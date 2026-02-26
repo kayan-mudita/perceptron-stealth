@@ -1,0 +1,131 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String   @id @default(uuid())
+  email          String   @unique
+  passwordHash   String
+  firstName      String
+  lastName       String
+  industry       String   @default("other")
+  company        String?
+  avatarUrl      String?
+  plan           String   @default("free")
+  onboarded      Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  photos         Photo[]
+  voiceSamples   VoiceSample[]
+  videos         Video[]
+  schedules      Schedule[]
+  socialAccounts SocialAccount[]
+  brandProfile   BrandProfile?
+  analytics      AnalyticsEvent[]
+}
+
+model BrandProfile {
+  id             String   @id @default(uuid())
+  userId         String   @unique
+  user           User     @relation(fields: [userId], references: [id])
+  brandName      String?
+  tagline        String?
+  toneOfVoice    String?
+  targetAudience String?
+  competitors    String?
+  brandColors    String?
+  guidelines     String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model Photo {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  filename  String
+  url       String
+  isPrimary Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  videos Video[]
+}
+
+model VoiceSample {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  filename  String
+  url       String
+  duration  Int      @default(0)
+  isDefault Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  videos Video[]
+}
+
+model Video {
+  id            String   @id @default(uuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id])
+  title         String
+  description   String?
+  script        String?
+  status        String   @default("draft")
+  model         String   @default("kling_2.6")
+  videoUrl      String?
+  thumbnailUrl  String?
+  duration      Int      @default(0)
+  contentType   String   @default("general")
+  sourceReview  String?
+  photoId       String?
+  photo         Photo?   @relation(fields: [photoId], references: [id])
+  voiceId       String?
+  voice         VoiceSample? @relation(fields: [voiceId], references: [id])
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  schedule        Schedule?
+  analyticsEvents AnalyticsEvent[]
+}
+
+model Schedule {
+  id          String   @id @default(uuid())
+  videoId     String   @unique
+  video       Video    @relation(fields: [videoId], references: [id])
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  platform    String
+  scheduledAt DateTime
+  publishedAt DateTime?
+  status      String   @default("scheduled")
+  createdAt   DateTime @default(now())
+}
+
+model SocialAccount {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  platform  String
+  handle    String
+  connected Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
+
+model AnalyticsEvent {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  videoId   String?
+  video     Video?   @relation(fields: [videoId], references: [id])
+  eventType String
+  platform  String?
+  count     Int      @default(1)
+  date      DateTime @default(now())
+}
