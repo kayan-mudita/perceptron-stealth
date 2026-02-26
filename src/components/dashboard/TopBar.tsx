@@ -1,15 +1,26 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { Bell, Search } from "lucide-react";
+import { Bell, Search, Sparkles } from "lucide-react";
+import Link from "next/link";
 
 export default function TopBar() {
   const { data: session } = useSession();
 
   return (
-    <header className="h-16 border-b border-white/5 bg-[#060911]/80 backdrop-blur-xl flex items-center justify-between px-6">
+    <header className="h-14 sm:h-16 border-b border-white/5 bg-[#060911]/80 backdrop-blur-xl flex items-center justify-between px-4 sm:px-6">
+      {/* Mobile logo (visible only on mobile) */}
+      <Link href="/dashboard/overview" className="flex lg:hidden items-center gap-2 mr-3">
+        <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center flex-shrink-0">
+          <Sparkles className="w-3.5 h-3.5 text-white" />
+        </div>
+        <span className="text-sm font-bold whitespace-nowrap">
+          Official <span className="gradient-text">AI</span>
+        </span>
+      </Link>
+
       {/* Search */}
-      <div className="relative max-w-md flex-1">
+      <div className="relative max-w-md flex-1 hidden sm:block">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
         <input
           type="text"
@@ -19,7 +30,12 @@ export default function TopBar() {
       </div>
 
       {/* Right side */}
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-2 sm:gap-4">
+        {/* Mobile search button */}
+        <button className="sm:hidden p-2 rounded-lg hover:bg-white/5 transition-colors">
+          <Search className="w-5 h-5 text-white/50" />
+        </button>
+
         {/* Notifications */}
         <button className="relative p-2 rounded-lg hover:bg-white/5 transition-colors">
           <Bell className="w-5 h-5 text-white/50" />
@@ -27,7 +43,7 @@ export default function TopBar() {
         </button>
 
         {/* Plan badge */}
-        <div className="hidden sm:block px-3 py-1 rounded-full bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-500/20">
+        <div className="hidden md:block px-3 py-1 rounded-full bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-500/20">
           <span className="text-xs font-semibold text-blue-400 uppercase">
             {(session?.user as any)?.plan || "Free"} Plan
           </span>
@@ -38,7 +54,7 @@ export default function TopBar() {
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-xs">
             {session?.user?.name?.charAt(0) || "U"}
           </div>
-          <div className="hidden sm:block">
+          <div className="hidden md:block">
             <div className="text-sm font-medium text-white leading-none">
               {session?.user?.name || "User"}
             </div>

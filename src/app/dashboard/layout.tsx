@@ -7,9 +7,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     <SessionProvider>
       <div className="flex min-h-screen">
         <Sidebar />
-        <div className="flex-1 ml-64">
+        {/* Desktop: offset for sidebar. Mobile: full width with bottom padding for nav */}
+        <div className="flex-1 lg:ml-64">
           <TopBar />
-          <main className="p-6">{children}</main>
+          <main className="p-4 sm:p-6 pb-24 lg:pb-6">{children}</main>
         </div>
       </div>
     </SessionProvider>
