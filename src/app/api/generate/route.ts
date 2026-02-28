@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { requireAuth } from "@/lib/api-helpers";
-import { generateVideo } from "@/lib/generate";
+import { generateVideo, pollJobUntilDone, type AIModel } from "@/lib/generate";
 
 export async function POST(req: NextRequest) {
   const { error, user } = await requireAuth();
@@ -28,6 +28,8 @@ export async function POST(req: NextRequest) {
   if (!photo) return NextResponse.json({ error: "No photo available. Please upload a photo first." }, { status: 400 });
   if (!voice) return NextResponse.json({ error: "No voice sample available. Please record your voice first." }, { status: 400 });
 
+  const selectedModel: AIModel = model || "kling_2.6";
+
   // Create/update video record
   if (!video) {
     video = await prisma.video.create({
@@ -35,35 +37,71 @@ export async function POST(req: NextRequest) {
         userId: user.id,
         title: script?.substring(0, 50) || "New Video",
         script,
-        model: model || "kling_2.6",
+        model: selectedModel,
         photoId: photo.id,
         voiceId: voice.id,
         status: "generating",
       },
     });
   } else {
-    await prisma.video.update({
+    video = await prisma.video.update({
       where: { id: video.id },
-      data: { status: "generating", model: model || video.model },
+      data: { status: "generating", model: selectedModel },
     });
   }
 
   // Call AI generation
   const result = await generateVideo({
-    model: model || "kling_2.6",
+    model: selectedModel,
     photoUrl: photo.url,
     voiceUrl: voice.url,
     script: script || video.script || "",
     duration: 8,
   });
 
-  // Update video with result
+  // Handle immediate failure
+  if (result.status === "failed") {
+    await prisma.video.update({
+      where: { id: video.id },
+      data: { status: "failed" },
+    });
+
+    return NextResponse.json({
+      video: { ...video, status: "failed" },
+      generation: result,
+    });
+  }
+
+  // Handle immediate completion (demo mode)
+  if (result.status === "completed") {
+    const updatedVideo = await prisma.video.update({
+      where: { id: video.id },
+      data: {
+        status: "review",
+        videoUrl: result.videoUrl || null,
+        thumbnailUrl: result.thumbnailUrl || null,
+        duration: 8,
+      },
+    });
+
+    return NextResponse.json({
+      video: updatedVideo,
+      generation: result,
+    });
+  }
+
+  // Job is processing -- start background polling (fire-and-forget)
+  // The polling function will update the Video record status in the DB
+  // when the job completes or fails.
+  pollJobUntilDone(video.id, result.jobId, selectedModel).catch((err) => {
+    console.error(`[Generate] Background poll error for video ${video!.id}:`, err);
+  });
+
+  // Update video record with processing state
   const updatedVideo = await prisma.video.update({
     where: { id: video.id },
     data: {
-      status: result.status === "completed" ? "review" : "generating",
-      videoUrl: result.videoUrl || null,
-      thumbnailUrl: result.thumbnailUrl || null,
+      status: "generating",
       duration: 8,
     },
   });

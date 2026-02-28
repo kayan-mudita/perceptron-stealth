@@ -8,6 +8,8 @@
     "start": "next start"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.999.0",
+    "@aws-sdk/s3-request-presigner": "^3.999.0",
     "@prisma/client": "^5.22.0",
     "bcryptjs": "^3.0.3",
     "dotenv": "^17.3.1",
@@ -15,13 +17,16 @@
     "lucide-react": "^0.575.0",
     "next": "^14.2.35",
     "next-auth": "^4.24.13",
+    "nodemailer": "^7.0.13",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "stripe": "^20.4.0",
     "uuid": "^13.0.0"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
     "@types/node": "^25.3.1",
+    "@types/nodemailer": "^7.0.11",
     "@types/react": "^19.2.14",
     "@types/uuid": "^10.0.0",
     "autoprefixer": "^10.4.27",
