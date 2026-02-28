@@ -1,7 +1,7 @@
+const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
 const appName = "Official AI";
-const appUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
 
-function baseLayout(content: string): string {
+function layout(content: string): string {
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,22 +9,21 @@ function baseLayout(content: string): string {
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>${appName}</title>
 </head>
-<body style="margin: 0; padding: 0; background-color: #0a0a0f; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color: #0a0a0f; padding: 40px 20px;">
+<body style="margin:0;padding:0;background-color:#0a0a0f;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#0a0a0f;padding:40px 20px;">
     <tr>
       <td align="center">
-        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width: 560px; background-color: #13131a; border-radius: 16px; border: 1px solid rgba(255,255,255,0.06); overflow: hidden;">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background-color:#12121a;border-radius:12px;border:1px solid rgba(255,255,255,0.06);overflow:hidden;">
           <!-- Header -->
           <tr>
-            <td style="padding: 32px 40px 24px; border-bottom: 1px solid rgba(255,255,255,0.06);">
+            <td style="padding:32px 40px 24px;border-bottom:1px solid rgba(255,255,255,0.06);">
               <table role="presentation" cellpadding="0" cellspacing="0">
                 <tr>
-                  <td style="width: 36px; height: 36px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); border-radius: 10px; text-align: center; vertical-align: middle;">
-                    <span style="color: #ffffff; font-size: 16px; line-height: 36px;">&#10024;</span>
+                  <td style="width:36px;height:36px;background:linear-gradient(135deg,#3b82f6,#9333ea);border-radius:10px;text-align:center;vertical-align:middle;font-size:18px;color:#ffffff;">
+                    &#10024;
                   </td>
-                  <td style="padding-left: 12px;">
-                    <span style="color: #ffffff; font-size: 18px; font-weight: 700;">Official </span>
-                    <span style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 18px; font-weight: 700;">AI</span>
+                  <td style="padding-left:10px;font-size:18px;font-weight:700;color:#ffffff;">
+                    Official <span style="background:linear-gradient(135deg,#3b82f6,#9333ea);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">AI</span>
                   </td>
                 </tr>
               </table>
@@ -32,17 +31,16 @@ function baseLayout(content: string): string {
           </tr>
           <!-- Content -->
           <tr>
-            <td style="padding: 32px 40px 40px;">
+            <td style="padding:32px 40px;">
               ${content}
             </td>
           </tr>
           <!-- Footer -->
           <tr>
-            <td style="padding: 24px 40px; border-top: 1px solid rgba(255,255,255,0.06);">
-              <p style="margin: 0; color: rgba(255,255,255,0.25); font-size: 12px; line-height: 1.5; text-align: center;">
-                &copy; ${new Date().getFullYear()} ${appName}. All rights reserved.<br />
-                You received this email because you have an account at ${appName}.<br />
-                <a href="${appUrl}" style="color: rgba(255,255,255,0.35); text-decoration: underline;">${appUrl}</a>
+            <td style="padding:24px 40px 32px;border-top:1px solid rgba(255,255,255,0.06);">
+              <p style="margin:0;font-size:12px;color:rgba(255,255,255,0.25);line-height:1.6;">
+                &copy; ${new Date().getFullYear()} ${appName}. All rights reserved.<br/>
+                You received this email because you have an account with ${appName}.
               </p>
             </td>
           </tr>
@@ -54,128 +52,126 @@ function baseLayout(content: string): string {
 </html>`;
 }
 
-function buttonHtml(text: string, url: string): string {
-  return `<table role="presentation" cellpadding="0" cellspacing="0" style="margin: 28px 0;">
+function button(text: string, url: string): string {
+  return `<table role="presentation" cellpadding="0" cellspacing="0" style="margin:28px 0;">
   <tr>
-    <td style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); border-radius: 10px; padding: 14px 32px;">
-      <a href="${url}" target="_blank" style="color: #ffffff; text-decoration: none; font-size: 14px; font-weight: 600; display: inline-block;">${text}</a>
+    <td style="background:linear-gradient(135deg,#3b82f6,#9333ea);border-radius:10px;padding:14px 32px;">
+      <a href="${url}" target="_blank" style="color:#ffffff;font-size:14px;font-weight:600;text-decoration:none;display:inline-block;">
+        ${text}
+      </a>
     </td>
   </tr>
 </table>`;
 }
 
-// ──────────────────────────────────────────────
-// Welcome Email
-// ──────────────────────────────────────────────
+// --- Welcome Email ---
 
 export function welcomeEmailHtml(firstName: string): string {
-  return baseLayout(`
-    <h1 style="margin: 0 0 8px; color: #ffffff; font-size: 24px; font-weight: 700;">Welcome to ${appName}!</h1>
-    <p style="margin: 0 0 20px; color: rgba(255,255,255,0.5); font-size: 15px; line-height: 1.6;">
-      Hi ${firstName}, we're excited to have you on board. Your AI-powered marketing teammate is ready to help you create professional video content in minutes.
+  return layout(`
+    <h1 style="margin:0 0 16px;font-size:24px;font-weight:700;color:#ffffff;">
+      Welcome to ${appName}, ${firstName}!
+    </h1>
+    <p style="margin:0 0 12px;font-size:15px;color:rgba(255,255,255,0.55);line-height:1.7;">
+      Your account has been created. You now have access to AI-powered video content creation, automated scheduling, and personalized marketing tools.
     </p>
-    <p style="margin: 0 0 8px; color: rgba(255,255,255,0.7); font-size: 14px; font-weight: 600;">Here's what you can do next:</p>
-    <ul style="margin: 0 0 20px; padding-left: 20px; color: rgba(255,255,255,0.5); font-size: 14px; line-height: 2;">
-      <li>Upload your photo and voice sample</li>
+    <p style="margin:0 0 4px;font-size:15px;color:rgba(255,255,255,0.55);line-height:1.7;">
+      Here is what to do next:
+    </p>
+    <ul style="margin:8px 0 0;padding-left:20px;font-size:14px;color:rgba(255,255,255,0.45);line-height:2;">
+      <li>Upload your professional photo</li>
+      <li>Record a 30-second voice sample</li>
       <li>Set up your brand profile</li>
       <li>Create your first AI video</li>
-      <li>Connect your social accounts</li>
     </ul>
-    ${buttonHtml("Go to Dashboard", `${appUrl}/dashboard/overview`)}
-    <p style="margin: 0; color: rgba(255,255,255,0.35); font-size: 13px; line-height: 1.5;">
-      Your 14-day free trial has started. No credit card required.
+    ${button("Go to Dashboard", `${baseUrl}/dashboard/overview`)}
+    <p style="margin:0;font-size:13px;color:rgba(255,255,255,0.3);line-height:1.6;">
+      Need help getting started? Reply to this email and our team will be happy to assist.
     </p>
   `);
 }
 
 export function welcomeEmailText(firstName: string): string {
-  return `Welcome to ${appName}!
+  return `Welcome to ${appName}, ${firstName}!
 
-Hi ${firstName}, we're excited to have you on board. Your AI-powered marketing teammate is ready to help you create professional video content in minutes.
+Your account has been created. You now have access to AI-powered video content creation, automated scheduling, and personalized marketing tools.
 
-Here's what you can do next:
-- Upload your photo and voice sample
+Here is what to do next:
+- Upload your professional photo
+- Record a 30-second voice sample
 - Set up your brand profile
 - Create your first AI video
-- Connect your social accounts
 
-Go to Dashboard: ${appUrl}/dashboard/overview
+Go to your dashboard: ${baseUrl}/dashboard/overview
 
-Your 14-day free trial has started. No credit card required.
+Need help getting started? Reply to this email and our team will be happy to assist.
 
 -- ${appName}`;
 }
 
-// ──────────────────────────────────────────────
-// Password Reset Email
-// ──────────────────────────────────────────────
+// --- Password Reset Email ---
 
 export function passwordResetEmailHtml(firstName: string, resetToken: string): string {
-  const resetUrl = `${appUrl}/auth/reset-password?token=${resetToken}`;
-  return baseLayout(`
-    <h1 style="margin: 0 0 8px; color: #ffffff; font-size: 24px; font-weight: 700;">Reset your password</h1>
-    <p style="margin: 0 0 20px; color: rgba(255,255,255,0.5); font-size: 15px; line-height: 1.6;">
-      Hi ${firstName}, we received a request to reset your password. Click the button below to choose a new one. This link will expire in 1 hour.
+  const resetUrl = `${baseUrl}/auth/reset-password?token=${resetToken}`;
+  return layout(`
+    <h1 style="margin:0 0 16px;font-size:24px;font-weight:700;color:#ffffff;">
+      Reset your password
+    </h1>
+    <p style="margin:0 0 12px;font-size:15px;color:rgba(255,255,255,0.55);line-height:1.7;">
+      Hi ${firstName}, we received a request to reset your password. Click the button below to choose a new one. This link is valid for 1 hour.
     </p>
-    ${buttonHtml("Reset Password", resetUrl)}
-    <p style="margin: 0 0 12px; color: rgba(255,255,255,0.35); font-size: 13px; line-height: 1.5;">
-      If the button doesn't work, copy and paste this link into your browser:
+    ${button("Reset Password", resetUrl)}
+    <p style="margin:0 0 8px;font-size:13px;color:rgba(255,255,255,0.3);line-height:1.6;">
+      If you did not request a password reset, you can safely ignore this email. Your password will remain unchanged.
     </p>
-    <p style="margin: 0 0 20px; word-break: break-all;">
-      <a href="${resetUrl}" style="color: #3b82f6; font-size: 13px; text-decoration: underline;">${resetUrl}</a>
-    </p>
-    <p style="margin: 0; color: rgba(255,255,255,0.35); font-size: 13px; line-height: 1.5;">
-      If you didn't request a password reset, you can safely ignore this email. Your password will remain unchanged.
+    <p style="margin:0;font-size:12px;color:rgba(255,255,255,0.2);line-height:1.6;word-break:break-all;">
+      Direct link: ${resetUrl}
     </p>
   `);
 }
 
 export function passwordResetEmailText(firstName: string, resetToken: string): string {
-  const resetUrl = `${appUrl}/auth/reset-password?token=${resetToken}`;
+  const resetUrl = `${baseUrl}/auth/reset-password?token=${resetToken}`;
   return `Reset your password
 
-Hi ${firstName}, we received a request to reset your password. Use the link below to choose a new one. This link will expire in 1 hour.
+Hi ${firstName}, we received a request to reset your password. Visit the link below to choose a new one. This link is valid for 1 hour.
 
-Reset your password: ${resetUrl}
+${resetUrl}
 
-If you didn't request a password reset, you can safely ignore this email. Your password will remain unchanged.
+If you did not request a password reset, you can safely ignore this email. Your password will remain unchanged.
 
 -- ${appName}`;
 }
 
-// ──────────────────────────────────────────────
-// Email Verification
-// ──────────────────────────────────────────────
+// --- Email Verification Email ---
 
-export function emailVerificationHtml(firstName: string, verificationToken: string): string {
-  const verifyUrl = `${appUrl}/api/auth/verify-email?token=${verificationToken}`;
-  return baseLayout(`
-    <h1 style="margin: 0 0 8px; color: #ffffff; font-size: 24px; font-weight: 700;">Verify your email</h1>
-    <p style="margin: 0 0 20px; color: rgba(255,255,255,0.5); font-size: 15px; line-height: 1.6;">
-      Hi ${firstName}, please verify your email address to complete your account setup. Click the button below to confirm your email.
+export function emailVerificationEmailHtml(firstName: string, verificationToken: string): string {
+  const verifyUrl = `${baseUrl}/api/auth/verify-email?token=${verificationToken}`;
+  return layout(`
+    <h1 style="margin:0 0 16px;font-size:24px;font-weight:700;color:#ffffff;">
+      Verify your email address
+    </h1>
+    <p style="margin:0 0 12px;font-size:15px;color:rgba(255,255,255,0.55);line-height:1.7;">
+      Hi ${firstName}, please confirm your email address by clicking the button below. This helps us keep your account secure.
     </p>
-    ${buttonHtml("Verify Email Address", verifyUrl)}
-    <p style="margin: 0 0 12px; color: rgba(255,255,255,0.35); font-size: 13px; line-height: 1.5;">
-      If the button doesn't work, copy and paste this link into your browser:
+    ${button("Verify Email", verifyUrl)}
+    <p style="margin:0 0 8px;font-size:13px;color:rgba(255,255,255,0.3);line-height:1.6;">
+      If you did not create an account with ${appName}, you can ignore this email.
     </p>
-    <p style="margin: 0 0 20px; word-break: break-all;">
-      <a href="${verifyUrl}" style="color: #3b82f6; font-size: 13px; text-decoration: underline;">${verifyUrl}</a>
-    </p>
-    <p style="margin: 0; color: rgba(255,255,255,0.35); font-size: 13px; line-height: 1.5;">
-      This link will expire in 24 hours. If you didn't create an account, you can safely ignore this email.
+    <p style="margin:0;font-size:12px;color:rgba(255,255,255,0.2);line-height:1.6;word-break:break-all;">
+      Direct link: ${verifyUrl}
     </p>
   `);
 }
 
-export function emailVerificationText(firstName: string, verificationToken: string): string {
-  const verifyUrl = `${appUrl}/api/auth/verify-email?token=${verificationToken}`;
-  return `Verify your email
+export function emailVerificationEmailText(firstName: string, verificationToken: string): string {
+  const verifyUrl = `${baseUrl}/api/auth/verify-email?token=${verificationToken}`;
+  return `Verify your email address
 
-Hi ${firstName}, please verify your email address to complete your account setup. Use the link below to confirm your email.
+Hi ${firstName}, please confirm your email address by visiting the link below. This helps us keep your account secure.
 
-Verify your email: ${verifyUrl}
+${verifyUrl}
 
-This link will expire in 24 hours. If you didn't create an account, you can safely ignore this email.
+If you did not create an account with ${appName}, you can ignore this email.
 
 -- ${appName}`;
 }

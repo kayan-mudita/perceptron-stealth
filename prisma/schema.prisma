@@ -3,33 +3,52 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
 model User {
-  id                   String   @id @default(uuid())
-  email                String   @unique
-  passwordHash         String
-  firstName            String
-  lastName             String
-  industry             String   @default("other")
-  company              String?
-  avatarUrl            String?
-  plan                 String   @default("free")
-  stripeCustomerId     String?  @unique
-  stripeSubscriptionId String?  @unique
-  onboarded            Boolean  @default(false)
-  createdAt            DateTime @default(now())
-  updatedAt            DateTime @updatedAt
+  id             String   @id @default(uuid())
+  email          String   @unique
+  passwordHash   String
+  firstName      String
+  lastName       String
+  industry       String   @default("other")
+  company        String?
+  avatarUrl      String?
+  plan           String   @default("free")
+  emailVerified  Boolean  @default(false)
+  onboarded      Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
-  photos         Photo[]
-  voiceSamples   VoiceSample[]
-  videos         Video[]
-  schedules      Schedule[]
-  socialAccounts SocialAccount[]
-  brandProfile   BrandProfile?
-  analytics      AnalyticsEvent[]
+  photos                  Photo[]
+  voiceSamples            VoiceSample[]
+  videos                  Video[]
+  schedules               Schedule[]
+  socialAccounts          SocialAccount[]
+  brandProfile            BrandProfile?
+  analytics               AnalyticsEvent[]
+  passwordResetTokens     PasswordResetToken[]
+  emailVerificationTokens EmailVerificationToken[]
+}
+
+model PasswordResetToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
+model EmailVerificationToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
 }
 
 model BrandProfile {
@@ -39,10 +58,10 @@ model BrandProfile {
   brandName      String?
   tagline        String?
   toneOfVoice    String?
-  targetAudience String?  @db.Text
-  competitors    String?  @db.Text
+  targetAudience String?
+  competitors    String?
   brandColors    String?
-  guidelines     String?  @db.Text
+  guidelines     String?
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 }
@@ -77,15 +96,15 @@ model Video {
   userId        String
   user          User     @relation(fields: [userId], references: [id])
   title         String
-  description   String?  @db.Text
-  script        String?  @db.Text
+  description   String?
+  script        String?
   status        String   @default("draft")
   model         String   @default("kling_2.6")
   videoUrl      String?
   thumbnailUrl  String?
   duration      Int      @default(0)
   contentType   String   @default("general")
-  sourceReview  String?  @db.Text
+  sourceReview  String?
   photoId       String?
   photo         Photo?   @relation(fields: [photoId], references: [id])
   voiceId       String?
@@ -111,21 +130,13 @@ model Schedule {
 }
 
 model SocialAccount {
-  id           String    @id @default(uuid())
-  userId       String
-  user         User      @relation(fields: [userId], references: [id])
-  platform     String
-  handle       String
-  accessToken  String?   @db.Text
-  refreshToken String?   @db.Text
-  expiresAt    DateTime?
-  scope        String?
-  accountId    String?
-  connected    Boolean   @default(true)
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
-
-  @@unique([userId, platform])
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  platform  String
+  handle    String
+  connected Boolean  @default(true)
+  createdAt DateTime @default(now())
 }
 
 model AnalyticsEvent {

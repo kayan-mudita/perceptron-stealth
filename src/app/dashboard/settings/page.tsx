@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
+import { useSearchParams } from "next/navigation";
 import {
   Settings,
   User,
@@ -12,6 +13,8 @@ import {
   ExternalLink,
   Trash2,
   Plus,
+  Loader2,
+  AlertCircle,
 } from "lucide-react";
 
 const tabs = [
@@ -22,13 +25,24 @@ const tabs = [
   { id: "privacy", label: "Privacy & Data", icon: Shield },
 ];
 
-const socialPlatforms = [
-  { id: "instagram", name: "Instagram", handle: "@rockwellrealty", connected: true, icon: "IG", color: "from-pink-500 to-purple-500" },
-  { id: "linkedin", name: "LinkedIn", handle: "Ryan Rockwell", connected: true, icon: "in", color: "from-blue-600 to-blue-400" },
-  { id: "tiktok", name: "TikTok", handle: "", connected: false, icon: "TT", color: "from-gray-600 to-gray-400" },
-  { id: "facebook", name: "Facebook", handle: "", connected: false, icon: "FB", color: "from-blue-700 to-blue-500" },
-  { id: "youtube", name: "YouTube", handle: "", connected: false, icon: "YT", color: "from-red-600 to-red-400" },
-];
+const platformMeta: Record<string, { name: string; icon: string; color: string }> = {
+  instagram: { name: "Instagram", icon: "IG", color: "from-pink-500 to-purple-500" },
+  linkedin: { name: "LinkedIn", icon: "in", color: "from-blue-600 to-blue-400" },
+  tiktok: { name: "TikTok", icon: "TT", color: "from-gray-600 to-gray-400" },
+  facebook: { name: "Facebook", icon: "FB", color: "from-blue-700 to-blue-500" },
+  youtube: { name: "YouTube", icon: "YT", color: "from-red-600 to-red-400" },
+};
+
+const allPlatformIds = ["instagram", "linkedin", "tiktok", "facebook", "youtube"];
+
+interface ConnectedAccount {
+  id: string;
+  platform: string;
+  handle: string;
+  connected: boolean;
+  accountId: string | null;
+  expiresAt: string | null;
+}
 
 const plans = [
   {
@@ -58,8 +72,87 @@ const plans = [
 ];
 
 export default function SettingsPage() {
-  const [activeTab, setActiveTab] = useState("profile");
+  const searchParams = useSearchParams();
+  const initialTab = searchParams.get("tab") || "profile";
+  const successMsg = searchParams.get("success");
+  const errorMsg = searchParams.get("error");
+
+  const [activeTab, setActiveTab] = useState(initialTab);
   const [currentPlan] = useState("authority");
+  const [connectedAccounts, setConnectedAccounts] = useState<ConnectedAccount[]>([]);
+  const [loadingAccounts, setLoadingAccounts] = useState(false);
+  const [disconnecting, setDisconnecting] = useState<string | null>(null);
+  const [toast, setToast] = useState<{ type: "success" | "error"; message: string } | null>(null);
+
+  // Show toast from URL params (after OAuth redirect)
+  useEffect(() => {
+    if (successMsg) {
+      setToast({ type: "success", message: successMsg });
+      // Clean up URL params
+      window.history.replaceState({}, "", "/dashboard/settings?tab=social");
+    } else if (errorMsg) {
+      setToast({ type: "error", message: errorMsg });
+      window.history.replaceState({}, "", "/dashboard/settings?tab=social");
+    }
+  }, [successMsg, errorMsg]);
+
+  // Auto-dismiss toast
+  useEffect(() => {
+    if (toast) {
+      const timer = setTimeout(() => setToast(null), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [toast]);
+
+  const fetchAccounts = useCallback(async () => {
+    setLoadingAccounts(true);
+    try {
+      const res = await fetch("/api/social/accounts");
+      if (res.ok) {
+        const data = await res.json();
+        setConnectedAccounts(data);
+      }
+    } catch (err) {
+      console.error("Failed to fetch accounts:", err);
+    } finally {
+      setLoadingAccounts(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (activeTab === "social") {
+      fetchAccounts();
+    }
+  }, [activeTab, fetchAccounts]);
+
+  const handleConnect = (platformId: string) => {
+    // Redirect to the OAuth connect endpoint
+    window.location.href = `/api/social/connect/${platformId}`;
+  };
+
+  const handleDisconnect = async (platformId: string) => {
+    setDisconnecting(platformId);
+    try {
+      const res = await fetch(`/api/social/disconnect/${platformId}`, {
+        method: "DELETE",
+      });
+      if (res.ok) {
+        setConnectedAccounts((prev) => prev.filter((a) => a.platform !== platformId));
+        setToast({ type: "success", message: `${platformMeta[platformId]?.name || platformId} disconnected` });
+      } else {
+        const data = await res.json();
+        setToast({ type: "error", message: data.error || "Failed to disconnect" });
+      }
+    } catch (err) {
+      setToast({ type: "error", message: "Failed to disconnect account" });
+    } finally {
+      setDisconnecting(null);
+    }
+  };
+
+  const getAccountForPlatform = (platformId: string) => {
+    return connectedAccounts.find((a) => a.platform === platformId && a.connected);
+  };
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
@@ -67,6 +160,28 @@ export default function SettingsPage() {
         <h1 className="text-2xl font-bold">Settings</h1>
         <p className="text-sm text-white/40 mt-1">Manage your account, plan, and connected platforms</p>
       </div>
+
+      {/* Toast notification */}
+      {toast && (
+        <div className={`flex items-center gap-2 p-3 rounded-lg text-sm ${
+          toast.type === "success"
+            ? "bg-green-500/10 border border-green-500/20 text-green-400"
+            : "bg-red-500/10 border border-red-500/20 text-red-400"
+        }`}>
+          {toast.type === "success" ? (
+            <Check className="w-4 h-4 flex-shrink-0" />
+          ) : (
+            <AlertCircle className="w-4 h-4 flex-shrink-0" />
+          )}
+          {toast.message}
+          <button
+            onClick={() => setToast(null)}
+            className="ml-auto text-white/40 hover:text-white/60"
+          >
+            x
+          </button>
+        </div>
+      )}
 
       {/* Tabs */}
       <div className="flex gap-1 overflow-x-auto pb-2">
@@ -169,30 +284,55 @@ export default function SettingsPage() {
       {activeTab === "social" && (
         <div className="space-y-4">
           <p className="text-xs text-white/30">Connect your social media accounts for automatic content publishing.</p>
-          {socialPlatforms.map((platform) => (
-            <div key={platform.id} className="glass-card p-4 flex items-center gap-4">
-              <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${platform.color} flex items-center justify-center text-white font-bold text-xs`}>
-                {platform.icon}
-              </div>
-              <div className="flex-1">
-                <div className="text-sm font-medium">{platform.name}</div>
-                {platform.connected ? (
-                  <div className="text-xs text-green-400 mt-0.5">Connected · {platform.handle}</div>
-                ) : (
-                  <div className="text-xs text-white/30 mt-0.5">Not connected</div>
-                )}
-              </div>
-              {platform.connected ? (
-                <button className="btn-secondary !py-1.5 !px-3 text-xs text-red-400 border-red-500/10 hover:bg-red-500/5">
-                  Disconnect
-                </button>
-              ) : (
-                <button className="btn-primary !py-1.5 !px-3 text-xs gap-1.5">
-                  <Plus className="w-3 h-3" /> Connect
-                </button>
-              )}
+          {loadingAccounts ? (
+            <div className="glass-card p-8 flex items-center justify-center gap-2 text-white/40">
+              <Loader2 className="w-4 h-4 animate-spin" />
+              Loading connected accounts...
             </div>
-          ))}
+          ) : (
+            allPlatformIds.map((platformId) => {
+              const meta = platformMeta[platformId];
+              const account = getAccountForPlatform(platformId);
+              const isConnected = !!account;
+              const isDisconnecting = disconnecting === platformId;
+
+              return (
+                <div key={platformId} className="glass-card p-4 flex items-center gap-4">
+                  <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${meta.color} flex items-center justify-center text-white font-bold text-xs`}>
+                    {meta.icon}
+                  </div>
+                  <div className="flex-1">
+                    <div className="text-sm font-medium">{meta.name}</div>
+                    {isConnected ? (
+                      <div className="text-xs text-green-400 mt-0.5">Connected{account.handle ? ` · ${account.handle}` : ""}</div>
+                    ) : (
+                      <div className="text-xs text-white/30 mt-0.5">Not connected</div>
+                    )}
+                  </div>
+                  {isConnected ? (
+                    <button
+                      onClick={() => handleDisconnect(platformId)}
+                      disabled={isDisconnecting}
+                      className="btn-secondary !py-1.5 !px-3 text-xs text-red-400 border-red-500/10 hover:bg-red-500/5 disabled:opacity-50"
+                    >
+                      {isDisconnecting ? (
+                        <Loader2 className="w-3 h-3 animate-spin" />
+                      ) : (
+                        "Disconnect"
+                      )}
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => handleConnect(platformId)}
+                      className="btn-primary !py-1.5 !px-3 text-xs gap-1.5"
+                    >
+                      <Plus className="w-3 h-3" /> Connect
+                    </button>
+                  )}
+                </div>
+              );
+            })
+          )}
         </div>
       )}
 

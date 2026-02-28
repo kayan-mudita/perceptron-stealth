@@ -77,7 +77,7 @@ function LoginForm() {
             <div>
               <div className="flex items-center justify-between mb-2">
                 <label className="text-sm font-medium text-white/60">Password</label>
-                <a href="#" className="text-xs text-blue-400 hover:text-blue-300">Forgot password?</a>
+                <Link href="/auth/forgot-password" className="text-xs text-blue-400 hover:text-blue-300">Forgot password?</Link>
               </div>
               <div className="relative">
                 <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />

@@ -1,47 +1,77 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { requireAuth } from "@/lib/api-helpers";
+import { videoCreateSchema } from "@/lib/validations";
+import { validateBody } from "@/lib/validate";
 
 export async function GET(req: NextRequest) {
-  const { error, user } = await requireAuth();
-  if (error) return error;
+  try {
+    const { error, user } = await requireAuth();
+    if (error) return error;
 
-  const { searchParams } = new URL(req.url);
-  const status = searchParams.get("status");
-  const contentType = searchParams.get("type");
+    const { searchParams } = new URL(req.url);
+    const status = searchParams.get("status");
+    const contentType = searchParams.get("type");
 
-  const where: any = { userId: user.id };
-  if (status) where.status = status;
-  if (contentType) where.contentType = contentType;
+    const where: Record<string, unknown> = { userId: user.id };
+    if (status) where.status = status;
+    if (contentType) where.contentType = contentType;
 
-  const videos = await prisma.video.findMany({
-    where,
-    include: { photo: true, voice: true, schedule: true },
-    orderBy: { createdAt: "desc" },
-  });
+    const videos = await prisma.video.findMany({
+      where,
+      include: { photo: true, voice: true, schedule: true },
+      orderBy: { createdAt: "desc" },
+    });
 
-  return NextResponse.json(videos);
+    return NextResponse.json(videos);
+  } catch (error) {
+    console.error("[GET /api/videos] Unexpected error:", error);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  }
 }
 
 export async function POST(req: NextRequest) {
-  const { error, user } = await requireAuth();
-  if (error) return error;
+  try {
+    const { error, user } = await requireAuth();
+    if (error) return error;
 
-  const body = await req.json();
-  const video = await prisma.video.create({
-    data: {
-      userId: user.id,
-      title: body.title,
-      description: body.description,
-      script: body.script,
-      model: body.model || "kling_2.6",
-      contentType: body.contentType || "general",
-      sourceReview: body.sourceReview,
-      photoId: body.photoId,
-      voiceId: body.voiceId,
-      status: "draft",
-    },
-  });
+    let body: unknown;
+    try {
+      body = await req.json();
+    } catch {
+      return NextResponse.json(
+        { error: "Invalid JSON in request body" },
+        { status: 400 }
+      );
+    }
 
-  return NextResponse.json(video);
+    const validation = validateBody(videoCreateSchema, body);
+    if (validation.error) {
+      return NextResponse.json(
+        { error: validation.error, fieldErrors: validation.fieldErrors },
+        { status: 400 }
+      );
+    }
+
+    const data = validation.data;
+    const video = await prisma.video.create({
+      data: {
+        userId: user.id,
+        title: data.title,
+        description: data.description,
+        script: data.script,
+        model: data.model,
+        contentType: data.contentType,
+        sourceReview: data.sourceReview,
+        photoId: data.photoId,
+        voiceId: data.voiceId,
+        status: "draft",
+      },
+    });
+
+    return NextResponse.json(video);
+  } catch (error) {
+    console.error("[POST /api/videos] Unexpected error:", error);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  }
 }
