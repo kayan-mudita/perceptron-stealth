@@ -110,6 +110,7 @@ model Video {
   duration      Int      @default(0)
   contentType   String   @default("general")
   sourceReview  String?
+  metadata      String?
   photoId       String?
   photo         Photo?   @relation(fields: [photoId], references: [id])
   voiceId       String?

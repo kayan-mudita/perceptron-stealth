@@ -272,6 +272,10 @@ async function falSubmit(
   }
 }
 
+export async function falPollOnce(compositeJobId: string): Promise<PollResult> {
+  return falPoll(compositeJobId);
+}
+
 async function falPoll(compositeJobId: string): Promise<PollResult> {
   const apiKey = getFalKey();
   if (!apiKey) return { status: "completed", videoUrl: `/api/demo-video` };

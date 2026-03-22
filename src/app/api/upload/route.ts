@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "@/lib/api-helpers";
+import prisma from "@/lib/prisma";
 import {
   uploadFile,
   isStorageConfigured,
@@ -169,13 +170,40 @@ export async function POST(req: NextRequest) {
 
   try {
     const url = await uploadFile(buffer, key, contentType);
+    const filename = file.name || `${fileId}.${ext}`;
+
+    // Create DB record for photos and voice samples
+    let record = null;
+    if (fileCategory === "photo") {
+      const existingPhotos = await prisma.photo.count({ where: { userId: user.id } });
+      record = await prisma.photo.create({
+        data: {
+          userId: user.id,
+          filename,
+          url,
+          isPrimary: existingPhotos === 0, // first photo is primary
+        },
+      });
+    } else if (fileCategory === "voice") {
+      const existingVoices = await prisma.voiceSample.count({ where: { userId: user.id } });
+      record = await prisma.voiceSample.create({
+        data: {
+          userId: user.id,
+          filename,
+          url,
+          isDefault: existingVoices === 0,
+        },
+      });
+    }
+
     return NextResponse.json({
       url,
       key,
-      filename: file.name || `${fileId}.${ext}`,
+      filename,
+      recordId: record?.id,
     });
   } catch (err) {
-    console.error("[Upload] S3 upload failed:", err);
+    console.error("[Upload] Upload failed:", err);
     return NextResponse.json(
       { error: "Upload failed. Please try again." },
       { status: 500 }

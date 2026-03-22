@@ -1,16 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { requireAuth } from "@/lib/api-helpers";
-import { generateVideo, pollJobUntilDone } from "@/lib/generate";
 import { generateRequestSchema } from "@/lib/validations";
 import { validateBody } from "@/lib/validate";
 import { generateLimiter, RateLimitError } from "@/lib/rate-limit";
-import { planComposition, expandCutPrompts } from "@/lib/video-compositor";
-import { generateStartingFrame } from "@/lib/starting-frame";
-import { stitchCuts, isShotstackConfigured, StitchCut } from "@/lib/video-stitcher";
-import { downloadAndStore, videoKey, audioKey, isStorageConfigured } from "@/lib/storage";
-import { generateVoiceover } from "@/lib/voice-engine";
+import { planComposition } from "@/lib/video-compositor";
 
+/**
+ * POST /api/generate — FAST
+ *
+ * Creates the video record and composition plan, returns immediately.
+ * All heavy processing (prompt expansion, TTS, video generation, stitching)
+ * happens in /api/generate/process which the frontend calls next.
+ *
+ * This avoids Netlify's 26s function timeout.
+ */
 export async function POST(req: NextRequest) {
   try {
     const { error, user } = await requireAuth();
@@ -41,14 +45,14 @@ export async function POST(req: NextRequest) {
     const selectedModel = model || "kling_2.6";
     const selectedFormat = format || "talking_head_15";
 
-    // Get or create video record
+    // Get or validate existing video
     let video;
     if (videoId) {
       video = await prisma.video.findFirst({ where: { id: videoId, userId: user.id } });
       if (!video) return NextResponse.json({ error: "Video not found" }, { status: 404 });
     }
 
-    // Get photo and voice
+    // Get photo and voice references (fast DB lookups)
     const photo = photoId
       ? await prisma.photo.findFirst({ where: { id: photoId, userId: user.id } })
       : await prisma.photo.findFirst({ where: { userId: user.id, isPrimary: true } });
@@ -57,297 +61,52 @@ export async function POST(req: NextRequest) {
       ? await prisma.voiceSample.findFirst({ where: { id: voiceId, userId: user.id } })
       : await prisma.voiceSample.findFirst({ where: { userId: user.id, isDefault: true } });
 
-    // ─── FORMAT-FIRST COMPOSITION PLAN ──────────────────────
-    //
-    // Step 1: Plan the cuts based on format
-    // Step 2: Expand each cut's prompt through the prompt engine
-    // Step 3: Generate each cut separately (same starting frame)
-    // Step 4: Store results for stitching
-
     const rawScript = script || video?.script || "";
 
-    // Step 1: Plan
+    // Plan the composition (pure logic, no API calls)
     const plan = planComposition(selectedFormat, rawScript);
 
-    // Step 2: Expand each cut's prompt with full production details
-    const expandedPlan = await expandCutPrompts(plan, user.id, selectedModel, user.industry);
-
-    // Step 2.5: Generate or retrieve starting frame for character consistency
-    let startingFrameUrl = photo?.url || "";
-    if (photo?.url) {
-      try {
-        // Check for existing starting frame first
-        const existingSF = await prisma.photo.findFirst({
-          where: { userId: user.id, filename: { startsWith: "starting-frame-" } },
-          orderBy: { createdAt: "desc" },
-        });
-        if (existingSF?.url) {
-          startingFrameUrl = existingSF.url;
-        } else {
-          const sf = await generateStartingFrame(user.id, rawScript);
-          if (sf.status === "complete" && sf.imageUrl) {
-            startingFrameUrl = sf.imageUrl;
-          }
-        }
-      } catch (err) {
-        console.error("[generate] Starting frame failed, using raw photo:", err);
-      }
-    }
-
-    // ─── STEP 3: GENERATE TTS AUDIO FROM SCRIPT ─────────────
-    //
-    // TTS runs ONCE for the entire script, before any video cuts.
-    // The resulting audio URL gets passed to the stitch step so
-    // audio and video are synced in the final output.
-    let ttsAudioUrl: string | null = null;
-
-    if (rawScript && rawScript.length > 10) {
-      try {
-        const ttsResult = await generateVoiceover(rawScript);
-        if (ttsResult.audioUrl) {
-          console.log(`[generate] TTS generated via ${ttsResult.provider} (${ttsResult.duration}s)`);
-
-          // Store the TTS audio in Supabase Storage so it's a permanent
-          // public URL that Shotstack can access during stitching
-          if (isStorageConfigured() && !ttsResult.audioUrl.startsWith("data:")) {
-            try {
-              ttsAudioUrl = await downloadAndStore(
-                ttsResult.audioUrl,
-                audioKey(user.id, `tts-${Date.now()}`, "mp3"),
-                "audio/mpeg"
-              );
-              console.log(`[generate] TTS audio stored in Supabase: ${ttsAudioUrl}`);
-            } catch (storeErr) {
-              console.error("[generate] Failed to store TTS audio, using direct URL:", storeErr);
-              ttsAudioUrl = ttsResult.audioUrl;
-            }
-          } else {
-            // FAL returns a temporary URL; if storage isn't configured,
-            // use the direct URL (may expire before stitch completes)
-            ttsAudioUrl = ttsResult.audioUrl;
-          }
-        }
-      } catch (err) {
-        console.error("[generate] TTS generation failed, video will have no voiceover:", err);
-      }
-    }
-
-    // Use TTS audio if generated, otherwise fall back to user's voice sample
-    const finalAudioUrl = ttsAudioUrl || voice?.url || "";
-
-    // Create/update video record with the composition plan
+    // Create/update video record
     if (!video) {
       video = await prisma.video.create({
         data: {
           userId: user.id,
           title: rawScript.length > 100 ? rawScript.substring(0, 97) + "..." : rawScript || "New Video",
-          description: `Format: ${expandedPlan.format.name} | ${expandedPlan.format.cuts.length} cuts`,
+          description: `Format: ${plan.format.name} | ${plan.format.cuts.length} cuts`,
           script: rawScript,
           model: selectedModel,
           contentType: selectedFormat,
           photoId: photo?.id,
           voiceId: voice?.id,
           status: "generating",
+          duration: plan.format.totalDuration,
         },
       });
     } else {
-      await prisma.video.update({
+      video = await prisma.video.update({
         where: { id: video.id },
         data: {
           status: "generating",
           model: selectedModel,
           contentType: selectedFormat,
-          description: `Format: ${expandedPlan.format.name} | ${expandedPlan.format.cuts.length} cuts`,
+          script: rawScript,
+          description: `Format: ${plan.format.name} | ${plan.format.cuts.length} cuts`,
+          duration: plan.format.totalDuration,
         },
       });
     }
 
-    // Step 3: Generate each cut
-    // For now, generate the FIRST cut (the hook) synchronously
-    // and queue the rest in background. The hook is what the user
-    // sees immediately as a preview.
-    const hookCut = expandedPlan.format.cuts[0];
-    const hookResult = await generateVideo({
-      model: selectedModel,
-      photoUrl: startingFrameUrl,
-      voiceUrl: finalAudioUrl,
-      script: hookCut.prompt,
-      userId: user.id,
-      industry: user.industry,
-      usePromptEngine: false, // already expanded
-      duration: hookCut.generateDuration,
-    });
-
-    // Update video with hook result + save the expanded prompt
-    const allExpandedPrompts = expandedPlan.format.cuts.map((c, i) =>
-      `═══ CUT ${i + 1}: ${c.type.toUpperCase()} (${c.duration}s from ${c.generateDuration}s generated) ═══\n${c.prompt}`
-    ).join("\n\n");
-
-    const updatedVideo = await prisma.video.update({
-      where: { id: video.id },
-      data: {
-        status: hookResult.status === "completed" ? "review" : "generating",
-        videoUrl: hookResult.videoUrl || null,
-        thumbnailUrl: hookResult.thumbnailUrl || null,
-        script: allExpandedPrompts.substring(0, 5000), // store expanded prompts
-        duration: expandedPlan.format.totalDuration,
-      },
-    });
-
-    // Fire-and-forget: poll hook completion + generate remaining cuts
-    if (hookResult.status === "processing" && hookResult.jobId) {
-      pollJobUntilDone(video.id, hookResult.jobId, selectedModel).catch((err) =>
-        console.error(`[generate] Hook poll failed for ${video!.id}:`, err)
-      );
-    }
-
-    // Background: generate remaining cuts (cuts 1..N) then stitch everything
-    const remainingCuts = expandedPlan.format.cuts.slice(1);
-    if (remainingCuts.length > 0) {
-      generateRemainingCuts(
-        video.id, user.id, selectedModel, startingFrameUrl, finalAudioUrl,
-        ttsAudioUrl || voice?.url || null,
-        hookResult.videoUrl || null, hookCut.duration,
-        remainingCuts, user.industry
-      ).catch((err) =>
-        console.error(`[generate] Remaining cuts failed for ${video!.id}:`, err)
-      );
-    }
-
     return NextResponse.json({
-      video: updatedVideo,
+      video,
       composition: {
-        format: expandedPlan.format.name,
-        totalCuts: expandedPlan.format.cuts.length,
-        totalDuration: expandedPlan.format.totalDuration,
-        hooksGenerated: 1,
-        remainingCuts: remainingCuts.length,
-        hookStatus: hookResult.status,
-        promptExpanded: true,
-        hasVoiceover: !!ttsAudioUrl,
+        format: plan.format.name,
+        totalCuts: plan.format.cuts.length,
+        totalDuration: plan.format.totalDuration,
+        status: "queued",
       },
     });
   } catch (error) {
     console.error("[POST /api/generate] Unexpected error:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
-  }
-}
-
-// ─── Background Cut Generation + Stitching ──────────────────────
-
-async function generateRemainingCuts(
-  parentVideoId: string,
-  userId: string,
-  model: string,
-  photoUrl: string,
-  voiceUrl: string,
-  audioUrl: string | null,  // TTS audio URL for Shotstack stitch (separate from voiceUrl for video models)
-  hookVideoUrl: string | null,
-  hookDuration: number,
-  cuts: any[],
-  industry?: string
-): Promise<void> {
-  // Collect all cut video URLs (hook is already done)
-  const completedCuts: StitchCut[] = [];
-
-  if (hookVideoUrl) {
-    completedCuts.push({
-      videoUrl: hookVideoUrl,
-      trimTo: hookDuration,
-    });
-  }
-
-  // Generate each remaining cut sequentially
-  for (const cut of cuts) {
-    try {
-      const result = await generateVideo({
-        model,
-        photoUrl,
-        voiceUrl,
-        script: cut.prompt,
-        userId,
-        industry,
-        usePromptEngine: false,
-        duration: cut.generateDuration,
-      });
-
-      let cutVideoUrl = result.videoUrl;
-
-      // If processing, poll until done then read URL from DB
-      if (result.status === "processing" && result.jobId) {
-        await pollJobUntilDone(parentVideoId, result.jobId, model);
-        const updated = await prisma.video.findUnique({ where: { id: parentVideoId } });
-        if (updated?.videoUrl) {
-          cutVideoUrl = updated.videoUrl;
-        }
-      }
-
-      if (cutVideoUrl) {
-        completedCuts.push({
-          videoUrl: cutVideoUrl,
-          trimTo: cut.duration,
-        });
-      }
-
-      console.log(`[generate] Cut ${cut.index} (${cut.type}) done for ${parentVideoId}`);
-    } catch (err) {
-      console.error(`[generate] Cut ${cut.index} failed for ${parentVideoId}:`, err);
-    }
-  }
-
-  // ─── STITCH ALL CUTS ──────────────────────────────────────
-  if (completedCuts.length > 1 && isShotstackConfigured()) {
-    try {
-      console.log(`[generate] Stitching ${completedCuts.length} cuts for ${parentVideoId}${audioUrl ? ` with audio: ${audioUrl.substring(0, 80)}...` : " (no audio)"}`);
-
-      const finalUrl = await stitchCuts({
-        cuts: completedCuts,
-        audioUrl: audioUrl || undefined,
-        aspectRatio: "9:16",
-      });
-
-      // Download stitched video and store permanently in Supabase
-      const storedUrl = await downloadAndStore(
-        finalUrl,
-        videoKey(userId, parentVideoId, "mp4"),
-        "video/mp4"
-      );
-
-      // Update the parent video with the final stitched URL
-      await prisma.video.update({
-        where: { id: parentVideoId },
-        data: {
-          videoUrl: storedUrl,
-          status: "review",
-        },
-      });
-
-      console.log(`[generate] Final stitched video stored for ${parentVideoId}`);
-    } catch (err) {
-      console.error(`[generate] Stitching failed for ${parentVideoId}:`, err);
-      // Fall back to hook-only video
-      await prisma.video.update({
-        where: { id: parentVideoId },
-        data: { status: "review" },
-      });
-    }
-  } else if (completedCuts.length === 1) {
-    // Only hook generated — store it permanently
-    try {
-      const storedUrl = await downloadAndStore(
-        completedCuts[0].videoUrl,
-        videoKey(userId, parentVideoId, "mp4"),
-        "video/mp4"
-      );
-      await prisma.video.update({
-        where: { id: parentVideoId },
-        data: { videoUrl: storedUrl, status: "review" },
-      });
-    } catch {
-      await prisma.video.update({
-        where: { id: parentVideoId },
-        data: { status: "review" },
-      });
-    }
   }
 }
