@@ -66,7 +66,7 @@ export async function POST(req: NextRequest) {
         where: { id: videoId },
         data: {
           script: allPrompts.substring(0, 5000),
-          metadata: JSON.stringify({ cuts: cutData, format: selectedFormat }),
+          sourceReview: JSON.stringify({ cuts: cutData, format: selectedFormat }),
         },
       });
 
@@ -105,11 +105,11 @@ export async function POST(req: NextRequest) {
       }
 
       // Store TTS URL in metadata
-      const existing = video.metadata ? JSON.parse(video.metadata as string) : {};
+      const existing = video.sourceReview ? JSON.parse(video.sourceReview as string) : {};
       existing.ttsAudioUrl = ttsAudioUrl;
       await prisma.video.update({
         where: { id: videoId },
-        data: { metadata: JSON.stringify(existing) },
+        data: { sourceReview: JSON.stringify(existing) },
       });
 
       return NextResponse.json({
@@ -123,7 +123,7 @@ export async function POST(req: NextRequest) {
     // ─── STEP: CUT (generate one video cut) ───────────────────
     if (step === "cut") {
       const i = cutIndex ?? 0;
-      const meta = video.metadata ? JSON.parse(video.metadata as string) : {};
+      const meta = video.sourceReview ? JSON.parse(video.sourceReview as string) : {};
       const cuts = meta.cuts || [];
       const cut = cuts[i];
 
@@ -160,7 +160,7 @@ export async function POST(req: NextRequest) {
       };
       await prisma.video.update({
         where: { id: videoId },
-        data: { metadata: JSON.stringify(meta) },
+        data: { sourceReview: JSON.stringify(meta) },
       });
 
       const isLastCut = i >= cuts.length - 1;
@@ -180,7 +180,7 @@ export async function POST(req: NextRequest) {
     // ─── STEP: POLL (check if a cut is done) ──────────────────
     if (step === "poll") {
       const i = cutIndex ?? 0;
-      const meta = video.metadata ? JSON.parse(video.metadata as string) : {};
+      const meta = video.sourceReview ? JSON.parse(video.sourceReview as string) : {};
       const cutJob = meta.cutJobs?.[i];
 
       if (!cutJob?.jobId) {
@@ -208,7 +208,7 @@ export async function POST(req: NextRequest) {
       meta.cutJobs[i] = cutJob;
       await prisma.video.update({
         where: { id: videoId },
-        data: { metadata: JSON.stringify(meta) },
+        data: { sourceReview: JSON.stringify(meta) },
       });
 
       if (pollResult.status === "completed") {
@@ -234,7 +234,7 @@ export async function POST(req: NextRequest) {
 
     // ─── STEP: STITCH ─────────────────────────────────────────
     if (step === "stitch") {
-      const meta = video.metadata ? JSON.parse(video.metadata as string) : {};
+      const meta = video.sourceReview ? JSON.parse(video.sourceReview as string) : {};
       const cutJobs = meta.cutJobs || {};
 
       const completedCuts: StitchCut[] = Object.values(cutJobs)

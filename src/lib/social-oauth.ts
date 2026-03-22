@@ -6,6 +6,34 @@ export function isValidPlatform(platform: string): platform is SocialPlatform {
   return VALID_PLATFORMS.includes(platform as SocialPlatform);
 }
 
+/**
+ * Returns the env var keys required for a platform's OAuth flow.
+ */
+export function getPlatformEnvKeys(platform: SocialPlatform): { clientId: string; clientSecret: string } {
+  const keyMap: Record<SocialPlatform, { clientId: string; clientSecret: string }> = {
+    instagram: { clientId: "INSTAGRAM_CLIENT_ID", clientSecret: "INSTAGRAM_CLIENT_SECRET" },
+    youtube: { clientId: "YOUTUBE_CLIENT_ID", clientSecret: "YOUTUBE_CLIENT_SECRET" },
+    tiktok: { clientId: "TIKTOK_CLIENT_ID", clientSecret: "TIKTOK_CLIENT_SECRET" },
+    linkedin: { clientId: "LINKEDIN_CLIENT_ID", clientSecret: "LINKEDIN_CLIENT_SECRET" },
+    facebook: { clientId: "FACEBOOK_CLIENT_ID", clientSecret: "FACEBOOK_CLIENT_SECRET" },
+  };
+  return keyMap[platform];
+}
+
+/**
+ * Check whether a platform has its OAuth credentials configured in env vars.
+ */
+export function isPlatformConfigured(platform: SocialPlatform): {
+  configured: boolean;
+  missingVars: string[];
+} {
+  const keys = getPlatformEnvKeys(platform);
+  const missingVars: string[] = [];
+  if (!process.env[keys.clientId]) missingVars.push(keys.clientId);
+  if (!process.env[keys.clientSecret]) missingVars.push(keys.clientSecret);
+  return { configured: missingVars.length === 0, missingVars };
+}
+
 interface OAuthConfig {
   clientId: string;
   clientSecret: string;
