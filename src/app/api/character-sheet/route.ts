@@ -8,14 +8,14 @@ export async function POST(req: NextRequest) {
     const { error, user } = await requireAuth();
     if (error) return error;
 
-    let body: { photoUrls?: string[] };
+    let body: { photoUrls?: string[]; industry?: string };
     try {
       body = await req.json();
     } catch {
       return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
     }
 
-    // If no photo URLs provided, look up the user's uploaded photos
+    // If no photo URLs provided, look up the user's uploaded photos from Supabase
     let photoUrls = body.photoUrls || [];
 
     if (!photoUrls.length) {
@@ -33,7 +33,10 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const result = await generateCharacterSheets(user.id, photoUrls);
+    // Resolve industry — prefer body param, fall back to user's stored industry
+    const industry = body.industry || user.industry || "other";
+
+    const result = await generateCharacterSheets(user.id, photoUrls, industry);
 
     return NextResponse.json({
       poses: {
@@ -42,6 +45,7 @@ export async function POST(req: NextRequest) {
         status: result.poses.status,
         imageCount: result.poses.images.length,
       },
+      // 3D sheet is backend-only — only return id and status, never the image URL
       threeD: {
         id: result.threeD.characterSheetId,
         status: result.threeD.status,

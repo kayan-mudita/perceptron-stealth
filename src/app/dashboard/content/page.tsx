@@ -14,11 +14,13 @@ import {
   Loader2,
   Film,
 } from "lucide-react";
-import VideoModal from "@/components/VideoModal";
+import VideoDetailModal from "@/components/VideoDetailModal";
 
 interface VideoItem {
   id: string;
   title: string;
+  description: string | null;
+  script: string | null;
   model: string;
   status: string;
   contentType: string;
@@ -177,7 +179,7 @@ export default function ContentPage() {
             <VideoGridCard
               key={video.id}
               video={video}
-              onSelect={() => video.videoUrl && setSelectedVideo(video)}
+              onSelect={() => setSelectedVideo(video)}
             />
           ))}
         </div>
@@ -189,8 +191,8 @@ export default function ContentPage() {
           {filtered.map((video) => (
             <div
               key={video.id}
-              onClick={() => video.videoUrl && setSelectedVideo(video)}
-              className={`flex items-center gap-4 px-5 py-3 hover:bg-white/[0.015] transition-colors ${video.videoUrl ? "cursor-pointer" : ""}`}
+              onClick={() => setSelectedVideo(video)}
+              className="flex items-center gap-4 px-5 py-3 hover:bg-white/[0.015] transition-colors cursor-pointer"
             >
               <div className="w-16 h-10 rounded-lg bg-white/[0.03] flex items-center justify-center flex-shrink-0 overflow-hidden">
                 {video.thumbnailUrl ? (
@@ -215,12 +217,17 @@ export default function ContentPage() {
         </div>
       )}
 
-      {/* Video Modal */}
-      {selectedVideo && selectedVideo.videoUrl && (
-        <VideoModal
-          src={selectedVideo.videoUrl}
-          title={selectedVideo.title}
+      {/* Video Detail Modal */}
+      {selectedVideo && (
+        <VideoDetailModal
+          video={selectedVideo}
           onClose={() => setSelectedVideo(null)}
+          onStatusChange={(id, newStatus) => {
+            setVideos((prev) =>
+              prev.map((v) => (v.id === id ? { ...v, status: newStatus } : v))
+            );
+            setSelectedVideo(null);
+          }}
         />
       )}
     </div>
@@ -258,7 +265,7 @@ function VideoGridCard({
       onClick={onSelect}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      className={`rounded-xl border border-white/[0.04] bg-white/[0.015] overflow-hidden group hover:border-white/[0.08] transition-all ${video.videoUrl ? "cursor-pointer" : ""}`}
+      className="rounded-xl border border-white/[0.04] bg-white/[0.015] overflow-hidden group hover:border-white/[0.08] transition-all cursor-pointer"
     >
       <div className="aspect-video bg-white/[0.02] relative flex items-center justify-center overflow-hidden">
         {/* Hover video preview */}

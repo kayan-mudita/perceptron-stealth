@@ -8,7 +8,8 @@ import { generateLimiter, RateLimitError } from "@/lib/rate-limit";
 import { planComposition, expandCutPrompts } from "@/lib/video-compositor";
 import { generateStartingFrame } from "@/lib/starting-frame";
 import { stitchCuts, isShotstackConfigured, StitchCut } from "@/lib/video-stitcher";
-import { downloadAndStore, videoKey } from "@/lib/storage";
+import { downloadAndStore, videoKey, audioKey, isStorageConfigured } from "@/lib/storage";
+import { generateVoiceover } from "@/lib/voice-engine";
 
 export async function POST(req: NextRequest) {
   try {
@@ -93,6 +94,47 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    // ─── STEP 3: GENERATE TTS AUDIO FROM SCRIPT ─────────────
+    //
+    // TTS runs ONCE for the entire script, before any video cuts.
+    // The resulting audio URL gets passed to the stitch step so
+    // audio and video are synced in the final output.
+    let ttsAudioUrl: string | null = null;
+
+    if (rawScript && rawScript.length > 10) {
+      try {
+        const ttsResult = await generateVoiceover(rawScript);
+        if (ttsResult.audioUrl) {
+          console.log(`[generate] TTS generated via ${ttsResult.provider} (${ttsResult.duration}s)`);
+
+          // Store the TTS audio in Supabase Storage so it's a permanent
+          // public URL that Shotstack can access during stitching
+          if (isStorageConfigured() && !ttsResult.audioUrl.startsWith("data:")) {
+            try {
+              ttsAudioUrl = await downloadAndStore(
+                ttsResult.audioUrl,
+                audioKey(user.id, `tts-${Date.now()}`, "mp3"),
+                "audio/mpeg"
+              );
+              console.log(`[generate] TTS audio stored in Supabase: ${ttsAudioUrl}`);
+            } catch (storeErr) {
+              console.error("[generate] Failed to store TTS audio, using direct URL:", storeErr);
+              ttsAudioUrl = ttsResult.audioUrl;
+            }
+          } else {
+            // FAL returns a temporary URL; if storage isn't configured,
+            // use the direct URL (may expire before stitch completes)
+            ttsAudioUrl = ttsResult.audioUrl;
+          }
+        }
+      } catch (err) {
+        console.error("[generate] TTS generation failed, video will have no voiceover:", err);
+      }
+    }
+
+    // Use TTS audio if generated, otherwise fall back to user's voice sample
+    const finalAudioUrl = ttsAudioUrl || voice?.url || "";
+
     // Create/update video record with the composition plan
     if (!video) {
       video = await prisma.video.create({
@@ -128,7 +170,7 @@ export async function POST(req: NextRequest) {
     const hookResult = await generateVideo({
       model: selectedModel,
       photoUrl: startingFrameUrl,
-      voiceUrl: voice?.url || "",
+      voiceUrl: finalAudioUrl,
       script: hookCut.prompt,
       userId: user.id,
       industry: user.industry,
@@ -163,7 +205,8 @@ export async function POST(req: NextRequest) {
     const remainingCuts = expandedPlan.format.cuts.slice(1);
     if (remainingCuts.length > 0) {
       generateRemainingCuts(
-        video.id, user.id, selectedModel, startingFrameUrl, voice?.url || "",
+        video.id, user.id, selectedModel, startingFrameUrl, finalAudioUrl,
+        ttsAudioUrl || voice?.url || null,
         hookResult.videoUrl || null, hookCut.duration,
         remainingCuts, user.industry
       ).catch((err) =>
@@ -181,6 +224,7 @@ export async function POST(req: NextRequest) {
         remainingCuts: remainingCuts.length,
         hookStatus: hookResult.status,
         promptExpanded: true,
+        hasVoiceover: !!ttsAudioUrl,
       },
     });
   } catch (error) {
@@ -197,6 +241,7 @@ async function generateRemainingCuts(
   model: string,
   photoUrl: string,
   voiceUrl: string,
+  audioUrl: string | null,  // TTS audio URL for Shotstack stitch (separate from voiceUrl for video models)
   hookVideoUrl: string | null,
   hookDuration: number,
   cuts: any[],
@@ -253,11 +298,11 @@ async function generateRemainingCuts(
   // ─── STITCH ALL CUTS ──────────────────────────────────────
   if (completedCuts.length > 1 && isShotstackConfigured()) {
     try {
-      console.log(`[generate] Stitching ${completedCuts.length} cuts for ${parentVideoId}...`);
+      console.log(`[generate] Stitching ${completedCuts.length} cuts for ${parentVideoId}${audioUrl ? ` with audio: ${audioUrl.substring(0, 80)}...` : " (no audio)"}`);
 
       const finalUrl = await stitchCuts({
         cuts: completedCuts,
-        audioUrl: voiceUrl || undefined,
+        audioUrl: audioUrl || undefined,
         aspectRatio: "9:16",
       });
 

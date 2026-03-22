@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Official AI — Architecture Overview</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; background: #060911; color: #e2e8f0; min-height: 100vh; padding: 40px 24px; }
+
+  h1 { font-size: 32px; font-weight: 700; text-align: center; margin-bottom: 8px; }
+  h1 span { background: linear-gradient(135deg, #3b82f6, #8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .subtitle { text-align: center; color: #64748b; font-size: 15px; margin-bottom: 48px; }
+
+  /* Status Legend */
+  .legend { display: flex; justify-content: center; gap: 24px; margin-bottom: 40px; flex-wrap: wrap; }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #94a3b8; }
+  .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+  .dot-live { background: #22c55e; box-shadow: 0 0 8px #22c55e88; }
+  .dot-ui { background: #f59e0b; box-shadow: 0 0 8px #f59e0b88; }
+  .dot-stub { background: #64748b; }
+
+  /* Section Headers */
+  .section { max-width: 1200px; margin: 0 auto 56px; }
+  .section-title { font-size: 18px; font-weight: 600; color: #94a3b8; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 24px; padding-left: 16px; border-left: 3px solid #3b82f6; }
+
+  /* Flow Diagram */
+  .flow { display: flex; align-items: stretch; gap: 0; justify-content: center; flex-wrap: wrap; margin-bottom: 16px; }
+  .flow-card { background: #0f1420; border: 1px solid #1e293b; border-radius: 16px; padding: 24px; min-width: 180px; max-width: 220px; flex: 1; position: relative; }
+  .flow-card:hover { border-color: #3b82f680; background: #0f1420ee; transform: translateY(-2px); transition: all 0.2s; }
+  .flow-arrow { display: flex; align-items: center; justify-content: center; color: #334155; font-size: 24px; padding: 0 4px; min-width: 32px; }
+  .flow-icon { font-size: 28px; margin-bottom: 12px; }
+  .flow-title { font-size: 15px; font-weight: 600; color: #f1f5f9; margin-bottom: 6px; }
+  .flow-desc { font-size: 12px; color: #64748b; line-height: 1.5; }
+  .flow-status { position: absolute; top: 12px; right: 12px; width: 8px; height: 8px; border-radius: 50%; }
+
+  /* Feature Grid */
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 20px; }
+  .card { background: #0f1420; border: 1px solid #1e293b; border-radius: 16px; padding: 28px; position: relative; overflow: hidden; }
+  .card:hover { border-color: #3b82f640; }
+  .card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--accent, #3b82f6), transparent); }
+  .card-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 16px; }
+  .card-icon { font-size: 32px; }
+  .card-status { font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 100px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .status-live { background: #22c55e18; color: #22c55e; border: 1px solid #22c55e30; }
+  .status-ui { background: #f59e0b18; color: #f59e0b; border: 1px solid #f59e0b30; }
+  .status-stub { background: #64748b18; color: #64748b; border: 1px solid #64748b30; }
+  .card h3 { font-size: 18px; font-weight: 600; margin-bottom: 8px; }
+  .card p { font-size: 13px; color: #94a3b8; line-height: 1.6; margin-bottom: 16px; }
+
+  /* Tech Pills */
+  .pills { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
+  .pill { font-size: 11px; padding: 3px 10px; border-radius: 100px; background: #1e293b; color: #94a3b8; border: 1px solid #334155; }
+  .pill-api { background: #3b82f610; color: #60a5fa; border-color: #3b82f630; }
+  .pill-db { background: #8b5cf610; color: #a78bfa; border-color: #8b5cf630; }
+  .pill-ext { background: #f59e0b10; color: #fbbf24; border-color: #f59e0b30; }
+
+  /* Data Flow Connectors */
+  .data-flow { display: flex; align-items: center; gap: 8px; font-size: 12px; color: #475569; margin-top: 12px; padding-top: 12px; border-top: 1px solid #1e293b; }
+  .data-flow .arrow { color: #3b82f6; }
+
+  /* Integration Map */
+  .integrations { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+  .int-card { background: #0f1420; border: 1px solid #1e293b; border-radius: 12px; padding: 16px; text-align: center; }
+  .int-card:hover { border-color: #3b82f640; }
+  .int-icon { font-size: 24px; margin-bottom: 8px; }
+  .int-name { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+  .int-role { font-size: 11px; color: #64748b; }
+
+  /* Summary Box */
+  .summary { background: linear-gradient(135deg, #3b82f608, #8b5cf608); border: 1px solid #3b82f620; border-radius: 16px; padding: 32px; max-width: 1200px; margin: 0 auto; }
+  .summary h2 { font-size: 20px; font-weight: 600; margin-bottom: 16px; }
+  .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 24px; }
+  .summary-stat { text-align: center; }
+  .summary-num { font-size: 36px; font-weight: 700; background: linear-gradient(135deg, #3b82f6, #8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .summary-label { font-size: 13px; color: #64748b; margin-top: 4px; }
+
+  @media (max-width: 768px) {
+    .flow { flex-direction: column; align-items: center; }
+    .flow-arrow { transform: rotate(90deg); }
+    .grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<h1>Official <span>AI</span> — Platform Architecture</h1>
+<p class="subtitle">Business feature map &amp; technical integration overview</p>
+
+<!-- Legend -->
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot dot-live"></div> Backend Wired (API + DB)</div>
+  <div class="legend-item"><div class="legend-dot dot-ui"></div> UI Complete, Mock Data</div>
+  <div class="legend-item"><div class="legend-dot dot-stub"></div> Placeholder / Not Built</div>
+</div>
+
+<!-- ═══════════ CORE USER JOURNEY ═══════════ -->
+<div class="section">
+  <div class="section-title">Core User Journey</div>
+  <div class="flow">
+    <div class="flow-card">
+      <div class="flow-status dot-live"></div>
+      <div class="flow-icon">🔐</div>
+      <div class="flow-title">Sign Up / Login</div>
+      <div class="flow-desc">Email + password auth with email verification, password reset, JWT sessions</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-card">
+      <div class="flow-status dot-live"></div>
+      <div class="flow-icon">🎯</div>
+      <div class="flow-title">Onboarding</div>
+      <div class="flow-desc">Industry selection, brand setup, voice &amp; photo upload — marks user as onboarded</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-card">
+      <div class="flow-status dot-ui"></div>
+      <div class="flow-icon">🤖</div>
+      <div class="flow-title">AI Video Creation</div>
+      <div class="flow-desc">Chat interface, industry templates, Google Review import → AI generates videos</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-card">
+      <div class="flow-status dot-ui"></div>
+      <div class="flow-icon">✅</div>
+      <div class="flow-title">Review &amp; Approve</div>
+      <div class="flow-desc">Carousel approval flow — approve, request changes, or reject with feedback</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-card">
+      <div class="flow-status dot-ui"></div>
+      <div class="flow-icon">📅</div>
+      <div class="flow-title">Schedule &amp; Publish</div>
+      <div class="flow-desc">Calendar view with AI suggestions, schedule to connected social platforms</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ BUSINESS FEATURES ═══════════ -->
+<div class="section">
+  <div class="section-title">Business Features — Deep Dive</div>
+  <div class="grid">
+
+    <!-- Generate -->
+    <div class="card" style="--accent: #8b5cf6;">
+      <div class="card-header">
+        <div class="card-icon">🎬</div>
+        <div class="card-status status-ui">UI Only</div>
+      </div>
+      <h3>AI Video Generation</h3>
+      <p>The core product. Users describe what they want in a chat interface. The AI "teammate" generates videos using their uploaded photos + voice samples. Two AI models: <strong>Kling 2.6</strong> (hyper-realistic) and <strong>Seedance 2.0</strong> (creative).</p>
+      <div class="pills">
+        <span class="pill pill-api">POST /api/generate</span>
+        <span class="pill pill-db">Video model</span>
+        <span class="pill pill-ext">Kling 2.6 API</span>
+      </div>
+      <p><strong>Industry templates</strong> pre-loaded: Real Estate (8 templates), Legal, Medical, Creator. Users can also paste Google Reviews and convert them into video testimonials.</p>
+      <div class="data-flow">
+        <span class="arrow">→</span> Backend API exists but UI uses simulated setTimeout responses, not real API calls
+      </div>
+    </div>
+
+    <!-- Content Library -->
+    <div class="card" style="--accent: #3b82f6;">
+      <div class="card-header">
+        <div class="card-icon">📚</div>
+        <div class="card-status status-ui">UI Only</div>
+      </div>
+      <h3>Content Library</h3>
+      <p>Central hub for all generated videos. Grid or list view with status filtering (Draft, Published, Review, Scheduled, Approved). Search by title. Shows model used, duration, view counts.</p>
+      <div class="pills">
+        <span class="pill pill-api">GET /api/videos</span>
+        <span class="pill pill-db">Video model</span>
+      </div>
+      <p>Backend CRUD fully built — but the page renders <strong>8 hardcoded demo videos</strong> instead of fetching from the API.</p>
+      <div class="data-flow">
+        <span class="arrow">→</span> Wire up: replace demoVideos[] with fetch('/api/videos') call
+      </div>
+    </div>
+
+    <!-- Approvals -->
+    <div class="card" style="--accent: #22c55e;">
+      <div class="card-header">
+        <div class="card-icon">✅</div>
+        <div class="card-status status-ui">UI Only</div>
+      </div>
+      <h3>Approval Workflow</h3>
+      <p>Carousel-style review of pending videos. Each shows the full AI script, model used, duration, and content type. Three actions: Approve (green), Request Changes (yellow), Reject (red). Optional feedback field + schedule-after-approval.</p>
+      <div class="pills">
+        <span class="pill pill-api">PATCH /api/videos/[id]</span>
+        <span class="pill pill-db">Video.status</span>
+      </div>
+      <p>Great UX pattern — but approval actions are <strong>button-only with no API calls</strong>. The status field exists on the Video model to support this.</p>
+      <div class="data-flow">
+        <span class="arrow">→</span> Wire up: PATCH video status + create Schedule on approve
+      </div>
+    </div>
+
+    <!-- Calendar -->
+    <div class="card" style="--accent: #f59e0b;">
+      <div class="card-header">
+        <div class="card-icon">📅</div>
+        <div class="card-status status-ui">UI Only</div>
+      </div>
+      <h3>Smart Calendar</h3>
+      <p>Full month calendar view showing scheduled posts. AI-powered weekly suggestions panel recommends content by day with platform + model + reasoning. "AI Generate Week" button with loading state.</p>
+      <div class="pills">
+        <span class="pill pill-api">GET/POST /api/schedule</span>
+        <span class="pill pill-db">Schedule model</span>
+        <span class="pill pill-ext">AI Suggestions</span>
+      </div>
+      <p>The Schedule CRUD API is <strong>fully built</strong>. Calendar UI uses hardcoded data. AI suggestions are mock data — no LLM integration yet.</p>
+      <div class="data-flow">
+        <span class="arrow">→</span> Wire up: fetch real schedules + integrate AI suggestion engine
+      </div>
+    </div>
+
+    <!-- Analytics -->
+    <div class="card" style="--accent: #ec4899;">
+      <div class="card-header">
+        <div class="card-icon">📊</div>
+        <div class="card-status status-ui">UI Only</div>
+      </div>
+      <h3>Analytics Dashboard</h3>
+      <p>Four KPI cards (Views, Likes, Shares, Comments), weekly growth bar chart, platform breakdown pie chart (Instagram 41%, LinkedIn 29%, TikTok 17%, YouTube 9%), top performing content table.</p>
+      <div class="pills">
+        <span class="pill pill-api">GET /api/analytics</span>
+        <span class="pill pill-db">AnalyticsEvent</span>
+      </div>
+      <p>Analytics API exists and writes to AnalyticsEvent model. Dashboard page uses <strong>100% hardcoded numbers</strong>. Needs real aggregation queries.</p>
+      <div class="data-flow">
+        <span class="arrow">→</span> Wire up: aggregate AnalyticsEvent data + pull from social platform APIs
+      </div>
+    </div>
+
+    <!-- Vault -->
+    <div class="card" style="--accent: #14b8a6;">
+      <div class="card-header">
+        <div class="card-icon">🔒</div>
+        <div class="card-status status-ui">UI Only</div>
+      </div>
+      <h3>Asset Vault</h3>
+      <p>Three tabs: <strong>Photos</strong> (grid with star/delete), <strong>Voice Samples</strong> (list with waveform, play/pause, set default), <strong>Brand Profile</strong> (business info form + brand guidelines + color picker).</p>
+      <div class="pills">
+        <span class="pill pill-api">GET/POST /api/photos</span>
+        <span class="pill pill-api">GET/POST /api/voices</span>
+        <span class="pill pill-api">GET/PUT /api/brand-profile</span>
+        <span class="pill pill-ext">AWS S3</span>
+      </div>
+      <p>All three APIs are <strong>fully built</strong> with S3 upload support. UI shows demo data instead of fetching. Brand profile has upsert logic.</p>
+      <div class="data-flow">
+        <span class="arrow">→</span> Wire up: replace demo arrays with real API fetches
+      </div>
+    </div>
+
+    <!-- Settings -->
+    <div class="card" style="--accent: #6366f1;">
+      <div class="card-header">
+        <div class="card-icon">⚙️</div>
+        <div class="card-status status-live">Partially Live</div>
+      </div>
+      <h3>Settings &amp; Accounts</h3>
+      <p>Five tabs: Profile editing, Plan &amp; Billing (3 tiers: $79/$199/$375), Connected Accounts (5 social platforms with OAuth), Notifications toggles, Privacy &amp; Data controls.</p>
+      <div class="pills">
+        <span class="pill pill-api">GET /api/social/accounts</span>
+        <span class="pill pill-api">POST /api/stripe/checkout</span>
+        <span class="pill pill-ext">Stripe</span>
+        <span class="pill pill-ext">OAuth x5</span>
+      </div>
+      <p><strong>Only page with real API integration</strong> — social accounts fetch/disconnect is wired. Stripe checkout/portal APIs built. Profile save + notifications are UI-only.</p>
+      <div class="data-flow">
+        <span class="arrow">→</span> Partially wired: social accounts live, billing + profile need connection
+      </div>
+    </div>
+
+    <!-- Overview -->
+    <div class="card" style="--accent: #f97316;">
+      <div class="card-header">
+        <div class="card-icon">🏠</div>
+        <div class="card-status status-ui">UI Only</div>
+      </div>
+      <h3>Dashboard Overview</h3>
+      <p>Landing page after login. Four stat cards (Videos, Views, Engagement, Shares), recent content table, upcoming posts preview, pending approvals banner. The "command center" view.</p>
+      <div class="pills">
+        <span class="pill pill-db">Video, Schedule, AnalyticsEvent</span>
+      </div>
+      <p>Pure presentation layer with hardcoded stats. Should aggregate from Videos, Schedules, and AnalyticsEvents.</p>
+      <div class="data-flow">
+        <span class="arrow">→</span> Wire up: server-side aggregation queries for real stats
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════ INTEGRATIONS ═══════════ -->
+<div class="section">
+  <div class="section-title">External Integrations</div>
+  <div class="integrations">
+    <div class="int-card">
+      <div class="int-icon">💳</div>
+      <div class="int-name">Stripe</div>
+      <div class="int-role">Billing, subscriptions, customer portal</div>
+      <div style="margin-top:8px;"><span class="pill" style="font-size:10px;">API Built</span></div>
+    </div>
+    <div class="int-card">
+      <div class="int-icon">☁️</div>
+      <div class="int-name">AWS S3</div>
+      <div class="int-role">Photo &amp; voice sample file storage</div>
+      <div style="margin-top:8px;"><span class="pill" style="font-size:10px;">API Built</span></div>
+    </div>
+    <div class="int-card">
+      <div class="int-icon">📸</div>
+      <div class="int-name">Instagram</div>
+      <div class="int-role">OAuth connect, publish videos</div>
+      <div style="margin-top:8px;"><span class="pill" style="font-size:10px;">OAuth Ready</span></div>
+    </div>
+    <div class="int-card">
+      <div class="int-icon">💼</div>
+      <div class="int-name">LinkedIn</div>
+      <div class="int-role">OAuth connect, publish videos</div>
+      <div style="margin-top:8px;"><span class="pill" style="font-size:10px;">OAuth Ready</span></div>
+    </div>
+    <div class="int-card">
+      <div class="int-icon">🎵</div>
+      <div class="int-name">TikTok</div>
+      <div class="int-role">OAuth connect, publish videos</div>
+      <div style="margin-top:8px;"><span class="pill" style="font-size:10px;">OAuth Ready</span></div>
+    </div>
+    <div class="int-card">
+      <div class="int-icon">▶️</div>
+      <div class="int-name">YouTube</div>
+      <div class="int-role">OAuth connect, publish videos</div>
+      <div style="margin-top:8px;"><span class="pill" style="font-size:10px;">OAuth Ready</span></div>
+    </div>
+    <div class="int-card">
+      <div class="int-icon">👥</div>
+      <div class="int-name">Facebook</div>
+      <div class="int-role">OAuth connect, publish videos</div>
+      <div style="margin-top:8px;"><span class="pill" style="font-size:10px;">OAuth Ready</span></div>
+    </div>
+    <div class="int-card">
+      <div class="int-icon">📧</div>
+      <div class="int-name">Nodemailer</div>
+      <div class="int-role">Email verification, password reset</div>
+      <div style="margin-top:8px;"><span class="pill" style="font-size:10px;">API Built</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ DATA MODEL ═══════════ -->
+<div class="section">
+  <div class="section-title">Data Architecture</div>
+  <div style="background: #0f1420; border: 1px solid #1e293b; border-radius: 16px; padding: 32px; font-family: 'SF Mono', 'Fira Code', monospace; font-size: 13px; line-height: 2; overflow-x: auto;">
+    <pre style="color: #94a3b8;">
+<span style="color:#22c55e;">User</span> ─┬─ has one ──── <span style="color:#8b5cf6;">BrandProfile</span>  (name, tagline, tone, audience, colors, guidelines)
+      │
+      ├─ has many ─── <span style="color:#3b82f6;">Photo[]</span>        (filename, url, isPrimary)  ←── stored in <span style="color:#f59e0b;">S3</span>
+      │                    └── used by Videos
+      │
+      ├─ has many ─── <span style="color:#3b82f6;">VoiceSample[]</span> (filename, url, duration, isDefault)  ←── stored in <span style="color:#f59e0b;">S3</span>
+      │                    └── used by Videos
+      │
+      ├─ has many ─── <span style="color:#ec4899;">Video[]</span>       (title, script, status, model, videoUrl, thumbnailUrl)
+      │                    ├── has one Schedule
+      │                    └── has many AnalyticsEvents
+      │
+      ├─ has many ─── <span style="color:#f97316;">Schedule[]</span>    (platform, scheduledAt, publishedAt, status)
+      │
+      ├─ has many ─── <span style="color:#14b8a6;">SocialAccount[]</span> (platform, handle, accessToken, refreshToken)
+      │                    └── unique per [userId, platform]
+      │
+      └─ has many ─── <span style="color:#64748b;">AnalyticsEvent[]</span> (eventType, platform, count, date)
+    </pre>
+  </div>
+</div>
+
+<!-- ═══════════ WHAT'S REAL VS NOT ═══════════ -->
+<div class="section">
+  <div class="section-title">Reality Check — What's Wired vs. What's Demo</div>
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+    <div style="background: #0f1420; border: 1px solid #22c55e30; border-radius: 16px; padding: 28px;">
+      <h3 style="color: #22c55e; font-size: 16px; margin-bottom: 16px;">✓ Backend is Real</h3>
+      <ul style="list-style: none; font-size: 13px; color: #94a3b8; line-height: 2.2;">
+        <li>✓ Full auth system (signup, login, email verify, password reset)</li>
+        <li>✓ User CRUD with JWT sessions</li>
+        <li>✓ Video CRUD API (create, read, update, delete)</li>
+        <li>✓ Photo &amp; voice sample management + S3 upload</li>
+        <li>✓ Brand profile upsert</li>
+        <li>✓ Schedule CRUD</li>
+        <li>✓ Social account OAuth connect/disconnect</li>
+        <li>✓ Stripe checkout + portal + webhook</li>
+        <li>✓ Rate limiting middleware</li>
+        <li>✓ Analytics event recording</li>
+        <li>✓ SQLite database with full Prisma schema</li>
+      </ul>
+    </div>
+    <div style="background: #0f1420; border: 1px solid #f59e0b30; border-radius: 16px; padding: 28px;">
+      <h3 style="color: #f59e0b; font-size: 16px; margin-bottom: 16px;">⚡ Frontend Uses Mock Data</h3>
+      <ul style="list-style: none; font-size: 13px; color: #94a3b8; line-height: 2.2;">
+        <li>⚡ Overview page — hardcoded stats &amp; tables</li>
+        <li>⚡ Generate page — setTimeout simulations, no real AI</li>
+        <li>⚡ Content Library — 8 demo videos, no API fetch</li>
+        <li>⚡ Approvals — 3 demo videos, buttons don't save</li>
+        <li>⚡ Calendar — hardcoded February 2026 schedule</li>
+        <li>⚡ Analytics — all numbers are fake constants</li>
+        <li>⚡ Vault — demo photos/voices, no API fetch</li>
+        <li>⚡ Settings profile — form doesn't save</li>
+        <li>⚡ Settings billing — plan cards are display only</li>
+        <li>⚡ AI suggestions — no LLM integration</li>
+        <li>⚡ Social publishing — OAuth exists but no post API</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ SUMMARY ═══════════ -->
+<div class="summary">
+  <h2 style="text-align:center;">Platform Summary</h2>
+  <div class="summary-grid">
+    <div class="summary-stat">
+      <div class="summary-num">8</div>
+      <div class="summary-label">Dashboard Pages</div>
+    </div>
+    <div class="summary-stat">
+      <div class="summary-num">17</div>
+      <div class="summary-label">API Routes (all functional)</div>
+    </div>
+    <div class="summary-stat">
+      <div class="summary-num">9</div>
+      <div class="summary-label">Database Models</div>
+    </div>
+    <div class="summary-stat">
+      <div class="summary-num">8</div>
+      <div class="summary-label">External Integrations</div>
+    </div>
+  </div>
+  <p style="text-align: center; margin-top: 24px; color: #64748b; font-size: 14px; max-width: 700px; margin-left: auto; margin-right: auto; line-height: 1.7;">
+    <strong style="color:#e2e8f0;">The big picture:</strong> You have a polished UI layer sitting on top of a solid backend that's mostly built but not connected.
+    The #1 job is <strong style="color:#3b82f6;">wiring the frontend to the existing APIs</strong> — most of the hard infrastructure work is already done.
+  </p>
+</div>
+
+</body>
+</html>

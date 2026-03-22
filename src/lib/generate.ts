@@ -16,9 +16,7 @@
 //   2. That's it. FAL handles the rest.
 
 import prisma from "@/lib/prisma";
-import { getConfig } from "@/lib/system-config";
 import { expandPrompt } from "@/lib/prompt-engine";
-import { generateVoiceover } from "@/lib/voice-engine";
 import {
   isStorageConfigured,
   downloadAndStore,
@@ -332,11 +330,13 @@ async function falPoll(compositeJobId: string): Promise<PollResult> {
 // ─── Public API ─────────────────────────────────────────────────
 
 /**
- * Main entry point for video generation.
+ * Main entry point for video generation (per-cut).
  * 1. Optionally expands the user's request into a production prompt via Gemini
- * 2. Optionally generates voiceover via FAL MiniMax TTS
- * 3. Submits to the correct FAL model
- * 4. Returns generation result (async — poll for completion)
+ * 2. Submits to the correct FAL model
+ * 3. Returns generation result (async — poll for completion)
+ *
+ * Note: TTS audio is generated once at the route level (not per-cut)
+ * and synced during the Shotstack stitch step.
  */
 export async function generateVideo(params: GenerateVideoParams): Promise<GenerateResult> {
   // Step 1: Prompt engineering (if enabled)
@@ -359,39 +359,21 @@ export async function generateVideo(params: GenerateVideoParams): Promise<Genera
     }
   }
 
-  // Step 2: Voice generation (if TTS providers available)
-  let voiceUrl = params.voiceUrl;
-
-  if (finalScript && getFalKey()) {
-    try {
-      const dialogueMatch = finalScript.match(/SCRIPT[^:]*:([\s\S]*?)(?=AUDIO|ANTI-GLITCH|$)/i);
-      const dialogue = dialogueMatch
-        ? dialogueMatch[1].replace(/\([^)]*\)/g, "").replace(/\n/g, " ").trim()
-        : finalScript.substring(0, 500);
-
-      if (dialogue.length > 10) {
-        const ttsResult = await generateVoiceover(dialogue);
-        if (ttsResult.audioUrl) {
-          voiceUrl = ttsResult.audioUrl;
-          console.log(`[generate] TTS generated via ${ttsResult.provider} (${ttsResult.duration}s)`);
-        }
-      }
-    } catch (err) {
-      console.error("[generate] TTS failed, using original voice:", err);
-    }
-  }
+  // Step 2: Voice generation is handled at the route level (once per video,
+  // not per cut). The voiceUrl param already contains either the user's voice
+  // sample or the TTS-generated audio URL from the route.
 
   // Step 3: Route to the correct FAL model
   const modelConfig = FAL_MODELS[params.model];
   if (!modelConfig) {
     // Unknown model — fall back to Kling 2.6
     const fallbackConfig = FAL_MODELS["kling_2.6"];
-    const payload = fallbackConfig.buildPayload({ ...params, script: finalScript, voiceUrl });
+    const payload = fallbackConfig.buildPayload({ ...params, script: finalScript });
     const result = await falSubmit(fallbackConfig.falId, payload);
     return { ...result, expandedPrompt };
   }
 
-  const payload = modelConfig.buildPayload({ ...params, script: finalScript, voiceUrl });
+  const payload = modelConfig.buildPayload({ ...params, script: finalScript });
   console.log(`[generate] Submitting to FAL model: ${modelConfig.falId}`);
   console.log(`[generate] Payload keys: ${Object.keys(payload).join(", ")}`);
 

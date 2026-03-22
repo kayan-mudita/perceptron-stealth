@@ -1,5 +1,7 @@
 import prisma from "./prisma";
 import { getConfig } from "./system-config";
+import { uploadFile, isStorageConfigured } from "./storage";
+import { getBackgroundsForIndustry } from "./character-sheet";
 
 const GOOGLE_AI_STUDIO_URL = "https://generativelanguage.googleapis.com/v1beta/models";
 
@@ -60,18 +62,13 @@ export async function generateStartingFrame(
     select: { industry: true, firstName: true },
   });
 
-  // Build the starting frame prompt
-  const industrySettings: Record<string, string> = {
-    real_estate: "modern, bright office with city views, professional real estate agent attire, warm natural lighting",
-    legal: "clean law office with bookshelves, professional suit, authoritative but approachable lighting",
-    medical: "clean clinical setting with soft lighting, medical professional attire, trustworthy and warm",
-    creator: "aesthetic home studio setup, casual but put-together outfit, ring light creating soft even illumination",
-    business: "modern co-working space or office, smart casual attire, natural window lighting",
-    other: "clean, minimal professional setting, smart casual attire, natural soft lighting",
-  };
-
-  const setting = industrySettings[user?.industry || "other"] || industrySettings.other;
-  const scene = sceneDescription || `Professional ${user?.industry || "business"} setting`;
+  // Use industry-specific backgrounds (same presets as character sheet)
+  const industry = user?.industry || "other";
+  const backgrounds = getBackgroundsForIndustry(industry);
+  // Pick the first background as default for the starting frame
+  const defaultBackground = backgrounds[0];
+  const setting = `${defaultBackground}, professional attire appropriate for ${industry}, natural lighting`;
+  const scene = sceneDescription || `Professional ${industry} setting — ${defaultBackground}`;
 
   const prompt = `Generate a single high-quality portrait photograph of this person for use as a video generation starting frame.
 
@@ -114,10 +111,27 @@ This image will be used as the consistent anchor frame for all video generation.
   }
 
   // Add character sheet as additional reference
-  if (characterSheet?.compositeUrl && characterSheet.compositeUrl.startsWith("data:")) {
-    const match = characterSheet.compositeUrl.match(/^data:([^;]+);base64,(.+)$/);
-    if (match) {
-      parts.push({ inlineData: { mimeType: match[1], data: match[2] } });
+  if (characterSheet?.compositeUrl) {
+    if (characterSheet.compositeUrl.startsWith("data:")) {
+      // Data URL — extract inline
+      const match = characterSheet.compositeUrl.match(/^data:([^;]+);base64,(.+)$/);
+      if (match) {
+        parts.push({ inlineData: { mimeType: match[1], data: match[2] } });
+      }
+    } else if (characterSheet.compositeUrl.startsWith("http")) {
+      // Supabase URL — download and inline
+      try {
+        const res = await fetch(characterSheet.compositeUrl);
+        if (res.ok) {
+          const buffer = await res.arrayBuffer();
+          parts.push({
+            inlineData: {
+              mimeType: res.headers.get("content-type") || "image/png",
+              data: Buffer.from(buffer).toString("base64"),
+            },
+          });
+        }
+      } catch {}
     }
   }
 
@@ -159,7 +173,23 @@ This image will be used as the consistent anchor frame for all video generation.
       return { imageUrl: null, photoId: null, status: "failed" };
     }
 
-    const imageUrl = `data:${imagePart.inlineData.mimeType};base64,${imagePart.inlineData.data}`;
+    const { mimeType, data: base64Data } = imagePart.inlineData;
+    let imageUrl: string;
+
+    // Upload to Supabase Storage if configured (permanent URL)
+    if (isStorageConfigured()) {
+      try {
+        const buffer = Buffer.from(base64Data, "base64");
+        const ext = mimeType.includes("png") ? "png" : "jpg";
+        const storageKey = `starting-frames/${userId}/sf-${Date.now()}.${ext}`;
+        imageUrl = await uploadFile(buffer, storageKey, mimeType);
+      } catch (err) {
+        console.error("[starting-frame] Storage upload failed, using data URL:", err);
+        imageUrl = `data:${mimeType};base64,${base64Data}`;
+      }
+    } else {
+      imageUrl = `data:${mimeType};base64,${base64Data}`;
+    }
 
     // Save as a photo record marked as the starting frame
     const savedPhoto = await prisma.photo.create({

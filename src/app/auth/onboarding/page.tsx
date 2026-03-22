@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
   ArrowRight,
@@ -9,7 +9,6 @@ import {
   Loader2,
   X,
   RefreshCw,
-  Play,
   Plus,
   Camera,
 } from "lucide-react";
@@ -46,9 +45,19 @@ function OnboardingFlow() {
   const [genError, setGenError] = useState<string | null>(null);
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [videoGenerating, setVideoGenerating] = useState(false);
+  const [videoError, setVideoError] = useState<string | null>(null);
   const [completing, setCompleting] = useState(false);
+  const [startingFrameGenerated, setStartingFrameGenerated] = useState(false);
+  const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const stepIndex = ["industry", "photos", "character", "video"].indexOf(step);
+
+  // Clean up polling on unmount
+  useEffect(() => {
+    return () => {
+      if (pollRef.current) clearInterval(pollRef.current);
+    };
+  }, []);
 
   // ─── Industry ──────────────────────────────────────────────────
 
@@ -112,19 +121,47 @@ function OnboardingFlow() {
     setGenerating(true);
     setGenError(null);
     try {
+      // Filter to only Supabase URLs (not local /uploads/ fallbacks)
       const photoUrls = photos.map((p) => p.url).filter((u) => !u.startsWith("/uploads/"));
+
+      // Call character sheet API with industry for background presets.
+      // This generates BOTH the poses sheet (user-facing) and the 360-degree
+      // sheet (backend-only for video model reference) in parallel.
       const res = await fetch("/api/character-sheet", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ photoUrls }),
+        body: JSON.stringify({ photoUrls, industry: selectedIndustry }),
       });
       if (!res.ok) throw new Error((await res.json()).error || "Generation failed");
       const data = await res.json();
       setCharacterSheetUrl(data.poses.compositeUrl);
+
+      // After character sheets are generated, kick off starting frame generation
+      // in the background. The starting frame is the anchor image used for EVERY
+      // video cut to maintain character consistency.
+      if (!startingFrameGenerated) {
+        generateStartingFrameBackground();
+      }
     } catch (err: any) {
       setGenError(err.message);
     } finally {
       setGenerating(false);
+    }
+  };
+
+  // Fire-and-forget starting frame generation (runs after character sheet completes)
+  const generateStartingFrameBackground = async () => {
+    try {
+      const res = await fetch("/api/starting-frame", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ industry: selectedIndustry }),
+      });
+      if (res.ok) {
+        setStartingFrameGenerated(true);
+      }
+    } catch {
+      // Non-blocking — the generate API has its own starting frame fallback
     }
   };
 
@@ -137,32 +174,98 @@ function OnboardingFlow() {
 
   const enterVideoStep = () => {
     setStep("video");
-    if (!videoUrl && !videoGenerating) generateVideo();
+    if (!videoUrl && !videoGenerating) generateFirstVideo();
   };
 
-  const generateVideo = async () => {
+  const generateFirstVideo = async () => {
     setVideoGenerating(true);
+    setVideoError(null);
     try {
+      // Step 1: Create a video record
       const res = await fetch("/api/videos", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title: "Your First AI Video", description: "Generated during onboarding", contentType: "onboarding", model: "kling_2.6" }),
+        body: JSON.stringify({
+          title: "Your First AI Video",
+          description: "Generated during onboarding",
+          contentType: "quick_tip_8",
+          model: "kling_2.6",
+        }),
       });
-      if (res.ok) {
-        const vid = await res.json();
-        const gen = await fetch("/api/generate", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ videoId: vid.id, model: "kling_2.6", script: "A confident professional speaking directly to camera." }),
-        });
-        if (gen.ok) {
-          const data = await gen.json();
-          if (data.videoUrl) setVideoUrl(data.videoUrl);
-        }
+      if (!res.ok) throw new Error("Failed to create video record");
+      const vid = await res.json();
+
+      // Step 2: Kick off generation with format and script.
+      // Uses quick_tip_8 format (8 seconds, 3 cuts) for fast onboarding experience.
+      // The generate API will use the starting frame for character consistency.
+      const gen = await fetch("/api/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          videoId: vid.id,
+          model: "kling_2.6",
+          format: "quick_tip_8",
+          script: "A confident professional introducing themselves and sharing a quick tip relevant to their industry. Natural, conversational, like talking to a friend.",
+        }),
+      });
+
+      if (!gen.ok) throw new Error("Failed to start generation");
+      const genData = await gen.json();
+
+      // Step 3: Check if the hook came back immediately (demo mode / sync result)
+      if (genData.video?.videoUrl) {
+        setVideoUrl(genData.video.videoUrl);
+        setVideoGenerating(false);
+        return;
       }
-    } catch {} finally {
+
+      // Step 4: Poll for completion — the hook generates first, then remaining
+      // cuts are stitched in background. We show the video as soon as any URL is available.
+      const videoId = genData.video?.id || vid.id;
+      startPolling(videoId);
+    } catch (err: any) {
+      setVideoError(err.message || "Video generation failed");
       setVideoGenerating(false);
     }
+  };
+
+  const startPolling = (videoId: string) => {
+    // Clean up any existing poll
+    if (pollRef.current) clearInterval(pollRef.current);
+
+    let pollCount = 0;
+    const maxPolls = 60; // 60 polls * 5s = 5 minutes max
+
+    pollRef.current = setInterval(async () => {
+      pollCount++;
+      if (pollCount > maxPolls) {
+        if (pollRef.current) clearInterval(pollRef.current);
+        setVideoGenerating(false);
+        setVideoError("Video is taking longer than expected. Check your dashboard later.");
+        return;
+      }
+
+      try {
+        const statusRes = await fetch(`/api/generate/status?videoId=${videoId}`);
+        if (!statusRes.ok) return;
+
+        const { video } = await statusRes.json();
+
+        if (video.status === "review" || video.status === "approved" || video.status === "published") {
+          // Video is ready
+          if (pollRef.current) clearInterval(pollRef.current);
+          if (video.videoUrl) setVideoUrl(video.videoUrl);
+          setVideoGenerating(false);
+        } else if (video.status === "failed") {
+          if (pollRef.current) clearInterval(pollRef.current);
+          setVideoGenerating(false);
+          setVideoError("Video generation failed. You can try again from the dashboard.");
+        }
+        // If still "generating" or "draft", keep polling
+      } catch {
+        // Network error — keep trying
+      }
+    }, 5000); // Poll every 5 seconds
   };
 
   const completeOnboarding = async () => {
@@ -406,6 +509,33 @@ function OnboardingFlow() {
                   <p className="text-[14px] text-white/30 max-w-xs mx-auto">
                     Creating a short clip featuring your AI avatar. This is the good part.
                   </p>
+                  <p className="text-[12px] text-white/15 mt-4 max-w-xs mx-auto">
+                    This usually takes 1-3 minutes. We'll show it as soon as it's ready.
+                  </p>
+                </div>
+              ) : videoError ? (
+                <div className="text-center py-16">
+                  <h1 className="text-[22px] font-semibold text-white/90 mb-2">Generation issue</h1>
+                  <p className="text-[14px] text-white/30 mb-8">{videoError}</p>
+                  <div className="flex items-center justify-center gap-3">
+                    <button
+                      onClick={() => { setVideoError(null); generateFirstVideo(); }}
+                      className="inline-flex items-center gap-2 px-5 py-3 rounded-xl border border-white/[0.06] text-[14px] text-white/50 hover:text-white/70 hover:border-white/10 transition-all"
+                    >
+                      <RefreshCw className="w-4 h-4" /> Try again
+                    </button>
+                    <button
+                      onClick={completeOnboarding}
+                      disabled={completing}
+                      className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white text-[#050508] text-[14px] font-medium hover:bg-white/90 disabled:opacity-40 transition-all"
+                    >
+                      {completing ? (
+                        <><Loader2 className="w-4 h-4 animate-spin" /> Setting up...</>
+                      ) : (
+                        <>Skip to dashboard <ArrowRight className="w-4 h-4" /></>
+                      )}
+                    </button>
+                  </div>
                 </div>
               ) : (
                 <div>

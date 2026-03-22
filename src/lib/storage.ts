@@ -127,3 +127,7 @@ export function voiceKey(userId: string, fileId: string, ext: string): string {
 export function videoKey(userId: string, fileId: string, ext: string): string {
   return `videos/${userId}/${fileId}.${ext}`;
 }
+
+export function audioKey(userId: string, fileId: string, ext: string): string {
+  return `audio/${userId}/${fileId}.${ext}`;
+}
