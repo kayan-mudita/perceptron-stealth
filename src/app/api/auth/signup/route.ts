@@ -24,11 +24,8 @@ export async function POST(req: NextRequest) {
 
     let body: unknown;
     try {
-      const buf = await req.arrayBuffer();
-      const text = new TextDecoder().decode(buf);
-      body = JSON.parse(text);
-    } catch (parseErr) {
-      console.error("[signup] Body parse error:", parseErr, "content-type:", req.headers.get("content-type"));
+      body = await req.json();
+    } catch {
       return NextResponse.json({ error: "Invalid JSON in request body" }, { status: 400 });
     }
 
