@@ -1,40 +1,22 @@
-// S3-compatible storage layer
-// Works with AWS S3, Cloudflare R2, MinIO, or any S3-compatible provider
+// Supabase Storage layer
+// Uses the officialai-media bucket for all file storage
 
-import {
-  S3Client,
-  PutObjectCommand,
-  GetObjectCommand,
-  DeleteObjectCommand,
-} from "@aws-sdk/client-s3";
-import { getSignedUrl as s3GetSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { createClient, SupabaseClient } from "@supabase/supabase-js";
 
 // ---------------------------------------------------------------------------
 // Configuration
 // ---------------------------------------------------------------------------
 
-const bucket = process.env.S3_BUCKET || "";
-const region = process.env.S3_REGION || "us-east-1";
-const endpoint = process.env.S3_ENDPOINT || undefined;
-const publicUrl = process.env.S3_PUBLIC_URL || undefined; // optional CDN / public bucket URL
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
+const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
+const BUCKET = "officialai-media";
 
-function getS3Client(): S3Client {
-  return new S3Client({
-    region,
-    endpoint,
-    credentials: {
-      accessKeyId: process.env.S3_ACCESS_KEY_ID || "",
-      secretAccessKey: process.env.S3_SECRET_ACCESS_KEY || "",
-    },
-    // For path-style access (needed for MinIO / some R2 configs)
-    forcePathStyle: process.env.S3_FORCE_PATH_STYLE === "true",
-  });
-}
+let _client: SupabaseClient | null = null;
 
-// Lazy singleton
-let _client: S3Client | null = null;
-function client(): S3Client {
-  if (!_client) _client = getS3Client();
+function getClient(): SupabaseClient {
+  if (!_client) {
+    _client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  }
   return _client;
 }
 
@@ -42,87 +24,77 @@ function client(): S3Client {
 // Public helpers
 // ---------------------------------------------------------------------------
 
-/**
- * Check whether S3 storage is configured. When it is not, callers should fall
- * back to local / placeholder behaviour.
- */
 export function isStorageConfigured(): boolean {
-  return !!(
-    bucket &&
-    process.env.S3_ACCESS_KEY_ID &&
-    process.env.S3_SECRET_ACCESS_KEY
-  );
+  return !!(SUPABASE_URL && SUPABASE_ANON_KEY);
 }
 
 /**
- * Upload a file buffer to S3 and return its URL.
- *
- * @param buffer  - File content
- * @param key     - S3 object key (e.g. "photos/user123/abc.jpg")
- * @param contentType - MIME type
- * @returns The public / presigned URL of the uploaded object
+ * Upload a file buffer to Supabase Storage and return its public URL.
  */
 export async function uploadFile(
   buffer: Buffer,
   key: string,
   contentType: string
 ): Promise<string> {
-  await client().send(
-    new PutObjectCommand({
-      Bucket: bucket,
-      Key: key,
-      Body: buffer,
-      ContentType: contentType,
-    })
-  );
+  const client = getClient();
 
-  // If a public URL base is configured, return a direct URL.
-  // Otherwise fall back to a presigned URL.
-  if (publicUrl) {
-    const base = publicUrl.endsWith("/") ? publicUrl.slice(0, -1) : publicUrl;
-    return `${base}/${key}`;
+  const { error } = await client.storage
+    .from(BUCKET)
+    .upload(key, buffer, {
+      contentType,
+      upsert: true,
+    });
+
+  if (error) {
+    throw new Error(`Supabase upload failed: ${error.message}`);
   }
 
-  return getSignedUrl(key);
+  // Return the public URL (bucket is public)
+  const { data } = client.storage.from(BUCKET).getPublicUrl(key);
+  return data.publicUrl;
 }
 
 /**
- * Generate a presigned download URL valid for the given duration.
- *
- * @param key       - S3 object key
- * @param expiresIn - Seconds until the URL expires (default: 1 hour)
+ * Get the public URL for a stored file.
+ */
+export function getPublicUrl(key: string): string {
+  const client = getClient();
+  const { data } = client.storage.from(BUCKET).getPublicUrl(key);
+  return data.publicUrl;
+}
+
+/**
+ * Generate a signed download URL valid for the given duration.
  */
 export async function getSignedUrl(
   key: string,
   expiresIn = 3600
 ): Promise<string> {
-  const command = new GetObjectCommand({
-    Bucket: bucket,
-    Key: key,
-  });
-  return s3GetSignedUrl(client(), command, { expiresIn });
+  const client = getClient();
+  const { data, error } = await client.storage
+    .from(BUCKET)
+    .createSignedUrl(key, expiresIn);
+
+  if (error || !data?.signedUrl) {
+    throw new Error(`Failed to create signed URL: ${error?.message}`);
+  }
+  return data.signedUrl;
 }
 
 /**
- * Delete a file from S3.
+ * Delete a file from storage.
  */
 export async function deleteFile(key: string): Promise<void> {
-  await client().send(
-    new DeleteObjectCommand({
-      Bucket: bucket,
-      Key: key,
-    })
-  );
+  const client = getClient();
+  const { error } = await client.storage.from(BUCKET).remove([key]);
+  if (error) {
+    throw new Error(`Failed to delete file: ${error.message}`);
+  }
 }
 
 /**
- * Download a file from an external URL and upload it to S3.
- * Useful for persisting AI-generated video results.
- *
- * @param sourceUrl   - The URL to download from
- * @param key         - Destination S3 key
- * @param contentType - MIME type for the stored object
- * @returns The S3 URL of the stored file
+ * Download a file from an external URL and upload it to storage.
+ * Used for persisting AI-generated video/image results.
  */
 export async function downloadAndStore(
   sourceUrl: string,
