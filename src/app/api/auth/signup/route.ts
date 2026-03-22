@@ -1,15 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { randomBytes } from "crypto";
 import bcrypt from "bcryptjs";
 import prisma from "@/lib/prisma";
 import { signupSchema } from "@/lib/validations";
 import { validateBody } from "@/lib/validate";
 import { authLimiter, RateLimitError } from "@/lib/rate-limit";
-import { sendWelcomeEmail, sendEmailVerificationEmail } from "@/lib/email";
 
 export async function POST(req: NextRequest) {
   try {
-    // Rate limiting: 5 requests per minute per IP
     const ip =
       req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
       req.headers.get("x-real-ip") ||
@@ -25,15 +22,11 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Parse and validate request body
     let body: unknown;
     try {
       body = await req.json();
     } catch {
-      return NextResponse.json(
-        { error: "Invalid JSON in request body" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Invalid JSON in request body" }, { status: 400 });
     }
 
     const validation = validateBody(signupSchema, body);
@@ -60,27 +53,9 @@ export async function POST(req: NextRequest) {
         lastName,
         industry: industry || "other",
         company,
+        emailVerified: true,
       },
     });
-
-    // Generate email verification token (24 hour expiry)
-    const verificationToken = randomBytes(32).toString("hex");
-    await prisma.emailVerificationToken.create({
-      data: {
-        token: verificationToken,
-        userId: user.id,
-        expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
-      },
-    });
-
-    // Send emails (fire-and-forget so signup is not blocked by email delivery)
-    const userInfo = { email: user.email, firstName: user.firstName };
-    sendEmailVerificationEmail(userInfo, verificationToken).catch((err) =>
-      console.error("Failed to send verification email:", err)
-    );
-    sendWelcomeEmail(userInfo).catch((err) =>
-      console.error("Failed to send welcome email:", err)
-    );
 
     return NextResponse.json({
       id: user.id,
