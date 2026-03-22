@@ -1,0 +1,13 @@
+# Official AI - Robots.txt
+User-agent: *
+Allow: /
+
+# Disallow dashboard and auth internals from indexing
+Disallow: /dashboard/
+Disallow: /api/
+Disallow: /auth/onboarding
+Disallow: /auth/forgot-password
+Disallow: /auth/reset-password
+
+# Sitemap
+Sitemap: https://officialai.com/sitemap.xml

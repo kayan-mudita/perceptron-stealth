@@ -2,34 +2,11 @@
 
 import Link from "next/link";
 import { ArrowRight, Check, Zap, Camera, Sparkles, Send } from "lucide-react";
+import MarketingLayout from "@/components/marketing/MarketingLayout";
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-[#050508] overflow-hidden">
-      {/* Nav */}
-      <nav className="fixed top-0 left-0 right-0 z-50 border-b border-white/[0.04]">
-        <div className="absolute inset-0 bg-[#050508]/80 backdrop-blur-xl" />
-        <div className="relative max-w-6xl mx-auto px-6 flex items-center justify-between h-14">
-          <span className="text-[15px] font-semibold tracking-tight">
-            Official <span className="text-blue-400">AI</span>
-          </span>
-          <div className="flex items-center gap-4">
-            <Link
-              href="/auth/login"
-              className="text-[13px] text-white/40 hover:text-white/70 transition-colors"
-            >
-              Log in
-            </Link>
-            <Link
-              href="/auth/signup"
-              className="text-[13px] px-4 py-2 rounded-lg bg-white text-[#050508] font-medium hover:bg-white/90 transition-colors"
-            >
-              Get started
-            </Link>
-          </div>
-        </div>
-      </nav>
-
+    <MarketingLayout>
       {/* Hero */}
       <section className="relative pt-32 pb-24 px-6">
         {/* Subtle gradient orbs */}
@@ -68,12 +45,12 @@ export default function LandingPage() {
               Start free trial
               <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
             </Link>
-            <a
-              href="#how"
+            <Link
+              href="/how-it-works"
               className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl text-[15px] text-white/40 hover:text-white/60 transition-all"
             >
               See how it works
-            </a>
+            </Link>
           </div>
 
           <p className="text-[13px] text-white/15">
@@ -102,7 +79,7 @@ export default function LandingPage() {
       </section>
 
       {/* How it Works */}
-      <section id="how" className="py-28 px-6">
+      <section id="how" className="py-28 px-6 scroll-mt-20">
         <div className="max-w-4xl mx-auto">
           <div className="mb-14">
             <p className="text-[13px] font-medium text-blue-400/70 uppercase tracking-widest mb-3">
@@ -128,7 +105,7 @@ export default function LandingPage() {
                 icon: Sparkles,
                 num: "02",
                 title: "AI creates your content",
-                desc: 'Type what you want or let AI decide. It writes the script, plans the shots, and builds a multi-cut video that looks professionally produced.',
+                desc: "Type what you want or let AI decide. It writes the script, plans the shots, and builds a multi-cut video that looks professionally produced.",
                 accent: "from-violet-500/20 to-violet-500/0",
               },
               {
@@ -143,7 +120,6 @@ export default function LandingPage() {
                 key={step.num}
                 className="group relative p-6 rounded-2xl border border-white/[0.04] bg-white/[0.015] hover:border-white/[0.08] hover:bg-white/[0.025] transition-all duration-300"
               >
-                {/* Gradient accent top */}
                 <div
                   className={`absolute top-0 left-0 right-0 h-px bg-gradient-to-r ${step.accent}`}
                 />
@@ -162,11 +138,20 @@ export default function LandingPage() {
               </div>
             ))}
           </div>
+
+          <div className="mt-8 text-center">
+            <Link
+              href="/how-it-works"
+              className="text-[13px] text-blue-400/70 hover:text-blue-400 transition-colors"
+            >
+              Learn more about our process &rarr;
+            </Link>
+          </div>
         </div>
       </section>
 
       {/* Features */}
-      <section className="py-28 px-6 border-t border-white/[0.04]">
+      <section id="features" className="py-28 px-6 border-t border-white/[0.04] scroll-mt-20">
         <div className="max-w-4xl mx-auto">
           <div className="mb-14">
             <p className="text-[13px] font-medium text-blue-400/70 uppercase tracking-widest mb-3">
@@ -219,6 +204,15 @@ export default function LandingPage() {
               </div>
             ))}
           </div>
+
+          <div className="mt-8 text-center">
+            <Link
+              href="/features"
+              className="text-[13px] text-blue-400/70 hover:text-blue-400 transition-colors"
+            >
+              See all features &rarr;
+            </Link>
+          </div>
         </div>
       </section>
 
@@ -268,11 +262,20 @@ export default function LandingPage() {
               </div>
             ))}
           </div>
+
+          <div className="mt-8 text-center">
+            <Link
+              href="/use-cases"
+              className="text-[13px] text-blue-400/70 hover:text-blue-400 transition-colors"
+            >
+              Explore all use cases &rarr;
+            </Link>
+          </div>
         </div>
       </section>
 
       {/* Pricing */}
-      <section className="py-28 px-6 border-t border-white/[0.04]">
+      <section id="pricing" className="py-28 px-6 border-t border-white/[0.04] scroll-mt-20">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-14">
             <p className="text-[13px] font-medium text-blue-400/70 uppercase tracking-widest mb-3">
@@ -289,34 +292,34 @@ export default function LandingPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-3xl mx-auto">
             {[
               {
-                name: "Professional",
+                name: "Starter",
                 price: "$79",
                 features: [
-                  "3 videos per month",
+                  "10 videos per month",
+                  "3 platforms",
+                  "Basic analytics",
                   "Voice cloning",
-                  "500 AI images",
-                  "Review-to-video pipeline",
                 ],
               },
               {
                 name: "Authority",
-                price: "$199",
+                price: "$149",
                 features: [
-                  "8 videos per month",
-                  "1,500 AI images",
-                  "10 team members",
-                  "Content strategy AI",
+                  "30 videos per month",
+                  "All platforms",
+                  "Advanced analytics",
+                  "Priority generation",
                 ],
                 popular: true,
               },
               {
-                name: "Expert",
-                price: "$375",
+                name: "Enterprise",
+                price: "Custom",
                 features: [
-                  "40+ videos per month",
-                  "Dedicated strategist",
-                  "Content calendar",
-                  "Full agency replacement",
+                  "Unlimited videos",
+                  "Dedicated support",
+                  "Custom models",
+                  "API access",
                 ],
               },
             ].map((plan, i) => (
@@ -342,7 +345,9 @@ export default function LandingPage() {
                   <span className="text-[32px] font-bold text-white">
                     {plan.price}
                   </span>
-                  <span className="text-[13px] text-white/20">/mo</span>
+                  {plan.price !== "Custom" && (
+                    <span className="text-[13px] text-white/20">/mo</span>
+                  )}
                 </div>
                 <ul className="space-y-3 mb-6">
                   {plan.features.map((f, j) => (
@@ -363,10 +368,19 @@ export default function LandingPage() {
                       : "border border-white/[0.08] text-white/50 hover:text-white/70 hover:border-white/[0.12]"
                   }`}
                 >
-                  Start free trial
+                  {plan.price === "Custom" ? "Contact sales" : "Start free trial"}
                 </Link>
               </div>
             ))}
+          </div>
+
+          <div className="mt-8 text-center">
+            <Link
+              href="/pricing"
+              className="text-[13px] text-blue-400/70 hover:text-blue-400 transition-colors"
+            >
+              Compare all plans &rarr;
+            </Link>
           </div>
         </div>
       </section>
@@ -374,7 +388,6 @@ export default function LandingPage() {
       {/* CTA */}
       <section className="py-28 px-6 border-t border-white/[0.04]">
         <div className="relative max-w-2xl mx-auto text-center">
-          {/* Subtle background glow */}
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[300px] pointer-events-none">
             <div className="absolute inset-0 bg-blue-500/[0.03] rounded-full blur-[80px]" />
           </div>
@@ -404,16 +417,6 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
-
-      {/* Footer */}
-      <footer className="border-t border-white/[0.04] py-8 px-6">
-        <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <span className="text-[13px] text-white/20 font-medium">
-            Official <span className="text-blue-400/50">AI</span>
-          </span>
-          <span className="text-[12px] text-white/10">&copy; 2026</span>
-        </div>
-      </footer>
-    </div>
+    </MarketingLayout>
   );
 }
