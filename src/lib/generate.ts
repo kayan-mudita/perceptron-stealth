@@ -21,6 +21,7 @@ import {
   isStorageConfigured,
   downloadAndStore,
   videoKey,
+  thumbnailKey,
 } from "@/lib/storage";
 
 // ─── Types ──────────────────────────────────────────────────────
@@ -424,7 +425,7 @@ export async function pollJobUntilDone(
               finalVideoUrl = await downloadAndStore(result.videoUrl, videoKey(userId, videoId, "mp4"), "video/mp4");
             }
             if (result.thumbnailUrl) {
-              finalThumbnailUrl = await downloadAndStore(result.thumbnailUrl, videoKey(userId, `${videoId}-thumb`, "jpg"), "image/jpeg");
+              finalThumbnailUrl = await downloadAndStore(result.thumbnailUrl, thumbnailKey(userId, videoId, "jpg"), "image/jpeg");
             }
           } catch (s3Err) {
             console.error(`[Poll] S3 upload failed for ${videoId}:`, s3Err);

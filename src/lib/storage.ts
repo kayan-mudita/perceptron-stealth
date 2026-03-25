@@ -131,3 +131,7 @@ export function videoKey(userId: string, fileId: string, ext: string): string {
 export function audioKey(userId: string, fileId: string, ext: string): string {
   return `audio/${userId}/${fileId}.${ext}`;
 }
+
+export function thumbnailKey(userId: string, fileId: string, ext: string): string {
+  return `thumbnails/${userId}/${fileId}.${ext}`;
+}

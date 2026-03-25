@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { requireAuth } from "@/lib/api-helpers";
-import { generateVideo, pollJobUntilDone } from "@/lib/generate";
+import { generateVideo } from "@/lib/generate";
 import { expandCutPrompts, planComposition } from "@/lib/video-compositor";
-import { generateStartingFrame } from "@/lib/starting-frame";
+import { getOrGenerateStartingFrame } from "@/lib/starting-frame";
 import { stitchCuts, isShotstackConfigured, StitchCut } from "@/lib/video-stitcher";
-import { downloadAndStore, videoKey, audioKey, isStorageConfigured } from "@/lib/storage";
+import { downloadAndStore, videoKey, audioKey, thumbnailKey, isStorageConfigured } from "@/lib/storage";
 import { generateVoiceover } from "@/lib/voice-engine";
 
 /**
@@ -92,7 +92,8 @@ export async function POST(req: NextRequest) {
                   audioKey(user.id, `tts-${Date.now()}`, "mp3"),
                   "audio/mpeg"
                 );
-              } catch {
+              } catch (err) {
+                console.error("[process/tts] Failed to persist TTS audio to storage, using temp URL:", err);
                 ttsAudioUrl = ttsResult.audioUrl;
               }
             } else {
@@ -131,12 +132,49 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: `Cut ${i} not found` }, { status: 400 });
       }
 
-      // Get photo for starting frame
-      const photo = video.photoId
-        ? await prisma.photo.findFirst({ where: { id: video.photoId } })
-        : await prisma.photo.findFirst({ where: { userId: user.id, isPrimary: true } });
+      // ── Resolve the image URL to pass to FAL as the reference frame ──
+      //
+      // Priority order:
+      //   1. Starting frame (AI-generated anchor image for character consistency)
+      //   2. video.photoId (explicit photo attached to this video record)
+      //   3. User's primary uploaded photo (last resort)
+      //
+      // The starting frame is the CORRECT image to use here. It is generated
+      // from the user's uploaded photos + character sheet and placed in the
+      // user's industry-appropriate background. Using it for EVERY cut is
+      // what ensures character consistency across the multi-cut video.
+      let photoUrl: string = "";
 
-      const photoUrl = photo?.url || "";
+      // Try starting frame first (cached or generate on first cut)
+      if (i === 0) {
+        // On the first cut, resolve starting frame (may generate if missing)
+        const sfUrl = await getOrGenerateStartingFrame(user.id);
+        if (sfUrl) {
+          photoUrl = sfUrl;
+          // Cache in metadata so subsequent cuts don't re-generate
+          meta.startingFrameUrl = sfUrl;
+          await prisma.video.update({
+            where: { id: videoId },
+            data: { sourceReview: JSON.stringify(meta) },
+          });
+        }
+      } else if (meta.startingFrameUrl) {
+        // Subsequent cuts — use the cached starting frame URL
+        photoUrl = meta.startingFrameUrl;
+      }
+
+      // Fallback: use the video's photoId or user's primary photo
+      if (!photoUrl) {
+        const photo = video.photoId
+          ? await prisma.photo.findFirst({ where: { id: video.photoId } })
+          : await prisma.photo.findFirst({ where: { userId: user.id, isPrimary: true } });
+        photoUrl = photo?.url || "";
+        if (photoUrl) {
+          console.warn(`[process/cut] No starting frame available for cut ${i}. Falling back to user photo.`);
+        } else {
+          console.error(`[process/cut] No photo URL available for cut ${i}. Video generation may produce inconsistent results.`);
+        }
+      }
 
       // Submit to FAL (returns immediately with job ID)
       const result = await generateVideo({
@@ -150,12 +188,40 @@ export async function POST(req: NextRequest) {
         duration: cut.generateDuration,
       });
 
+      // If FAL returned a sync result (immediate completion), persist to Supabase Storage
+      let persistedVideoUrl = result.videoUrl || null;
+      let persistedThumbnailUrl = result.thumbnailUrl || null;
+
+      if (result.status === "completed" && result.videoUrl && isStorageConfigured()) {
+        try {
+          persistedVideoUrl = await downloadAndStore(
+            result.videoUrl,
+            videoKey(user.id, `${videoId}-cut-${i}`, "mp4"),
+            "video/mp4"
+          );
+        } catch (err) {
+          console.error(`[process/cut] Failed to persist cut ${i} video to storage:`, err);
+        }
+        if (result.thumbnailUrl) {
+          try {
+            persistedThumbnailUrl = await downloadAndStore(
+              result.thumbnailUrl,
+              thumbnailKey(user.id, `${videoId}-cut-${i}`, "jpg"),
+              "image/jpeg"
+            );
+          } catch (err) {
+            console.error(`[process/cut] Failed to persist cut ${i} thumbnail to storage:`, err);
+          }
+        }
+      }
+
       // Store job ID in metadata
       if (!meta.cutJobs) meta.cutJobs = {};
       meta.cutJobs[i] = {
         jobId: result.jobId,
         status: result.status,
-        videoUrl: result.videoUrl || null,
+        videoUrl: persistedVideoUrl,
+        thumbnailUrl: persistedThumbnailUrl,
         trimTo: cut.duration,
       };
       await prisma.video.update({
@@ -169,7 +235,7 @@ export async function POST(req: NextRequest) {
         status: result.status === "completed" ? "cut_done" : "cut_submitted",
         cutIndex: i,
         jobId: result.jobId,
-        videoUrl: result.videoUrl || null,
+        videoUrl: persistedVideoUrl,
         nextStep: result.status === "completed"
           ? (isLastCut ? "stitch" : "cut")
           : "poll",
@@ -204,7 +270,41 @@ export async function POST(req: NextRequest) {
       const pollResult = await falPollOnce(cutJob.jobId);
 
       cutJob.status = pollResult.status;
-      if (pollResult.videoUrl) cutJob.videoUrl = pollResult.videoUrl;
+
+      // When cut completes, persist video/thumbnail to Supabase Storage (permanent URL)
+      if (pollResult.status === "completed" && pollResult.videoUrl) {
+        let storedVideoUrl = pollResult.videoUrl;
+        let storedThumbnailUrl = pollResult.thumbnailUrl || null;
+
+        if (isStorageConfigured()) {
+          try {
+            storedVideoUrl = await downloadAndStore(
+              pollResult.videoUrl,
+              videoKey(user.id, `${videoId}-cut-${i}`, "mp4"),
+              "video/mp4"
+            );
+          } catch (err) {
+            console.error(`[process/poll] Failed to persist cut ${i} video to storage:`, err);
+          }
+          if (pollResult.thumbnailUrl) {
+            try {
+              storedThumbnailUrl = await downloadAndStore(
+                pollResult.thumbnailUrl,
+                thumbnailKey(user.id, `${videoId}-cut-${i}`, "jpg"),
+                "image/jpeg"
+              );
+            } catch (err) {
+              console.error(`[process/poll] Failed to persist cut ${i} thumbnail to storage:`, err);
+            }
+          }
+        }
+
+        cutJob.videoUrl = storedVideoUrl;
+        cutJob.thumbnailUrl = storedThumbnailUrl;
+      } else if (pollResult.videoUrl) {
+        cutJob.videoUrl = pollResult.videoUrl;
+      }
+
       meta.cutJobs[i] = cutJob;
       await prisma.video.update({
         where: { id: videoId },
@@ -217,7 +317,7 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({
           status: "cut_done",
           cutIndex: i,
-          videoUrl: pollResult.videoUrl,
+          videoUrl: cutJob.videoUrl,
           nextStep: isLastCut ? "stitch" : "cut",
           nextCutIndex: isLastCut ? undefined : i + 1,
         });
@@ -237,6 +337,9 @@ export async function POST(req: NextRequest) {
       const meta = video.sourceReview ? JSON.parse(video.sourceReview as string) : {};
       const cutJobs = meta.cutJobs || {};
 
+      // Cut videos are already persisted to Supabase Storage (permanent URLs)
+      // from the poll/cut steps above. The URLs in cutJobs[i].videoUrl should
+      // already be permanent Supabase URLs.
       const completedCuts: StitchCut[] = Object.values(cutJobs)
         .filter((j: any) => j.videoUrl)
         .map((j: any) => ({ videoUrl: j.videoUrl, trimTo: j.trimTo }));
@@ -245,17 +348,43 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: "No completed cuts to stitch" }, { status: 400 });
       }
 
-      // Single cut — just store it directly
+      // Helper: persist a URL to Supabase Storage if it's still a temp URL
+      const ensurePermanentUrl = async (url: string, storageKeyPath: string, mime: string): Promise<string> => {
+        if (!isStorageConfigured()) return url;
+        // Already a Supabase URL — no need to re-download
+        const supabaseHost = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
+        if (supabaseHost && url.startsWith(supabaseHost)) return url;
+        // Still a temp URL (FAL, Shotstack, etc.) — download and persist
+        try {
+          return await downloadAndStore(url, storageKeyPath, mime);
+        } catch (err) {
+          console.error(`[process/stitch] Failed to persist ${storageKeyPath}:`, err);
+          return url;
+        }
+      };
+
+      // Get first cut's thumbnail for the final video record
+      const firstCutJob: any = Object.values(cutJobs).find((j: any) => j.videoUrl);
+      const cutThumbnailUrl = firstCutJob?.thumbnailUrl || null;
+
+      // Single cut — use it directly as the final video
       if (completedCuts.length === 1) {
-        let finalUrl = completedCuts[0].videoUrl;
-        if (isStorageConfigured()) {
-          try {
-            finalUrl = await downloadAndStore(finalUrl, videoKey(user.id, videoId, "mp4"), "video/mp4");
-          } catch { /* use original URL */ }
+        const finalUrl = await ensurePermanentUrl(
+          completedCuts[0].videoUrl,
+          videoKey(user.id, videoId, "mp4"),
+          "video/mp4"
+        );
+        let finalThumb = cutThumbnailUrl;
+        if (finalThumb) {
+          finalThumb = await ensurePermanentUrl(
+            finalThumb,
+            thumbnailKey(user.id, videoId, "jpg"),
+            "image/jpeg"
+          );
         }
         await prisma.video.update({
           where: { id: videoId },
-          data: { videoUrl: finalUrl, status: "review" },
+          data: { videoUrl: finalUrl, thumbnailUrl: finalThumb, status: "review" },
         });
         return NextResponse.json({ status: "done", videoUrl: finalUrl });
       }
@@ -263,41 +392,57 @@ export async function POST(req: NextRequest) {
       // Multiple cuts — stitch via Shotstack
       if (isShotstackConfigured()) {
         try {
-          const finalUrl = await stitchCuts({
+          const stitchedUrl = await stitchCuts({
             cuts: completedCuts,
             audioUrl: meta.ttsAudioUrl || undefined,
             aspectRatio: "9:16",
           });
 
-          let storedUrl = finalUrl;
-          if (isStorageConfigured()) {
-            try {
-              storedUrl = await downloadAndStore(finalUrl, videoKey(user.id, videoId, "mp4"), "video/mp4");
-            } catch { /* use Shotstack URL */ }
+          const storedUrl = await ensurePermanentUrl(
+            stitchedUrl,
+            videoKey(user.id, videoId, "mp4"),
+            "video/mp4"
+          );
+
+          let finalThumb = cutThumbnailUrl;
+          if (finalThumb) {
+            finalThumb = await ensurePermanentUrl(
+              finalThumb,
+              thumbnailKey(user.id, videoId, "jpg"),
+              "image/jpeg"
+            );
           }
 
           await prisma.video.update({
             where: { id: videoId },
-            data: { videoUrl: storedUrl, status: "review" },
+            data: { videoUrl: storedUrl, thumbnailUrl: finalThumb, status: "review" },
           });
 
           return NextResponse.json({ status: "done", videoUrl: storedUrl });
         } catch (err: any) {
           console.error("[process/stitch] Shotstack failed:", err);
-          // Fall back to first cut
-          const fallback = completedCuts[0].videoUrl;
+          // Fall back to first cut (already a permanent Supabase URL from poll step)
+          const fallback = await ensurePermanentUrl(
+            completedCuts[0].videoUrl,
+            videoKey(user.id, videoId, "mp4"),
+            "video/mp4"
+          );
           await prisma.video.update({
             where: { id: videoId },
-            data: { videoUrl: fallback, status: "review" },
+            data: { videoUrl: fallback, thumbnailUrl: cutThumbnailUrl, status: "review" },
           });
           return NextResponse.json({ status: "done", videoUrl: fallback, warning: "Stitch failed, using first cut" });
         }
       } else {
-        // No Shotstack — use first cut
-        const fallback = completedCuts[0].videoUrl;
+        // No Shotstack — use first cut (already a permanent Supabase URL from poll step)
+        const fallback = await ensurePermanentUrl(
+          completedCuts[0].videoUrl,
+          videoKey(user.id, videoId, "mp4"),
+          "video/mp4"
+        );
         await prisma.video.update({
           where: { id: videoId },
-          data: { videoUrl: fallback, status: "review" },
+          data: { videoUrl: fallback, thumbnailUrl: cutThumbnailUrl, status: "review" },
         });
         return NextResponse.json({ status: "done", videoUrl: fallback, warning: "Shotstack not configured" });
       }

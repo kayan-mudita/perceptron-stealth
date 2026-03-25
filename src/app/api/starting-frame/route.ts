@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "@/lib/api-helpers";
-import { generateStartingFrame } from "@/lib/starting-frame";
+import { generateStartingFrame, getStartingFrameUrl } from "@/lib/starting-frame";
 
 /**
  * POST /api/starting-frame
@@ -35,11 +35,40 @@ export async function POST(req: NextRequest) {
       imageUrl: result.imageUrl,
       photoId: result.photoId,
       status: result.status,
+      isPermanent: result.imageUrl ? !result.imageUrl.startsWith("data:") : false,
     });
-  } catch (err: any) {
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : "Failed to generate starting frame";
     console.error("[POST /api/starting-frame]", err);
     return NextResponse.json(
-      { error: err.message || "Failed to generate starting frame" },
+      { error: message },
+      { status: 500 }
+    );
+  }
+}
+
+/**
+ * GET /api/starting-frame
+ *
+ * Returns the current starting frame URL for the authenticated user,
+ * without generating a new one. Useful for checking status.
+ */
+export async function GET() {
+  try {
+    const { error, user } = await requireAuth();
+    if (error) return error;
+
+    const url = await getStartingFrameUrl(user.id);
+
+    return NextResponse.json({
+      imageUrl: url,
+      exists: !!url,
+    });
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : "Failed to check starting frame";
+    console.error("[GET /api/starting-frame]", err);
+    return NextResponse.json(
+      { error: message },
       { status: 500 }
     );
   }

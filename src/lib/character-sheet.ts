@@ -113,10 +113,13 @@ export function getBackgroundsForIndustry(industry: string): string[] {
 async function callGeminiImageGen(
   prompt: string,
   referenceImageUrls: string[],
-  storageKey?: string
+  storageKey?: string,
+  options?: { maxRetries?: number; label?: string }
 ): Promise<string | null> {
   const apiKey = getApiKey();
   const model = await getConfig("character_sheet_model", "nano_banana");
+  const maxRetries = options?.maxRetries ?? 1;
+  const label = options?.label ?? "unknown";
 
   // Map model config to actual Gemini model name
   const MODEL_MAP: Record<string, string> = {
@@ -146,50 +149,81 @@ async function callGeminiImageGen(
     }
   }
 
-  const response = await fetch(
-    `${GOOGLE_AI_STUDIO_URL}/${modelName}:generateContent?key=${apiKey}`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        contents: [{ parts }],
-        generationConfig: {
-          responseModalities: ["image", "text"],
-          temperature: 0.8,
-        },
-      }),
+  let lastError: Error | null = null;
+
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    if (attempt > 0) {
+      console.log(`[character-sheet] Retry ${attempt}/${maxRetries} for ${label}`);
     }
-  );
 
-  if (!response.ok) {
-    const err = await response.text();
-    throw new Error(`Gemini API error (${response.status}): ${err}`);
-  }
+    try {
+      const response = await fetch(
+        `${GOOGLE_AI_STUDIO_URL}/${modelName}:generateContent?key=${apiKey}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            contents: [{ parts }],
+            generationConfig: {
+              responseModalities: ["image", "text"],
+              temperature: 0.8,
+            },
+          }),
+        }
+      );
 
-  const data: GeminiImageResponse = await response.json();
-
-  // Extract generated image from response
-  const candidate = data.candidates?.[0];
-  const imagePart = candidate?.content?.parts?.find((p) => p.inlineData);
-
-  if (imagePart?.inlineData) {
-    const { mimeType, data: base64Data } = imagePart.inlineData;
-
-    // Upload to Supabase Storage if configured (permanent URL)
-    if (isStorageConfigured() && storageKey) {
-      try {
-        const buffer = Buffer.from(base64Data, "base64");
-        const publicUrl = await uploadFile(buffer, storageKey, mimeType);
-        return publicUrl;
-      } catch (err) {
-        console.error("[character-sheet] Storage upload failed, falling back to data URL:", err);
+      if (!response.ok) {
+        const err = await response.text();
+        lastError = new Error(`Gemini API error (${response.status}): ${err}`);
+        console.error(`[character-sheet] ${label} attempt ${attempt} API error:`, lastError.message);
+        continue;
       }
-    }
 
-    // Fallback: return as data URL
-    return `data:${mimeType};base64,${base64Data}`;
+      const data: GeminiImageResponse = await response.json();
+
+      // Extract generated image from response
+      const candidate = data.candidates?.[0];
+      const imagePart = candidate?.content?.parts?.find((p) => p.inlineData);
+
+      if (imagePart?.inlineData) {
+        const { mimeType, data: base64Data } = imagePart.inlineData;
+
+        // Upload to Supabase Storage if configured (permanent URL)
+        if (isStorageConfigured() && storageKey) {
+          try {
+            const buffer = Buffer.from(base64Data, "base64");
+            const publicUrl = await uploadFile(buffer, storageKey, mimeType);
+            return publicUrl;
+          } catch (err) {
+            console.error("[character-sheet] Storage upload failed, falling back to data URL:", err);
+          }
+        }
+
+        // Fallback: return as data URL
+        return `data:${mimeType};base64,${base64Data}`;
+      }
+
+      // No image returned — log what the model DID return for debugging
+      const textPart = candidate?.content?.parts?.find((p) => p.text);
+      const refusalText = textPart?.text || "(no text in response)";
+      console.error(
+        `[character-sheet] ${label} attempt ${attempt}: No image generated. ` +
+        `Model response text: ${refusalText.substring(0, 500)}`
+      );
+      console.error(
+        `[character-sheet] ${label} attempt ${attempt}: Full response structure: ` +
+        `candidates=${data.candidates?.length ?? 0}, ` +
+        `parts=${candidate?.content?.parts?.length ?? 0}`
+      );
+      lastError = new Error(`No image in response: ${refusalText.substring(0, 200)}`);
+    } catch (err: any) {
+      lastError = err;
+      console.error(`[character-sheet] ${label} attempt ${attempt} threw:`, err.message);
+    }
   }
 
+  // All attempts exhausted
+  console.error(`[character-sheet] ${label}: All ${maxRetries + 1} attempts failed. Last error:`, lastError?.message);
   return null;
 }
 
@@ -250,9 +284,13 @@ Professional lighting appropriate for each setting. Clean composition. Character
   const storageKey = `character-sheets/${userId}/${sheet.id}-poses.png`;
 
   try {
-    const imageUrl = await callGeminiImageGen(prompt, photoUrls, storageKey);
+    const imageUrl = await callGeminiImageGen(prompt, photoUrls, storageKey, {
+      maxRetries: 1,
+      label: "poses",
+    });
 
     if (!imageUrl) {
+      console.error(`[character-sheet] poses for user ${userId}: All attempts returned no image`);
       await prisma.characterSheet.update({
         where: { id: sheet.id },
         data: { status: "failed" },
@@ -307,29 +345,18 @@ export async function generate3DSheet(
   userId: string,
   photoUrls: string[]
 ): Promise<CharacterSheetResult> {
-  const defaultPrompt = `Generate a 360-degree character reference sheet of this person showing them from EVERY angle in a 3x3 grid.
+  // Simplified to 6 angles in a 2x3 grid — the original 9-angle 3x3 grid
+  // (including top-of-head bird's-eye and near-duplicate back-left/back-right)
+  // was too complex for a single image generation call and consistently failed.
+  const defaultPrompt = `Generate a character reference sheet showing this person from 6 different angles, arranged in a 2-row by 3-column grid.
 
-Use the reference photos to match their EXACT appearance — skin tone, hair (including how it looks from behind), facial features, body type, ear shape, hairline, and any distinguishing features.
+Use the reference photos to match their EXACT appearance — skin tone, hair, facial features, body type, and any distinguishing features.
 
-ANGLES (one per grid cell, LEFT to RIGHT, TOP to BOTTOM):
-1. FRONT FACING — direct eye contact, neutral expression
-2. 45 DEGREES RIGHT — head turned slightly right, showing right side of face
-3. RIGHT PROFILE — full side view, right ear visible
-4. BACK RIGHT (135 degrees) — showing back-right of head, right ear partially visible
-5. BACK OF HEAD — full rear view, showing hair from behind, neck, ears
-6. BACK LEFT (135 degrees) — showing back-left of head, left ear partially visible
-7. LEFT PROFILE — full side view, left ear visible
-8. 45 DEGREES LEFT — head turned slightly left, showing left side of face
-9. TOP OF HEAD — bird's eye view looking down, showing hair part and crown
+GRID LAYOUT (2 rows, 3 columns):
+Row 1: FRONT view, 3/4 RIGHT view, RIGHT PROFILE (side view)
+Row 2: BACK view (rear of head and body), 3/4 LEFT view, LEFT PROFILE (side view)
 
-CRITICAL REQUIREMENTS:
-- The person must be IDENTICAL in every cell — same clothing, same skin, same hair
-- Hair must be accurate from every angle (part, texture, length, color)
-- Ears, jawline, and neck must be anatomically consistent across views
-- Neutral expression throughout
-- Clean studio lighting, consistent across all angles
-- Plain neutral background (light gray or white)
-- This is a CHARACTER REFERENCE for AI video models — accuracy is more important than beauty`;
+Keep the person's pose neutral and standing in every cell. Same clothing, same appearance across all 6 views. Plain light gray background, clean studio lighting. This is a reference sheet for AI video generation — consistency and accuracy matter most.`;
 
   const prompt = await getConfig("prompt_character_sheet_3d", defaultPrompt);
 
@@ -345,9 +372,13 @@ CRITICAL REQUIREMENTS:
   const storageKey = `character-sheets/${userId}/${sheet.id}-360.png`;
 
   try {
-    const imageUrl = await callGeminiImageGen(prompt, photoUrls, storageKey);
+    const imageUrl = await callGeminiImageGen(prompt, photoUrls, storageKey, {
+      maxRetries: 2,
+      label: "3d_360",
+    });
 
     if (!imageUrl) {
+      console.error(`[character-sheet] 3d_360 for user ${userId}: All attempts returned no image`);
       await prisma.characterSheet.update({
         where: { id: sheet.id },
         data: { status: "failed" },
@@ -377,6 +408,7 @@ CRITICAL REQUIREMENTS:
       status: "complete",
     };
   } catch (err: any) {
+    console.error(`[character-sheet] 3d_360 for user ${userId} threw:`, err.message);
     await prisma.characterSheet.update({
       where: { id: sheet.id },
       data: { status: "failed" },

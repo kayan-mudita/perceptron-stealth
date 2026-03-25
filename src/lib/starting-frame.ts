@@ -15,13 +15,88 @@ const GOOGLE_AI_STUDIO_URL = "https://generativelanguage.googleapis.com/v1beta/m
  * This generates a high-quality starting frame using Nano Banana Pro,
  * with the character in their specific pose/setting/lighting ready
  * for video generation.
+ *
+ * IDENTIFICATION: Starting frame photos are stored in the Photo table with
+ * a filename prefix of "sf--". This prefix is used by getStartingFrameUrl()
+ * to retrieve them. The prefix is intentionally distinct from any user-
+ * uploaded filename to avoid false matches.
  */
+
+/** Filename prefix used to tag Photo records that are starting frames. */
+const SF_FILENAME_PREFIX = "sf--";
 
 export interface StartingFrameResult {
   imageUrl: string | null;
   photoId: string | null;
   status: "complete" | "failed" | "demo";
 }
+
+// ---------------------------------------------------------------------------
+// Retrieval — used by the video generation pipeline
+// ---------------------------------------------------------------------------
+
+/**
+ * Get the most recent starting frame URL for a user.
+ *
+ * This is the function that the video generation pipeline should call
+ * before every cut to get the anchor image for character consistency.
+ *
+ * Returns the Supabase Storage URL (permanent) if available, or null
+ * if no starting frame has been generated yet.
+ */
+export async function getStartingFrameUrl(userId: string): Promise<string | null> {
+  const sfPhoto = await prisma.photo.findFirst({
+    where: {
+      userId,
+      filename: { startsWith: SF_FILENAME_PREFIX },
+    },
+    orderBy: { createdAt: "desc" },
+    select: { url: true },
+  });
+
+  if (!sfPhoto?.url) return null;
+
+  // Reject data: URIs — they are ephemeral and cannot be passed to FAL
+  if (sfPhoto.url.startsWith("data:")) {
+    console.warn("[starting-frame] Found starting frame but it is a data URI (not permanent). Returning null.");
+    return null;
+  }
+
+  return sfPhoto.url;
+}
+
+/**
+ * Get or generate a starting frame for a user.
+ *
+ * Checks for an existing starting frame first. If none exists (or the
+ * existing one is a data URI), generates a new one.
+ *
+ * This is the safe entry point for the video generation pipeline --
+ * it will never throw. On failure it returns null so the caller can
+ * fall back to the user's primary photo.
+ */
+export async function getOrGenerateStartingFrame(userId: string): Promise<string | null> {
+  try {
+    // Check for existing starting frame
+    const existing = await getStartingFrameUrl(userId);
+    if (existing) return existing;
+
+    // None found — generate one
+    const result = await generateStartingFrame(userId);
+    if (result.status === "complete" && result.imageUrl && !result.imageUrl.startsWith("data:")) {
+      return result.imageUrl;
+    }
+
+    return null;
+  } catch (err) {
+    console.error("[starting-frame] getOrGenerateStartingFrame failed:", err);
+    return null;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Generation
+// ---------------------------------------------------------------------------
 
 /**
  * Generate a starting frame for video generation.
@@ -34,23 +109,28 @@ export async function generateStartingFrame(
 ): Promise<StartingFrameResult> {
   const apiKey = process.env.GOOGLE_AI_STUDIO_KEY;
   if (!apiKey) {
+    console.warn("[starting-frame] GOOGLE_AI_STUDIO_KEY not set, returning demo status");
     return { imageUrl: null, photoId: null, status: "demo" };
   }
 
-  // Get user's photos for reference
+  // Get user's uploaded photos for reference (exclude previous starting frames)
   const photos = await prisma.photo.findMany({
-    where: { userId },
+    where: {
+      userId,
+      NOT: { filename: { startsWith: SF_FILENAME_PREFIX } },
+    },
     orderBy: { isPrimary: "desc" },
     take: 3,
   });
 
   if (photos.length === 0) {
+    console.error("[starting-frame] No user photos found for userId:", userId);
     return { imageUrl: null, photoId: null, status: "failed" };
   }
 
   // Get character sheet for additional reference
   const characterSheet = await prisma.characterSheet.findFirst({
-    where: { userId, type: "poses", status: "complete" },
+    where: { userId, status: "complete" },
     include: { images: true },
     orderBy: { createdAt: "desc" },
   });
@@ -90,38 +170,48 @@ ${brand?.toneOfVoice ? `The person's energy should feel ${brand.toneOfVoice}.` :
 This image will be used as the consistent anchor frame for all video generation. Character consistency is critical.`;
 
   // Build parts with reference images
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const parts: any[] = [{ text: prompt }];
 
-  // Add user photos as reference
+  // Track how many reference images we actually attached
+  let refImageCount = 0;
+
+  // Add user photos as inline base64 reference
   for (const photo of photos) {
-    if (photo.url && !photo.url.startsWith("/uploads/")) {
-      try {
-        const res = await fetch(photo.url);
-        if (res.ok) {
-          const buffer = await res.arrayBuffer();
-          parts.push({
-            inlineData: {
-              mimeType: res.headers.get("content-type") || "image/jpeg",
-              data: Buffer.from(buffer).toString("base64"),
-            },
-          });
-        }
-      } catch {}
+    if (!photo.url || photo.url.startsWith("/uploads/")) continue;
+    try {
+      const res = await fetch(photo.url);
+      if (res.ok) {
+        const buffer = await res.arrayBuffer();
+        parts.push({
+          inlineData: {
+            mimeType: res.headers.get("content-type") || "image/jpeg",
+            data: Buffer.from(buffer).toString("base64"),
+          },
+        });
+        refImageCount++;
+      } else {
+        console.warn(`[starting-frame] Failed to fetch photo ${photo.id}: ${res.status}`);
+      }
+    } catch (err) {
+      console.warn(`[starting-frame] Error fetching photo ${photo.id}:`, err);
     }
   }
 
-  // Add character sheet as additional reference
+  // Add character sheet composite as additional reference
   if (characterSheet?.compositeUrl) {
-    if (characterSheet.compositeUrl.startsWith("data:")) {
+    const csUrl = characterSheet.compositeUrl;
+    if (csUrl.startsWith("data:")) {
       // Data URL — extract inline
-      const match = characterSheet.compositeUrl.match(/^data:([^;]+);base64,(.+)$/);
+      const match = csUrl.match(/^data:([^;]+);base64,(.+)$/);
       if (match) {
         parts.push({ inlineData: { mimeType: match[1], data: match[2] } });
+        refImageCount++;
       }
-    } else if (characterSheet.compositeUrl.startsWith("http")) {
+    } else if (csUrl.startsWith("http")) {
       // Supabase URL — download and inline
       try {
-        const res = await fetch(characterSheet.compositeUrl);
+        const res = await fetch(csUrl);
         if (res.ok) {
           const buffer = await res.arrayBuffer();
           parts.push({
@@ -130,10 +220,22 @@ This image will be used as the consistent anchor frame for all video generation.
               data: Buffer.from(buffer).toString("base64"),
             },
           });
+          refImageCount++;
+        } else {
+          console.warn(`[starting-frame] Failed to fetch character sheet: ${res.status}`);
         }
-      } catch {}
+      } catch (err) {
+        console.warn("[starting-frame] Error fetching character sheet:", err);
+      }
     }
   }
+
+  if (refImageCount === 0) {
+    console.error("[starting-frame] No reference images could be fetched. Cannot generate.");
+    return { imageUrl: null, photoId: null, status: "failed" };
+  }
+
+  console.log(`[starting-frame] Generating with ${refImageCount} reference image(s) for user ${userId}`);
 
   try {
     // Use the same model config as character-sheet.ts
@@ -162,44 +264,51 @@ This image will be used as the consistent anchor frame for all video generation.
     );
 
     if (!response.ok) {
-      console.error(`[starting-frame] ${modelName} error:`, await response.text());
+      const errBody = await response.text();
+      console.error(`[starting-frame] ${modelName} API error (${response.status}):`, errBody);
       return { imageUrl: null, photoId: null, status: "failed" };
     }
 
     const data = await response.json();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const imagePart = data.candidates?.[0]?.content?.parts?.find((p: any) => p.inlineData);
 
     if (!imagePart?.inlineData) {
+      console.error("[starting-frame] Gemini response contained no image data");
       return { imageUrl: null, photoId: null, status: "failed" };
     }
 
     const { mimeType, data: base64Data } = imagePart.inlineData;
     let imageUrl: string;
 
-    // Upload to Supabase Storage if configured (permanent URL)
+    // Upload to Supabase Storage (permanent URL required for FAL)
     if (isStorageConfigured()) {
+      const buffer = Buffer.from(base64Data, "base64");
+      const ext = mimeType.includes("png") ? "png" : "jpg";
+      const storageKey = `starting-frames/${userId}/sf-${Date.now()}.${ext}`;
       try {
-        const buffer = Buffer.from(base64Data, "base64");
-        const ext = mimeType.includes("png") ? "png" : "jpg";
-        const storageKey = `starting-frames/${userId}/sf-${Date.now()}.${ext}`;
         imageUrl = await uploadFile(buffer, storageKey, mimeType);
       } catch (err) {
-        console.error("[starting-frame] Storage upload failed, using data URL:", err);
+        console.error("[starting-frame] Supabase upload failed:", err);
+        // Data URI fallback — will work for display but NOT for FAL image-to-video
         imageUrl = `data:${mimeType};base64,${base64Data}`;
       }
     } else {
+      console.warn("[starting-frame] Storage not configured. Falling back to data URI (will not work with FAL).");
       imageUrl = `data:${mimeType};base64,${base64Data}`;
     }
 
-    // Save as a photo record marked as the starting frame
+    // Save as a photo record with the SF prefix so getStartingFrameUrl can find it
     const savedPhoto = await prisma.photo.create({
       data: {
         userId,
-        filename: `starting-frame-${Date.now()}.jpg`,
+        filename: `${SF_FILENAME_PREFIX}${Date.now()}.${mimeType.includes("png") ? "png" : "jpg"}`,
         url: imageUrl,
         isPrimary: false,
       },
     });
+
+    console.log(`[starting-frame] Generated successfully. Photo ID: ${savedPhoto.id}, URL is ${imageUrl.startsWith("data:") ? "data URI" : "Supabase URL"}`);
 
     return {
       imageUrl,
@@ -207,7 +316,7 @@ This image will be used as the consistent anchor frame for all video generation.
       status: "complete",
     };
   } catch (err) {
-    console.error("[starting-frame] Error:", err);
+    console.error("[starting-frame] Unexpected error during generation:", err);
     return { imageUrl: null, photoId: null, status: "failed" };
   }
 }
