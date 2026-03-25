@@ -32,14 +32,14 @@ export default function TopBar() {
       {/* Right side */}
       <div className="flex items-center gap-2 sm:gap-4">
         {/* Mobile search button */}
-        <button className="sm:hidden p-2 rounded-lg hover:bg-white/5 transition-colors">
+        <button className="sm:hidden p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg hover:bg-white/5 active:bg-white/10 transition-colors">
           <Search className="w-5 h-5 text-white/50" />
         </button>
 
         {/* Notifications */}
-        <button className="relative p-2 rounded-lg hover:bg-white/5 transition-colors">
+        <button className="relative p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg hover:bg-white/5 active:bg-white/10 transition-colors">
           <Bell className="w-5 h-5 text-white/50" />
-          <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-blue-500" />
+          <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-blue-500" />
         </button>
 
         {/* Plan badge */}

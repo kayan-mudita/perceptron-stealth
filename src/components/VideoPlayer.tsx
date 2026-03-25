@@ -107,27 +107,28 @@ export default function VideoPlayer({
           playing ? "opacity-0 group-hover:opacity-100" : "opacity-100"
         }`}
       >
-        <div className="w-14 h-14 rounded-full bg-black/50 backdrop-blur-sm border border-white/10 flex items-center justify-center transition-transform duration-200 hover:scale-110">
+        <div className="w-16 h-16 rounded-full bg-black/50 backdrop-blur-sm border border-white/10 flex items-center justify-center transition-transform duration-200 hover:scale-110 active:scale-95">
           {playing ? (
-            <Pause className="w-6 h-6 text-white" />
+            <Pause className="w-7 h-7 text-white" />
           ) : (
-            <Play className="w-6 h-6 text-white ml-0.5" />
+            <Play className="w-7 h-7 text-white ml-0.5" />
           )}
         </div>
       </div>
 
-      {/* Mute button */}
+      {/* Mute button -- always visible on mobile, hover on desktop */}
       <button
         onClick={(e) => {
           e.stopPropagation();
           toggleMute();
         }}
-        className="absolute bottom-3 right-3 w-8 h-8 rounded-full bg-black/50 backdrop-blur-sm border border-white/10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-black/70"
+        className="absolute bottom-3 right-3 w-10 h-10 rounded-full bg-black/50 backdrop-blur-sm border border-white/10 flex items-center justify-center opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-200 hover:bg-black/70 active:bg-black/90"
+        aria-label={muted ? "Unmute" : "Mute"}
       >
         {muted ? (
-          <VolumeX className="w-3.5 h-3.5 text-white/70" />
+          <VolumeX className="w-4 h-4 text-white/80" />
         ) : (
-          <Volume2 className="w-3.5 h-3.5 text-white/70" />
+          <Volume2 className="w-4 h-4 text-white/80" />
         )}
       </button>
     </div>

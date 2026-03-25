@@ -136,7 +136,7 @@ function SignupForm() {
                 <input type="text" value={form.company} onChange={(e) => setForm({ ...form, company: e.target.value })} placeholder="Your company name" className="input-field !py-2.5 text-sm" />
               </div>
 
-              <button type="submit" disabled={loading} className="btn-primary w-full gap-2 !mt-6 disabled:opacity-50">
+              <button type="submit" disabled={loading} className="btn-primary w-full gap-2 !mt-6 min-h-[48px] disabled:opacity-50">
                 {loading ? "Creating account..." : "Start your free trial"}
                 {!loading && <ArrowRight className="w-4 h-4" />}
               </button>

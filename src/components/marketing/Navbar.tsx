@@ -88,7 +88,7 @@ export default function Navbar() {
 
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
-            className="md:hidden relative z-10 p-2 -mr-2 rounded-lg hover:bg-white/[0.05] transition-colors"
+            className="md:hidden relative z-10 p-2.5 -mr-2 rounded-lg hover:bg-white/[0.05] active:bg-white/[0.08] transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
             aria-label={mobileOpen ? "Close menu" : "Open menu"}
           >
             {mobileOpen ? (
@@ -121,10 +121,10 @@ export default function Navbar() {
             <Link
               key={link.href}
               href={link.href}
-              className={`text-[18px] transition-colors py-3 px-8 ${
+              className={`text-[18px] transition-colors py-3 px-8 min-h-[48px] flex items-center ${
                 pathname === link.href
                   ? "text-white/90"
-                  : "text-white/50 hover:text-white/90"
+                  : "text-white/50 active:text-white/90"
               }`}
               style={{ transitionDelay: `${i * 50}ms` }}
             >
@@ -136,13 +136,13 @@ export default function Navbar() {
 
           <Link
             href="/auth/login"
-            className="text-[16px] text-white/40 hover:text-white/70 transition-colors py-3 px-8"
+            className="text-[16px] text-white/40 active:text-white/70 transition-colors py-3 px-8 min-h-[48px] flex items-center"
           >
             Log in
           </Link>
           <Link
             href="/auth/signup"
-            className="mt-2 text-[15px] px-8 py-3 rounded-xl bg-white text-[#050508] font-semibold hover:bg-white/90 transition-colors"
+            className="mt-2 text-[15px] px-8 py-3.5 min-h-[48px] flex items-center justify-center rounded-xl bg-white text-[#050508] font-semibold active:bg-white/80 transition-colors"
           >
             Start free trial
           </Link>

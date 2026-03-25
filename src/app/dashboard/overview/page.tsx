@@ -196,16 +196,16 @@ export default function OverviewPage() {
 
       {/* Pending Approvals Banner */}
       {reviewCount > 0 && (
-        <div className="rounded-xl border border-yellow-500/10 bg-yellow-500/[0.03] p-5">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <CheckCircle2 className="w-5 h-5 text-yellow-400/70" />
+        <div className="rounded-xl border border-yellow-500/10 bg-yellow-500/[0.03] p-4 sm:p-5">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="flex items-center gap-3 sm:gap-4">
+              <CheckCircle2 className="w-5 h-5 text-yellow-400/70 flex-shrink-0" />
               <div>
-                <div className="text-[15px] font-medium text-white/85">{reviewCount} video{reviewCount !== 1 ? "s" : ""} awaiting review</div>
-                <div className="text-sm text-white/30">Review and approve before publishing</div>
+                <div className="text-[14px] sm:text-[15px] font-medium text-white/85">{reviewCount} video{reviewCount !== 1 ? "s" : ""} awaiting review</div>
+                <div className="text-xs sm:text-sm text-white/30">Review and approve before publishing</div>
               </div>
             </div>
-            <Link href="/dashboard/approvals" className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/[0.06] text-sm text-white/60 hover:bg-white/[0.1] hover:text-white/80 transition-all">
+            <Link href="/dashboard/approvals" className="flex items-center justify-center gap-2 px-4 py-2.5 min-h-[44px] rounded-xl bg-white/[0.06] text-sm text-white/60 hover:bg-white/[0.1] hover:text-white/80 active:bg-white/[0.15] transition-all flex-shrink-0">
               Review <ArrowRight className="w-3 h-3" />
             </Link>
           </div>

@@ -40,14 +40,14 @@ export default function LandingPage() {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-6">
             <Link
               href="/auth/signup"
-              className="group inline-flex items-center gap-2.5 px-7 py-3.5 rounded-xl bg-white text-[#050508] text-[15px] font-semibold hover:bg-white/90 transition-all"
+              className="group inline-flex items-center justify-center gap-2.5 px-7 py-3.5 min-h-[48px] w-full sm:w-auto rounded-xl bg-white text-[#050508] text-[15px] font-semibold hover:bg-white/90 active:bg-white/80 transition-all"
             >
               Start free trial
               <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
             </Link>
             <Link
               href="/how-it-works"
-              className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl text-[15px] text-white/40 hover:text-white/60 transition-all"
+              className="inline-flex items-center justify-center gap-2 px-7 py-3.5 min-h-[48px] w-full sm:w-auto rounded-xl text-[15px] text-white/40 hover:text-white/60 active:text-white/70 transition-all"
             >
               See how it works
             </Link>
@@ -362,10 +362,10 @@ export default function LandingPage() {
                 </ul>
                 <Link
                   href="/auth/signup"
-                  className={`block text-center text-[13px] font-medium py-2.5 rounded-lg transition-all ${
+                  className={`block text-center text-[13px] font-medium py-3 min-h-[44px] flex items-center justify-center rounded-lg transition-all ${
                     plan.popular
-                      ? "bg-white text-[#050508] hover:bg-white/90"
-                      : "border border-white/[0.08] text-white/50 hover:text-white/70 hover:border-white/[0.12]"
+                      ? "bg-white text-[#050508] hover:bg-white/90 active:bg-white/80"
+                      : "border border-white/[0.08] text-white/50 hover:text-white/70 hover:border-white/[0.12] active:bg-white/[0.04]"
                   }`}
                 >
                   {plan.price === "Custom" ? "Contact sales" : "Start free trial"}
@@ -409,7 +409,7 @@ export default function LandingPage() {
             </p>
             <Link
               href="/auth/signup"
-              className="group inline-flex items-center gap-2.5 px-8 py-4 rounded-xl bg-white text-[#050508] text-[15px] font-semibold hover:bg-white/90 transition-all"
+              className="group inline-flex items-center justify-center gap-2.5 px-8 py-4 min-h-[48px] w-full sm:w-auto rounded-xl bg-white text-[#050508] text-[15px] font-semibold hover:bg-white/90 active:bg-white/80 transition-all"
             >
               Start free trial
               <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />

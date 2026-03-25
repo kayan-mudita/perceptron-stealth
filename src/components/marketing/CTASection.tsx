@@ -39,7 +39,7 @@ export default function CTASection({
           </p>
           <Link
             href={buttonHref}
-            className="group inline-flex items-center gap-2.5 px-8 py-4 rounded-xl bg-white text-[#050508] text-[15px] font-semibold hover:bg-white/90 transition-all"
+            className="group inline-flex items-center justify-center gap-2.5 px-8 py-4 min-h-[48px] w-full sm:w-auto rounded-xl bg-white text-[#050508] text-[15px] font-semibold hover:bg-white/90 active:bg-white/80 transition-all"
           >
             {buttonText}
             <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />

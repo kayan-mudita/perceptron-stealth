@@ -95,7 +95,7 @@ function LoginForm() {
             <button
               type="submit"
               disabled={loading}
-              className="btn-primary w-full gap-2 disabled:opacity-50"
+              className="btn-primary w-full gap-2 min-h-[48px] disabled:opacity-50"
             >
               {loading ? "Signing in..." : "Log in"}
               {!loading && <ArrowRight className="w-4 h-4" />}

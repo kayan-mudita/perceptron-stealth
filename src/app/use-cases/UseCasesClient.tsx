@@ -171,7 +171,7 @@ export default function UseCasesClient() {
 
       {/* Quick industry nav */}
       <section className="pb-16 px-6">
-        <div className="max-w-4xl mx-auto flex flex-wrap items-center justify-center gap-2">
+        <div className="max-w-4xl mx-auto flex flex-wrap items-center justify-center gap-2 sm:gap-2">
           {useCases.map((uc) => {
             const colors = accentMap[uc.accent];
             return (
@@ -247,7 +247,7 @@ export default function UseCasesClient() {
                   </div>
 
                   {/* Results */}
-                  <div className="grid grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
                     {uc.results.map((result, i) => (
                       <div
                         key={i}
@@ -290,7 +290,7 @@ export default function UseCasesClient() {
                     <div className="mt-6 pt-5 border-t border-white/[0.04]">
                       <Link
                         href="/auth/signup"
-                        className="block text-center text-[13px] font-medium py-2.5 rounded-lg bg-white text-[#050508] hover:bg-white/90 transition-all"
+                        className="block text-center text-[13px] font-medium py-3 min-h-[44px] flex items-center justify-center rounded-lg bg-white text-[#050508] hover:bg-white/90 active:bg-white/80 transition-all"
                       >
                         Try it for {uc.industry.toLowerCase()}
                       </Link>

@@ -12,6 +12,10 @@ import {
   Clock,
   FileText,
   Tag,
+  Volume2,
+  VolumeX,
+  RefreshCw,
+  AlertTriangle,
 } from "lucide-react";
 
 interface VideoItem {
@@ -33,6 +37,8 @@ interface VideoDetailModalProps {
   video: VideoItem;
   onClose: () => void;
   onStatusChange: (id: string, newStatus: string) => void;
+  onRetry?: (id: string) => void;
+  errorMessage?: string;
 }
 
 const statusStyles: Record<string, string> = {
@@ -42,6 +48,7 @@ const statusStyles: Record<string, string> = {
   approved: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
   draft: "bg-white/[0.06] text-white/40 border-white/[0.06]",
   generating: "bg-purple-500/10 text-purple-400 border-purple-500/20",
+  failed: "bg-red-500/10 text-red-400 border-red-500/20",
 };
 
 const modelLabels: Record<string, string> = {
@@ -77,10 +84,22 @@ export default function VideoDetailModal({
   video,
   onClose,
   onStatusChange,
+  onRetry,
+  errorMessage,
 }: VideoDetailModalProps) {
   const backdropRef = useRef<HTMLDivElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const [updating, setUpdating] = useState(false);
   const [scriptExpanded, setScriptExpanded] = useState(false);
+  const [isMuted, setIsMuted] = useState(true);
+
+  function toggleMute() {
+    const vid = videoRef.current;
+    if (!vid) return;
+    const next = !isMuted;
+    vid.muted = next;
+    setIsMuted(next);
+  }
 
   const handleClose = useCallback(() => {
     onClose();
@@ -138,7 +157,7 @@ export default function VideoDetailModal({
         {/* Close button */}
         <button
           onClick={handleClose}
-          className="absolute top-4 right-4 z-10 w-8 h-8 rounded-full bg-black/50 backdrop-blur border border-white/10 flex items-center justify-center hover:bg-white/10 transition-colors"
+          className="absolute top-4 right-4 z-10 w-10 h-10 rounded-full bg-black/50 backdrop-blur border border-white/10 flex items-center justify-center hover:bg-white/10 active:bg-white/20 transition-colors"
         >
           <X className="w-4 h-4 text-white/70" />
         </button>
@@ -151,13 +170,27 @@ export default function VideoDetailModal({
               style={{ aspectRatio: "9/16", maxHeight: "50vh" }}
             >
               <video
+                ref={videoRef}
                 src={video.videoUrl}
                 poster={video.thumbnailUrl || undefined}
                 controls
                 autoPlay
+                muted
                 playsInline
                 className="w-full h-full object-contain bg-black"
               />
+              {/* Unmute button */}
+              <button
+                onClick={toggleMute}
+                className="absolute top-3 right-3 w-10 h-10 rounded-full bg-black/60 backdrop-blur-sm border border-white/10 flex items-center justify-center hover:bg-black/80 active:bg-black/90 transition-colors z-10"
+                aria-label={isMuted ? "Unmute" : "Mute"}
+              >
+                {isMuted ? (
+                  <VolumeX className="w-4 h-4 text-white/80" />
+                ) : (
+                  <Volume2 className="w-4 h-4 text-white/80" />
+                )}
+              </button>
             </div>
           ) : (
             <div
@@ -172,6 +205,16 @@ export default function VideoDetailModal({
                   </p>
                   <p className="text-xs text-white/15 mt-1">
                     This may take a few minutes
+                  </p>
+                </>
+              ) : video.status === "failed" ? (
+                <>
+                  <AlertTriangle className="w-10 h-10 text-red-400/60 mb-4" />
+                  <p className="text-sm text-red-400/70 font-medium">
+                    Generation failed
+                  </p>
+                  <p className="text-xs text-white/15 mt-1">
+                    {errorMessage || "Something went wrong. Try again."}
                   </p>
                 </>
               ) : (
@@ -301,6 +344,35 @@ export default function VideoDetailModal({
                 )}
                 Reject
               </button>
+            </div>
+          )}
+
+          {/* Retry button (only for failed status) */}
+          {video.status === "failed" && (
+            <div className="space-y-3 pt-2">
+              {errorMessage && (
+                <div className="px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/20">
+                  <div className="flex items-center gap-2 mb-1">
+                    <AlertTriangle className="w-3.5 h-3.5 text-red-400/80" />
+                    <span className="text-xs font-medium text-red-400/80 uppercase tracking-wider">Error</span>
+                  </div>
+                  <p className="text-sm text-red-400/60">{errorMessage}</p>
+                </div>
+              )}
+              {onRetry && (
+                <button
+                  onClick={() => onRetry(video.id)}
+                  disabled={updating}
+                  className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-red-500/10 text-red-400 text-sm font-medium border border-red-500/20 hover:bg-red-500/20 transition-all disabled:opacity-50"
+                >
+                  {updating ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <RefreshCw className="w-4 h-4" />
+                  )}
+                  Retry Generation
+                </button>
+              )}
             </div>
           )}
         </div>

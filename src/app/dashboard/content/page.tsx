@@ -38,6 +38,7 @@ const statusStyles: Record<string, string> = {
   approved: "bg-emerald-500/10 text-emerald-400",
   draft: "bg-white/[0.06] text-white/40",
   generating: "bg-purple-500/10 text-purple-400",
+  failed: "bg-red-500/10 text-red-400",
 };
 
 const modelLabels: Record<string, string> = {
@@ -46,7 +47,7 @@ const modelLabels: Record<string, string> = {
   sora_2: "Sora 2",
 };
 
-const filters = ["All", "Published", "Review", "Scheduled", "Approved", "Draft"];
+const filters = ["All", "Published", "Review", "Scheduled", "Approved", "Draft", "Failed"];
 
 function formatDuration(seconds: number): string {
   if (!seconds) return "0:08";
@@ -66,6 +67,7 @@ export default function ContentPage() {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [search, setSearch] = useState("");
   const [selectedVideo, setSelectedVideo] = useState<VideoItem | null>(null);
+  const [videoError, setVideoError] = useState<string | undefined>();
 
   useEffect(() => {
     fetchVideos();
@@ -78,6 +80,56 @@ export default function ContentPage() {
       if (res.ok) setVideos(await res.json());
     } catch {} finally {
       setLoading(false);
+    }
+  }
+
+  async function handleSelectVideo(video: VideoItem) {
+    setSelectedVideo(video);
+    setVideoError(undefined);
+
+    // Fetch error message for failed videos from the status endpoint
+    if (video.status === "failed") {
+      try {
+        const res = await fetch(`/api/generate/status?videoId=${video.id}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.error) setVideoError(data.error);
+        }
+      } catch {
+        // Ignore — error display is best-effort
+      }
+    }
+  }
+
+  async function handleRetry(videoId: string) {
+    try {
+      const retryRes = await fetch("/api/generate/retry", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ videoId }),
+      });
+      if (!retryRes.ok) {
+        const errData = await retryRes.json().catch(() => ({}));
+        console.error("Retry failed:", errData.error);
+        return;
+      }
+
+      // Re-trigger the generation pipeline
+      await fetch("/api/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ videoId }),
+      });
+
+      // Update local state to reflect the retry
+      setVideos((prev) =>
+        prev.map((v) =>
+          v.id === videoId ? { ...v, status: "generating", videoUrl: null, thumbnailUrl: null } : v
+        )
+      );
+      setSelectedVideo(null);
+    } catch (err) {
+      console.error("Retry error:", err);
     }
   }
 
@@ -179,7 +231,7 @@ export default function ContentPage() {
             <VideoGridCard
               key={video.id}
               video={video}
-              onSelect={() => setSelectedVideo(video)}
+              onSelect={() => handleSelectVideo(video)}
             />
           ))}
         </div>
@@ -191,7 +243,7 @@ export default function ContentPage() {
           {filtered.map((video) => (
             <div
               key={video.id}
-              onClick={() => setSelectedVideo(video)}
+              onClick={() => handleSelectVideo(video)}
               className="flex items-center gap-4 px-5 py-3 hover:bg-white/[0.015] transition-colors cursor-pointer"
             >
               <div className="w-16 h-10 rounded-lg bg-white/[0.03] flex items-center justify-center flex-shrink-0 overflow-hidden">
@@ -228,6 +280,8 @@ export default function ContentPage() {
             );
             setSelectedVideo(null);
           }}
+          onRetry={handleRetry}
+          errorMessage={videoError}
         />
       )}
     </div>

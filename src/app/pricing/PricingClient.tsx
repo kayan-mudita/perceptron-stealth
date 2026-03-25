@@ -235,10 +235,10 @@ export default function PricingClient() {
 
               <Link
                 href={plan.href}
-                className={`block text-center text-[14px] font-medium py-3 rounded-xl transition-all ${
+                className={`block text-center text-[14px] font-medium py-3.5 min-h-[48px] flex items-center justify-center rounded-xl transition-all ${
                   plan.popular
-                    ? "bg-white text-[#050508] hover:bg-white/90"
-                    : "border border-white/[0.08] text-white/50 hover:text-white/70 hover:border-white/[0.12]"
+                    ? "bg-white text-[#050508] hover:bg-white/90 active:bg-white/80"
+                    : "border border-white/[0.08] text-white/50 hover:text-white/70 hover:border-white/[0.12] active:bg-white/[0.04]"
                 }`}
               >
                 {plan.cta}
@@ -260,8 +260,8 @@ export default function PricingClient() {
             </h2>
           </div>
 
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[600px]">
+          <div className="overflow-x-auto -mx-6 px-6 sm:mx-0 sm:px-0">
+            <table className="w-full min-w-[520px]">
               <thead>
                 <tr className="border-b border-white/[0.06]">
                   <th className="text-left py-4 pr-4 text-[13px] font-medium text-white/30 w-[40%]" />
@@ -334,13 +334,13 @@ export default function PricingClient() {
               >
                 <button
                   onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                  className="w-full flex items-center justify-between p-5 text-left"
+                  className="w-full flex items-center justify-between p-5 text-left min-h-[48px]"
                 >
                   <span className="text-[14px] font-medium text-white/70 pr-4">
                     {faq.q}
                   </span>
                   <ChevronDown
-                    className={`w-4 h-4 text-white/20 flex-shrink-0 transition-transform duration-200 ${
+                    className={`w-5 h-5 text-white/20 flex-shrink-0 transition-transform duration-200 ${
                       openFaq === i ? "rotate-180" : ""
                     }`}
                   />

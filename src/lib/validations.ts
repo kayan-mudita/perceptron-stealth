@@ -49,7 +49,7 @@ export const videoUpdateSchema = z.object({
   contentType: z.string().max(50).optional(),
   sourceReview: z.string().max(5000).optional(),
   status: z
-    .enum(["draft", "generating", "review", "approved", "published", "rejected"])
+    .enum(["draft", "generating", "review", "approved", "published", "rejected", "failed"])
     .optional(),
   photoId: z.string().uuid().optional(),
   voiceId: z.string().uuid().optional(),
