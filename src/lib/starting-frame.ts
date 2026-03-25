@@ -147,27 +147,22 @@ export async function generateStartingFrame(
   const backgrounds = getBackgroundsForIndustry(industry);
   // Pick the first background as default for the starting frame
   const defaultBackground = backgrounds[0];
-  const setting = `${defaultBackground}, professional attire appropriate for ${industry}, natural lighting`;
-  const scene = sceneDescription || `Professional ${industry} setting — ${defaultBackground}`;
+  const scene = sceneDescription || defaultBackground;
 
-  const prompt = `Generate a single high-quality portrait photograph of this person for use as a video generation starting frame.
+  const prompt = `Generate a single photograph of this EXACT person as a video starting frame. Match every detail from the reference photos — face, skin, hair, build, all distinguishing features.
 
-REQUIREMENTS:
-- The person must look EXACTLY like the reference photos provided
-- ${setting}
-- Scene: ${scene}
-- Person is facing the camera with a natural, confident expression
-- Slight smile, direct eye contact
-- Natural pose — standing or sitting, hands visible and relaxed
-- Shot from chest up (medium close-up)
-- Sharp focus on face, slight depth of field on background
-- Professional but authentic — looks like a real photo, not AI-generated
-- Resolution: high quality, sharp details
-- Lighting: soft, natural, flattering
+Shot on iPhone 15 Pro Max, 24mm lens, f/1.78 aperture. Medium close-up from chest up. Natural light from a window, no flash, no studio lighting.
 
-${brand?.toneOfVoice ? `The person's energy should feel ${brand.toneOfVoice}.` : ""}
+SCENE: ${scene}
+The environment should feel lived-in and real — not staged or sterile.
 
-This image will be used as the consistent anchor frame for all video generation. Character consistency is critical.`;
+PERSON: Facing camera, natural confident expression, slight smile, direct eye contact. Casual relaxed pose, hands visible and relaxed. Subtle breathing posture — not stiff, not posed.${brand?.toneOfVoice ? ` Energy: ${brand.toneOfVoice}.` : ""}
+
+Clothing: casual and real — whatever fits the setting, not business formal.
+Skin: real texture, visible pores, natural imperfections. No airbrushing, no glossy AI sheen.
+Background: slight depth of field blur, but the setting is clearly recognizable.
+
+No morphing, no extra fingers, no uncanny valley. This must look like a real iPhone photo taken by a real person in a real place. This frame anchors character consistency across all video generations.`;
 
   // Build parts with reference images
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

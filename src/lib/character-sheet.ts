@@ -37,60 +37,60 @@ interface GeminiImageResponse {
 
 export const INDUSTRY_BACKGROUNDS: Record<string, string[]> = {
   real_estate: [
-    "modern home with open floor plan and large windows",
-    "open house setting with staged living room",
-    "suburban neighborhood with tree-lined street",
-    "professional office desk with laptop and listing documents",
-    "sitting in a clean car, driver's seat, natural light through windows",
-    "beautifully staged home interior with neutral tones",
+    "kitchen of a house being shown — granite counters, afternoon sun through the window, open house flyer on the counter",
+    "parked car in a suburban neighborhood, steering wheel visible, houses with for-sale signs through windshield",
+    "living room mid-staging — one couch still has plastic wrap, natural light from bay windows, coffee on the side table",
+    "home office desk with laptop showing MLS listings, sticky notes on the monitor, half-empty water bottle",
+    "standing on a front porch of a listing, door ajar, welcome mat, afternoon golden light",
+    "back patio of a house, string lights overhead, wooden fence, neighbor's yard visible",
   ],
   legal: [
-    "courthouse steps with columns and warm afternoon light",
-    "law office with dark wood desk and legal books",
-    "legal library with floor-to-ceiling bookshelves",
-    "glass-walled conference room in a modern law firm",
-    "professional desk with legal documents and pen",
-    "city skyline from a high-rise office window",
+    "office with stacked case files on the desk, old coffee mug, framed degree crooked on the wall, window light",
+    "courthouse hallway — marble floor, natural light from tall windows, briefcase on the bench",
+    "desk with open laptop and legal pad covered in handwritten notes, bookshelf behind with worn spines",
+    "conference room — legal binders on the table, whiteboard with notes, city visible through the window",
+    "walking outside the courthouse, stone steps, late afternoon sun, jacket slung over arm",
+    "home office at night — desk lamp on, laptop open, reading glasses on the desk, bourbon-colored drink nearby",
   ],
   finance: [
-    "trading floor environment with multiple screens",
-    "modern finance office with clean desk and monitor",
-    "coffee shop with laptop open, casual working",
-    "city street in financial district, walking",
-    "home office with dual monitors and clean setup",
-    "conference call setup with ring light and webcam angle",
+    "home office with two monitors showing charts, messy desk, half-eaten lunch pushed to the side",
+    "coffee shop — laptop open to a spreadsheet, iced coffee sweating on the table, napkin with numbers scrawled",
+    "car parked outside an office building, dashboard phone mount, financial podcast paused on screen",
+    "kitchen counter in the morning — laptop open, cereal bowl pushed aside, market news on iPad in background",
+    "co-working space — standing desk, headphones around neck, whiteboard with scribbled projections behind",
+    "back patio at golden hour — phone in hand, casual clothes, just got off a client call energy",
   ],
   medical: [
-    "clean clinical office with soft lighting",
-    "doctor's office with medical diplomas on wall",
-    "hospital corridor with natural light",
-    "consultation room with warm neutral tones",
-    "medical practice lobby, professional setting",
-    "outdoor courtyard of a medical campus",
+    "break room — scrubs still on, cup of coffee, window light, backpack on the chair",
+    "office with diplomas on the wall (slightly crooked), anatomy model on the shelf, natural light",
+    "sitting in a parked car after a shift — scrubs, tired eyes, steering wheel, parking garage visible",
+    "home kitchen still in scrubs — making dinner, phone propped on the counter, warm overhead light",
+    "consultation room — simple desk, family photos next to the computer, afternoon sun through blinds",
+    "walking outside the hospital — trees, afternoon light, lanyard still around neck, heading to the car",
   ],
   creator: [
-    "aesthetic home studio with ring light",
-    "trendy coffee shop with exposed brick",
-    "outdoor urban setting with golden hour light",
-    "minimalist desk setup with camera and microphone",
-    "cozy living room with curated decor",
-    "rooftop or balcony with city view",
+    "bedroom desk setup — ring light off to the side, messy cord situation, sticky notes on the monitor",
+    "coffee shop corner — phone propped on a stack of books, iced latte, exposed brick wall behind",
+    "couch in a lived-in apartment — throw blanket, plants on the windowsill, golden hour light",
+    "kitchen counter — phone propped against a cereal box, morning light, still in pajamas energy",
+    "outdoor bench — park visible behind, earbuds in one ear, casual outfit, late afternoon sun",
+    "car front seat — phone on dashboard mount, just-parked energy, street visible through windshield",
   ],
   business: [
-    "modern coworking space with glass partitions",
-    "coffee shop meeting, laptop open",
-    "outdoor cafe with city backdrop",
-    "professional office with clean desk",
-    "home office with bookshelf background",
-    "conference room with whiteboard",
+    "home office — bookshelf with actual read books (spines cracked), desk lamp, sticky notes on monitor",
+    "coffee shop — laptop open, notebook with handwritten notes beside it, half-finished flat white",
+    "co-working table — other people blurred in background, laptop and phone side by side, natural light from big windows",
+    "kitchen island at home — standing with laptop, morning light, kid's drawing on the fridge behind",
+    "parked car — just finished a meeting energy, loosened collar, phone in hand, suburban parking lot",
+    "back porch — laptop on outdoor table, iced tea, trees and fence in background, afternoon light",
   ],
   other: [
-    "clean studio with neutral backdrop",
-    "coffee shop with warm ambient lighting",
-    "outdoor setting with soft natural light",
-    "modern office with minimal decor",
-    "home environment with comfortable setting",
-    "gym or active lifestyle setting",
+    "living room couch — throw pillows, coffee table with a mug, window light, TV off in background",
+    "kitchen counter — phone propped up, casual clothes, morning light, fruit bowl and mail pile visible",
+    "parked car — phone on dashboard, natural light, relaxed energy, suburban street visible",
+    "coffee shop — small table, iced drink, natural light, other patrons blurred in background",
+    "bedroom desk — simple setup, lamp on, personal items around, evening light from window",
+    "outdoor — park bench or backyard, natural light, trees, relaxed casual setting",
   ],
 };
 
@@ -250,25 +250,25 @@ export async function generatePosesSheet(
   const backgrounds = getBackgroundsForIndustry(resolvedIndustry);
   const backgroundList = backgrounds.map((bg, i) => `  ${i + 1}. ${bg}`).join("\n");
 
-  const defaultPrompt = `Generate a 3x3 character sheet of this person in 9 different professional poses.
+  const defaultPrompt = `Generate a 3x3 character sheet grid showing this EXACT person in 9 different poses. Match their face, skin tone, hair, body type, and every distinguishing feature PRECISELY from the reference photos. Same person in every single cell — consistency is everything.
 
-Use the reference photos to match their EXACT appearance — skin tone, hair, facial features, body type, and any distinguishing features.
+SAME EXACT FACE. SAME EXACT OUTFIT. SAME EXACT BUILD across all 9 cells.
 
-POSES (one per grid cell):
-1. Confident standing, arms relaxed — Background: ${backgrounds[0]}
-2. Sitting professionally — Background: ${backgrounds[1]}
-3. Gesturing while speaking to camera — Background: ${backgrounds[2]}
-4. Arms crossed, warm smile — Background: ${backgrounds[3]}
-5. Looking to the side, natural candid moment — Background: ${backgrounds[4]}
-6. Walking confidently — Background: ${backgrounds[5]}
-7. Leaning casually against a surface — Background: ${backgrounds[0]}
-8. Pointing forward, engaging the viewer — Background: ${backgrounds[1]}
-9. Close-up headshot, direct eye contact — Background: ${backgrounds[2]}
+GRID (one pose per cell, shot on iPhone 15 Pro Max, 24mm, f/1.78, natural light):
+1. Standing relaxed, slight smile, hands at sides — ${backgrounds[0]}
+2. Sitting casually, leaning back a bit — ${backgrounds[1]}
+3. Mid-sentence, one hand gesturing naturally — ${backgrounds[2]}
+4. Arms loosely crossed, warm half-smile — ${backgrounds[3]}
+5. Candid side glance, natural moment — ${backgrounds[4]}
+6. Walking toward camera, casual stride — ${backgrounds[5]}
+7. Leaning on a counter or doorframe — ${backgrounds[0]}
+8. Holding phone at chest level, about to record — ${backgrounds[1]}
+9. Close-up headshot, direct eye contact, subtle smile — ${backgrounds[2]}
 
-INDUSTRY BACKGROUND OPTIONS (use these settings):
-${backgroundList}
-
-Professional lighting appropriate for each setting. Clean composition. Character consistency is CRITICAL across all 9 poses — the person must look identical in every cell.`;
+Clothing: the same casual real outfit in EVERY cell (no blazers, no business casual — real clothes people actually wear).
+Lighting: natural window light and lamps only, no studio setups.
+Skin: real texture, visible pores, no airbrushing or glossy AI sheen.
+No warped hands, no extra fingers, no morphing between cells.`;
 
   const prompt = await getConfig("prompt_character_sheet_poses", defaultPrompt);
 
@@ -348,15 +348,19 @@ export async function generate3DSheet(
   // Simplified to 6 angles in a 2x3 grid — the original 9-angle 3x3 grid
   // (including top-of-head bird's-eye and near-duplicate back-left/back-right)
   // was too complex for a single image generation call and consistently failed.
-  const defaultPrompt = `Generate a character reference sheet showing this person from 6 different angles, arranged in a 2-row by 3-column grid.
+  const defaultPrompt = `Generate a 2x3 character reference sheet of this EXACT person from 6 angles. Match every detail from the reference photos — face, skin, hair, build, distinguishing features. This sheet is used by AI video models to maintain consistency, so accuracy is critical.
 
-Use the reference photos to match their EXACT appearance — skin tone, hair, facial features, body type, and any distinguishing features.
+SAME EXACT FACE. SAME EXACT OUTFIT. SAME EXACT BUILD in every cell.
 
-GRID LAYOUT (2 rows, 3 columns):
-Row 1: FRONT view, 3/4 RIGHT view, RIGHT PROFILE (side view)
-Row 2: BACK view (rear of head and body), 3/4 LEFT view, LEFT PROFILE (side view)
+GRID (2 rows, 3 columns — neutral standing pose in each):
+Row 1: FRONT view (direct eye contact) | 3/4 RIGHT view | RIGHT PROFILE (side)
+Row 2: BACK view (rear of head and body) | 3/4 LEFT view | LEFT PROFILE (side)
 
-Keep the person's pose neutral and standing in every cell. Same clothing, same appearance across all 6 views. Plain light gray background, clean studio lighting. This is a reference sheet for AI video generation — consistency and accuracy matter most.`;
+Clothing: same casual outfit in every cell — whatever they're wearing in the reference photos.
+Background: plain light gray, flat, no distractions.
+Lighting: even and soft, no harsh shadows — this is a reference sheet, not a portrait.
+Skin: real texture, natural, no smoothing or glossy AI sheen.
+No morphing between angles, no extra fingers, no face warping. Each view must clearly look like the same real person rotated in space.`;
 
   const prompt = await getConfig("prompt_character_sheet_3d", defaultPrompt);
 

@@ -5,6 +5,7 @@ import { generateRequestSchema } from "@/lib/validations";
 import { validateBody } from "@/lib/validate";
 import { generateLimiter, RateLimitError } from "@/lib/rate-limit";
 import { planComposition } from "@/lib/video-compositor";
+import { enforceUsageLimit, UsageLimitError } from "@/lib/usage";
 
 /**
  * POST /api/generate — FAST
@@ -19,6 +20,26 @@ export async function POST(req: NextRequest) {
   try {
     const { error, user } = await requireAuth();
     if (error) return error;
+
+    // Enforce plan-based video limits
+    try {
+      await enforceUsageLimit(user.id);
+    } catch (err) {
+      if (err instanceof UsageLimitError) {
+        return NextResponse.json(
+          {
+            error: err.message,
+            code: "USAGE_LIMIT_EXCEEDED",
+            usage: {
+              videosUsed: err.usage.videosUsed,
+              videosLimit: err.usage.videosLimit,
+              plan: err.usage.plan.plan,
+            },
+          },
+          { status: 403 }
+        );
+      }
+    }
 
     try {
       await generateLimiter.check(10, user.id);

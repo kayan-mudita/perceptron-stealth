@@ -3,7 +3,6 @@
 import { useState, useEffect, useCallback, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import {
-  Settings,
   User,
   CreditCard,
   Bell,
@@ -14,11 +13,12 @@ import {
   Trash2,
   Plus,
   Loader2,
-  AlertCircle,
   Info,
   Unlink,
   CheckCircle2,
   XCircle,
+  ArrowUpRight,
+  Zap,
 } from "lucide-react";
 
 const tabs = [
@@ -83,46 +83,56 @@ interface PlatformStatus {
   missingVars: string[];
 }
 
-const plans = [
+interface UsageData {
+  plan: string;
+  planLabel: string;
+  videosUsed: number;
+  videosLimit: number | null;
+  videosRemaining: number | null;
+  canGenerate: boolean;
+  currentPeriodEnd: string | null;
+}
+
+const availablePlans = [
   {
-    id: "professional",
-    name: "Professional",
+    id: "starter",
+    name: "Starter",
     price: "$79",
     period: "/month",
     features: [
-      "3 AI video clips/month",
+      "30 videos per month",
+      "3 platforms",
+      "Basic analytics",
       "Voice cloning",
-      "500 AI images",
-      "Review-to-video",
-      "Save 80% vs agencies",
+      "AI digital twin",
     ],
     popular: false,
   },
   {
     id: "authority",
     name: "Authority",
-    price: "$199",
+    price: "$149",
     period: "/month",
     features: [
-      "8 AI video clips/month",
-      "1,500 AI images",
-      "Up to 10 team members",
-      "3x more testimonials",
-      "Content strategy",
+      "100 videos per month",
+      "All platforms",
+      "Advanced analytics",
+      "Priority generation",
+      "Content calendar",
     ],
     popular: true,
   },
   {
-    id: "expert",
-    name: "Expert",
-    price: "$375",
-    period: "/month",
+    id: "enterprise",
+    name: "Enterprise",
+    price: "Custom",
+    period: "",
     features: [
-      "40+ AI video clips/month",
-      "Unlimited images",
-      "Dedicated AI strategist",
-      "Monthly content calendar",
-      "Competitor research",
+      "Unlimited videos",
+      "All platforms",
+      "Dedicated support",
+      "Custom AI models",
+      "API access",
     ],
     popular: false,
   },
@@ -145,9 +155,9 @@ function SettingsContent() {
   const initialTab = searchParams.get("tab") || "profile";
   const successMsg = searchParams.get("success");
   const errorMsg = searchParams.get("error");
+  const checkoutStatus = searchParams.get("checkout");
 
   const [activeTab, setActiveTab] = useState(initialTab);
-  const [currentPlan] = useState("authority");
   const [connectedAccounts, setConnectedAccounts] = useState<ConnectedAccount[]>([]);
   const [platformStatuses, setPlatformStatuses] = useState<PlatformStatus[]>([]);
   const [loadingAccounts, setLoadingAccounts] = useState(false);
@@ -159,16 +169,27 @@ function SettingsContent() {
     message: string;
   } | null>(null);
 
-  // Show toast from URL params (after OAuth redirect)
+  // Billing state
+  const [usage, setUsage] = useState<UsageData | null>(null);
+  const [loadingUsage, setLoadingUsage] = useState(false);
+  const [billingAction, setBillingAction] = useState<string | null>(null);
+
+  // Show toast from URL params (after OAuth redirect or checkout)
   useEffect(() => {
-    if (successMsg) {
+    if (checkoutStatus === "success") {
+      setToast({ type: "success", message: "Subscription activated successfully! Welcome aboard." });
+      window.history.replaceState({}, "", "/dashboard/settings?tab=plan");
+    } else if (checkoutStatus === "cancelled") {
+      setToast({ type: "error", message: "Checkout was cancelled. No charges were made." });
+      window.history.replaceState({}, "", "/dashboard/settings?tab=plan");
+    } else if (successMsg) {
       setToast({ type: "success", message: successMsg });
       window.history.replaceState({}, "", "/dashboard/settings?tab=social");
     } else if (errorMsg) {
       setToast({ type: "error", message: errorMsg });
       window.history.replaceState({}, "", "/dashboard/settings?tab=social");
     }
-  }, [successMsg, errorMsg]);
+  }, [successMsg, errorMsg, checkoutStatus]);
 
   // Auto-dismiss toast after 6 seconds
   useEffect(() => {
@@ -177,6 +198,22 @@ function SettingsContent() {
       return () => clearTimeout(timer);
     }
   }, [toast]);
+
+  // Fetch usage/plan data for billing tab
+  const fetchUsage = useCallback(async () => {
+    setLoadingUsage(true);
+    try {
+      const res = await fetch("/api/usage");
+      if (res.ok) {
+        const data = await res.json();
+        setUsage(data);
+      }
+    } catch (err) {
+      console.error("Failed to fetch usage:", err);
+    } finally {
+      setLoadingUsage(false);
+    }
+  }, []);
 
   // Fetch connected accounts from the database
   const fetchAccounts = useCallback(async () => {
@@ -215,11 +252,13 @@ function SettingsContent() {
       fetchAccounts();
       fetchPlatformStatuses();
     }
-  }, [activeTab, fetchAccounts, fetchPlatformStatuses]);
+    if (activeTab === "plan") {
+      fetchUsage();
+    }
+  }, [activeTab, fetchAccounts, fetchPlatformStatuses, fetchUsage]);
 
   const handleConnect = (platformId: string) => {
     setConnecting(platformId);
-    // Redirect to the OAuth connect endpoint
     window.location.href = `/api/social/connect/${platformId}`;
   };
 
@@ -251,6 +290,45 @@ function SettingsContent() {
     }
   };
 
+  const handleCheckout = async (planId: string) => {
+    if (planId === "enterprise") return;
+    setBillingAction(planId);
+    try {
+      const res = await fetch("/api/stripe/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ plan: planId }),
+      });
+      const data = await res.json();
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        setToast({ type: "error", message: data.error || "Failed to start checkout" });
+      }
+    } catch {
+      setToast({ type: "error", message: "Failed to start checkout. Please try again." });
+    } finally {
+      setBillingAction(null);
+    }
+  };
+
+  const handleManageSubscription = async () => {
+    setBillingAction("portal");
+    try {
+      const res = await fetch("/api/stripe/portal");
+      const data = await res.json();
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        setToast({ type: "error", message: data.error || "Failed to open billing portal" });
+      }
+    } catch {
+      setToast({ type: "error", message: "Failed to open billing portal. Please try again." });
+    } finally {
+      setBillingAction(null);
+    }
+  };
+
   const getAccountForPlatform = (platformId: string) => {
     return connectedAccounts.find(
       (a) => a.platform === platformId && a.connected
@@ -266,6 +344,14 @@ function SettingsContent() {
   ).length;
 
   const isLoading = loadingAccounts || loadingPlatforms;
+
+  // Usage progress bar percentage
+  const usagePercent =
+    usage && usage.videosLimit
+      ? Math.min(100, Math.round((usage.videosUsed / usage.videosLimit) * 100))
+      : 0;
+
+  const isPaidPlan = usage && usage.plan !== "free";
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
@@ -386,47 +472,211 @@ function SettingsContent() {
       {/* Plan & Billing Tab */}
       {activeTab === "plan" && (
         <div className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {plans.map((plan) => (
-              <div
-                key={plan.id}
-                className={`glass-card p-5 relative ${
-                  currentPlan === plan.id
-                    ? "border-blue-500/30 bg-blue-500/5"
-                    : ""
-                }`}
-              >
-                {plan.popular && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 text-[10px] font-semibold">
-                    Popular
+          {loadingUsage ? (
+            <div className="glass-card p-12 flex flex-col items-center justify-center gap-3 text-white/40">
+              <Loader2 className="w-5 h-5 animate-spin" />
+              <span className="text-sm">Loading billing information...</span>
+            </div>
+          ) : (
+            <>
+              {/* Current plan overview */}
+              <div className="glass-card p-6 space-y-5">
+                <div className="flex items-start justify-between">
+                  <div>
+                    <div className="flex items-center gap-3">
+                      <h3 className="font-semibold text-lg">
+                        {usage?.planLabel || "Free"} Plan
+                      </h3>
+                      {isPaidPlan && (
+                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-green-500/15 text-green-400 border border-green-500/20">
+                          <CheckCircle2 className="w-2.5 h-2.5" />
+                          Active
+                        </span>
+                      )}
+                      {!isPaidPlan && (
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-medium bg-white/5 text-white/40 border border-white/10">
+                          Free tier
+                        </span>
+                      )}
+                    </div>
+                    {usage?.currentPeriodEnd && (
+                      <p className="text-xs text-white/30 mt-1">
+                        Current period ends{" "}
+                        {new Date(usage.currentPeriodEnd).toLocaleDateString("en-US", {
+                          month: "long",
+                          day: "numeric",
+                          year: "numeric",
+                        })}
+                      </p>
+                    )}
+                    {!isPaidPlan && (
+                      <p className="text-xs text-white/30 mt-1">
+                        Upgrade to unlock more videos and features.
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Manage subscription button for paid users */}
+                  {isPaidPlan && (
+                    <button
+                      onClick={handleManageSubscription}
+                      disabled={billingAction === "portal"}
+                      className="btn-secondary !py-2 !px-4 text-xs gap-1.5 transition-all duration-200 disabled:opacity-50"
+                    >
+                      {billingAction === "portal" ? (
+                        <Loader2 className="w-3 h-3 animate-spin" />
+                      ) : (
+                        <>
+                          <ExternalLink className="w-3 h-3" />
+                          Manage subscription
+                        </>
+                      )}
+                    </button>
+                  )}
+                </div>
+
+                {/* Usage bar */}
+                {usage && (
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="text-white/40">Videos this month</span>
+                      <span className="text-white/60 font-medium">
+                        {usage.videosUsed}
+                        {usage.videosLimit !== null
+                          ? ` / ${usage.videosLimit}`
+                          : " (unlimited)"}
+                      </span>
+                    </div>
+                    {usage.videosLimit !== null && (
+                      <div className="w-full h-2 bg-white/5 rounded-full overflow-hidden">
+                        <div
+                          className={`h-full rounded-full transition-all duration-500 ${
+                            usagePercent >= 90
+                              ? "bg-red-500"
+                              : usagePercent >= 70
+                                ? "bg-amber-500"
+                                : "bg-blue-500"
+                          }`}
+                          style={{ width: `${usagePercent}%` }}
+                        />
+                      </div>
+                    )}
+                    {usage.videosLimit !== null && !usage.canGenerate && (
+                      <div className="flex items-center gap-2 text-xs text-amber-400/80 bg-amber-500/10 border border-amber-500/15 rounded-lg p-3 mt-2">
+                        <Zap className="w-3.5 h-3.5 flex-shrink-0" />
+                        <span>
+                          You have reached your monthly video limit. Upgrade your
+                          plan to continue generating.
+                        </span>
+                      </div>
+                    )}
                   </div>
                 )}
-                <h4 className="font-semibold text-lg">{plan.name}</h4>
-                <div className="flex items-baseline gap-1 mt-2">
-                  <span className="text-3xl font-bold">{plan.price}</span>
-                  <span className="text-sm text-white/30">{plan.period}</span>
-                </div>
-                <ul className="mt-4 space-y-2">
-                  {plan.features.map((f, i) => (
-                    <li
-                      key={i}
-                      className="flex items-center gap-2 text-xs text-white/50"
-                    >
-                      <Check className="w-3 h-3 text-green-400 flex-shrink-0" />
-                      {f}
-                    </li>
-                  ))}
-                </ul>
-                <button
-                  className={`mt-5 w-full gap-2 text-sm !py-2.5 ${
-                    currentPlan === plan.id ? "btn-secondary" : "btn-primary"
-                  }`}
-                >
-                  {currentPlan === plan.id ? "Current Plan" : "Upgrade"}
-                </button>
               </div>
-            ))}
-          </div>
+
+              {/* Plan cards */}
+              <div>
+                <h4 className="text-sm font-medium text-white/50 mb-4">
+                  {isPaidPlan ? "Change plan" : "Choose a plan"}
+                </h4>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {availablePlans.map((plan) => {
+                    const isCurrent = usage?.plan === plan.id;
+                    const isEnterprise = plan.id === "enterprise";
+                    const isUpgrade =
+                      !isCurrent &&
+                      !isEnterprise &&
+                      (usage?.plan === "free" ||
+                        (usage?.plan === "starter" && plan.id === "authority"));
+                    const isCheckingOut = billingAction === plan.id;
+
+                    return (
+                      <div
+                        key={plan.id}
+                        className={`glass-card p-5 relative transition-all duration-200 ${
+                          isCurrent
+                            ? "border-blue-500/30 bg-blue-500/5"
+                            : "hover:border-white/10"
+                        }`}
+                      >
+                        {plan.popular && (
+                          <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 text-[10px] font-semibold">
+                            Popular
+                          </div>
+                        )}
+                        <h4 className="font-semibold text-lg">{plan.name}</h4>
+                        <div className="flex items-baseline gap-1 mt-2">
+                          <span className="text-3xl font-bold">{plan.price}</span>
+                          {plan.period && (
+                            <span className="text-sm text-white/30">{plan.period}</span>
+                          )}
+                        </div>
+                        <ul className="mt-4 space-y-2">
+                          {plan.features.map((f, i) => (
+                            <li
+                              key={i}
+                              className="flex items-center gap-2 text-xs text-white/50"
+                            >
+                              <Check className="w-3 h-3 text-green-400 flex-shrink-0" />
+                              {f}
+                            </li>
+                          ))}
+                        </ul>
+
+                        {isCurrent ? (
+                          <button
+                            disabled
+                            className="mt-5 w-full btn-secondary gap-2 text-sm !py-2.5 opacity-60 cursor-default"
+                          >
+                            <CheckCircle2 className="w-3.5 h-3.5" />
+                            Current plan
+                          </button>
+                        ) : isEnterprise ? (
+                          <a
+                            href="mailto:hello@officialai.com?subject=Enterprise%20Inquiry"
+                            className="mt-5 w-full btn-secondary gap-2 text-sm !py-2.5 inline-flex items-center justify-center"
+                          >
+                            Contact sales
+                            <ArrowUpRight className="w-3.5 h-3.5" />
+                          </a>
+                        ) : isPaidPlan ? (
+                          <button
+                            onClick={handleManageSubscription}
+                            disabled={billingAction === "portal"}
+                            className="mt-5 w-full btn-secondary gap-2 text-sm !py-2.5 disabled:opacity-50"
+                          >
+                            {billingAction === "portal" ? (
+                              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                            ) : (
+                              <>
+                                {isUpgrade ? "Upgrade" : "Change plan"}
+                                <ArrowUpRight className="w-3.5 h-3.5" />
+                              </>
+                            )}
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => handleCheckout(plan.id)}
+                            disabled={!!billingAction}
+                            className="mt-5 w-full btn-primary gap-2 text-sm !py-2.5 disabled:opacity-50"
+                          >
+                            {isCheckingOut ? (
+                              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                            ) : (
+                              <>
+                                {isUpgrade ? "Upgrade" : "Subscribe"}
+                                <ArrowUpRight className="w-3.5 h-3.5" />
+                              </>
+                            )}
+                          </button>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </>
+          )}
         </div>
       )}
 
@@ -465,7 +715,7 @@ function SettingsContent() {
                 const account = getAccountForPlatform(platformId);
                 const status = getPlatformStatus(platformId);
                 const isConnected = !!account;
-                const isConfigured = status?.configured ?? true; // Default to true if status not loaded yet
+                const isConfigured = status?.configured ?? true;
                 const isDisconnecting = disconnecting === platformId;
                 const isConnecting = connecting === platformId;
 

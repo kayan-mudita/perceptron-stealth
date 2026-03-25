@@ -2,13 +2,15 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { Check, Minus, ChevronDown } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Check, Minus, ChevronDown, Loader2 } from "lucide-react";
 import MarketingLayout from "@/components/marketing/MarketingLayout";
 import CTASection from "@/components/marketing/CTASection";
 
 const plans = [
   {
     name: "Starter",
+    planId: "starter",
     price: "$79",
     period: "/mo",
     description: "For professionals getting started with AI content.",
@@ -23,11 +25,11 @@ const plans = [
       "Brand vault",
     ],
     cta: "Start free trial",
-    href: "/auth/signup",
     popular: false,
   },
   {
     name: "Authority",
+    planId: "authority",
     price: "$149",
     period: "/mo",
     description: "For professionals serious about growing their presence.",
@@ -44,11 +46,11 @@ const plans = [
       "Brand vault",
     ],
     cta: "Start free trial",
-    href: "/auth/signup",
     popular: true,
   },
   {
     name: "Enterprise",
+    planId: "enterprise",
     price: "Custom",
     period: "",
     description: "For teams and agencies that need scale and control.",
@@ -65,7 +67,6 @@ const plans = [
       "Brand vault",
     ],
     cta: "Contact sales",
-    href: "/auth/signup",
     popular: false,
   },
 ];
@@ -159,6 +160,46 @@ function CellValue({ value }: { value: boolean | string }) {
 
 export default function PricingClient() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
+  const router = useRouter();
+
+  async function handleSubscribe(planId: string) {
+    // Enterprise is always "contact sales"
+    if (planId === "enterprise") {
+      return;
+    }
+
+    setLoadingPlan(planId);
+    try {
+      const res = await fetch("/api/stripe/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ plan: planId }),
+      });
+
+      // If not authenticated, redirect to signup
+      if (res.status === 401) {
+        router.push("/auth/signup");
+        return;
+      }
+
+      const data = await res.json();
+
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        // Stripe not configured or error -- fall back to settings
+        console.error("Checkout error:", data.error);
+        router.push("/dashboard/settings?tab=plan");
+      }
+    } catch (err) {
+      console.error("Checkout request failed:", err);
+      // If fetch fails entirely, redirect to signup as fallback
+      router.push("/auth/signup");
+    } finally {
+      setLoadingPlan(null);
+    }
+  }
 
   return (
     <MarketingLayout>
@@ -189,62 +230,81 @@ export default function PricingClient() {
       {/* Pricing cards */}
       <section className="pb-24 px-6">
         <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-5">
-          {plans.map((plan, i) => (
-            <div
-              key={i}
-              className={`relative p-7 rounded-2xl border transition-all duration-300 ${
-                plan.popular
-                  ? "border-white/[0.1] bg-white/[0.025] scale-[1.02]"
-                  : "border-white/[0.04] hover:border-white/[0.07] bg-white/[0.015]"
-              }`}
-            >
-              {plan.popular && (
-                <div className="absolute -top-3 left-7">
-                  <span className="text-[11px] font-semibold text-blue-400 bg-blue-500/10 border border-blue-500/20 px-3 py-1 rounded-full">
-                    Most popular
-                  </span>
-                </div>
-              )}
+          {plans.map((plan, i) => {
+            const isEnterprise = plan.planId === "enterprise";
+            const isLoading = loadingPlan === plan.planId;
 
-              <h3 className="text-[16px] font-semibold text-white/90 mt-1">
-                {plan.name}
-              </h3>
-              <div className="flex items-baseline gap-1 mt-3 mb-2">
-                <span className="text-[36px] font-bold text-white">
-                  {plan.price}
-                </span>
-                {plan.period && (
-                  <span className="text-[14px] text-white/20">{plan.period}</span>
-                )}
-              </div>
-              <p className="text-[13px] text-white/25 mb-6">
-                {plan.description}
-              </p>
-
-              <ul className="space-y-3 mb-8">
-                {plan.features.map((f, j) => (
-                  <li
-                    key={j}
-                    className="flex items-center gap-2.5 text-[13px] text-white/40"
-                  >
-                    <Check className="w-3.5 h-3.5 text-white/20 flex-shrink-0" />
-                    {f}
-                  </li>
-                ))}
-              </ul>
-
-              <Link
-                href={plan.href}
-                className={`block text-center text-[14px] font-medium py-3.5 min-h-[48px] flex items-center justify-center rounded-xl transition-all ${
+            return (
+              <div
+                key={i}
+                className={`relative p-7 rounded-2xl border transition-all duration-300 ${
                   plan.popular
-                    ? "bg-white text-[#050508] hover:bg-white/90 active:bg-white/80"
-                    : "border border-white/[0.08] text-white/50 hover:text-white/70 hover:border-white/[0.12] active:bg-white/[0.04]"
+                    ? "border-white/[0.1] bg-white/[0.025] scale-[1.02]"
+                    : "border-white/[0.04] hover:border-white/[0.07] bg-white/[0.015]"
                 }`}
               >
-                {plan.cta}
-              </Link>
-            </div>
-          ))}
+                {plan.popular && (
+                  <div className="absolute -top-3 left-7">
+                    <span className="text-[11px] font-semibold text-blue-400 bg-blue-500/10 border border-blue-500/20 px-3 py-1 rounded-full">
+                      Most popular
+                    </span>
+                  </div>
+                )}
+
+                <h3 className="text-[16px] font-semibold text-white/90 mt-1">
+                  {plan.name}
+                </h3>
+                <div className="flex items-baseline gap-1 mt-3 mb-2">
+                  <span className="text-[36px] font-bold text-white">
+                    {plan.price}
+                  </span>
+                  {plan.period && (
+                    <span className="text-[14px] text-white/20">{plan.period}</span>
+                  )}
+                </div>
+                <p className="text-[13px] text-white/25 mb-6">
+                  {plan.description}
+                </p>
+
+                <ul className="space-y-3 mb-8">
+                  {plan.features.map((f, j) => (
+                    <li
+                      key={j}
+                      className="flex items-center gap-2.5 text-[13px] text-white/40"
+                    >
+                      <Check className="w-3.5 h-3.5 text-white/20 flex-shrink-0" />
+                      {f}
+                    </li>
+                  ))}
+                </ul>
+
+                {isEnterprise ? (
+                  <Link
+                    href="mailto:hello@officialai.com?subject=Enterprise%20Inquiry"
+                    className="block text-center text-[14px] font-medium py-3.5 min-h-[48px] flex items-center justify-center rounded-xl transition-all border border-white/[0.08] text-white/50 hover:text-white/70 hover:border-white/[0.12] active:bg-white/[0.04]"
+                  >
+                    {plan.cta}
+                  </Link>
+                ) : (
+                  <button
+                    onClick={() => handleSubscribe(plan.planId)}
+                    disabled={isLoading}
+                    className={`block w-full text-center text-[14px] font-medium py-3.5 min-h-[48px] flex items-center justify-center rounded-xl transition-all disabled:opacity-60 ${
+                      plan.popular
+                        ? "bg-white text-[#050508] hover:bg-white/90 active:bg-white/80"
+                        : "border border-white/[0.08] text-white/50 hover:text-white/70 hover:border-white/[0.12] active:bg-white/[0.04]"
+                    }`}
+                  >
+                    {isLoading ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      plan.cta
+                    )}
+                  </button>
+                )}
+              </div>
+            );
+          })}
         </div>
       </section>
 
