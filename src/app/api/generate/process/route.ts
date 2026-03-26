@@ -360,7 +360,8 @@ export async function POST(req: NextRequest) {
         });
 
         return NextResponse.json({
-          status: "failed",
+          status: "cut_failed",
+          cutIndex: i,
           error: failMsg,
         });
       }
@@ -406,6 +407,26 @@ export async function POST(req: NextRequest) {
       });
 
       if (pollResult.status === "completed") {
+        // If FAL reports "completed" but there is no video URL, treat as failure
+        if (!cutJob.videoUrl) {
+          const failMsg = `Cut ${i} completed but no video URL was returned from FAL`;
+          console.error(`[process/poll] ${failMsg}`);
+          meta.cutJobs[i] = { ...cutJob, status: "failed" };
+          meta.error = failMsg;
+          await prisma.video.update({
+            where: { id: videoId },
+            data: {
+              status: "failed",
+              sourceReview: JSON.stringify(meta),
+            },
+          });
+          return NextResponse.json({
+            status: "cut_failed",
+            cutIndex: i,
+            error: failMsg,
+          });
+        }
+
         const cuts = meta.cuts || [];
         const isLastCut = i >= cuts.length - 1;
         return NextResponse.json({

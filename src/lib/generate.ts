@@ -65,6 +65,16 @@ function getFalKey(): string | null {
   return process.env.FAL_API_KEY || null;
 }
 
+/**
+ * Clamp a duration to a valid Kling API value.
+ * Kling only accepts duration "5" or "10" — nothing else.
+ * Rule: if duration <= 7, use 5. If duration > 7, use 10.
+ */
+function clampToKlingDuration(duration: number | undefined): string {
+  const d = duration || 5;
+  return d <= 7 ? "5" : "10";
+}
+
 // ─── FAL Model Registry ─────────────────────────────────────────
 //
 // Every model is just a FAL model ID. The API format is identical
@@ -91,7 +101,7 @@ const FAL_MODELS: Record<string, FalModelConfig> = {
     buildPayload: (p) => ({
       prompt: p.script,
       image_url: p.photoUrl,
-      duration: String(Math.min(p.duration || 5, 10)),
+      duration: clampToKlingDuration(p.duration),
       aspect_ratio: "9:16",
     }),
   },
@@ -176,7 +186,7 @@ const FAL_MODELS: Record<string, FalModelConfig> = {
     buildPayload: (p) => ({
       prompt: p.script,
       image_url: p.photoUrl,
-      duration: String(Math.min(p.duration || 5, 10)),
+      duration: clampToKlingDuration(p.duration),
       aspect_ratio: "9:16",
     }),
   },
@@ -279,7 +289,7 @@ export async function falPollOnce(compositeJobId: string): Promise<PollResult> {
 
 async function falPoll(compositeJobId: string): Promise<PollResult> {
   const apiKey = getFalKey();
-  if (!apiKey) return { status: "completed", videoUrl: `/api/demo-video` };
+  if (!apiKey) return { status: "completed", videoUrl: "demo://no-video" };
 
   // Parse "FAL::{status_url}::{response_url}" format
   const parts = compositeJobId.split("::");
@@ -309,7 +319,7 @@ async function falPoll(compositeJobId: string): Promise<PollResult> {
       });
 
       if (!resultRes.ok) {
-        return { status: "completed" };
+        return { status: "failed", error: `FAL result fetch failed: ${resultRes.status}` };
       }
 
       const result = await resultRes.json();
@@ -463,8 +473,8 @@ function simulateGeneration(model: string): GenerateResult {
   return {
     jobId: `demo-${model}-${Date.now()}`,
     status: "completed",
-    videoUrl: `/api/demo-video?model=${model}`,
-    thumbnailUrl: `/api/demo-thumbnail?model=${model}`,
+    videoUrl: "demo://no-video",
+    thumbnailUrl: null as any,
     estimatedTime: 0,
   };
 }

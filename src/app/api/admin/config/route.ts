@@ -2,6 +2,13 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "@/lib/api-helpers";
 import { getAllConfigs, setConfig, seedDefaultConfigs, clearConfigCache } from "@/lib/system-config";
 
+function isAdminEmail(email: string): boolean {
+  const adminEmails = process.env.ADMIN_EMAILS ?? "";
+  if (!adminEmails) return false;
+  const list = adminEmails.split(",").map((e) => e.trim().toLowerCase());
+  return list.includes(email.toLowerCase());
+}
+
 export async function GET(req: NextRequest) {
   try {
     const { error } = await requireAuth();
@@ -25,8 +32,12 @@ export async function GET(req: NextRequest) {
 
 export async function PATCH(req: NextRequest) {
   try {
-    const { error } = await requireAuth();
+    const { error, user } = await requireAuth();
     if (error) return error;
+
+    if (!isAdminEmail(user.email)) {
+      return NextResponse.json({ error: "Forbidden: admin access required" }, { status: 403 });
+    }
 
     let body: { key: string; value: string };
     try {

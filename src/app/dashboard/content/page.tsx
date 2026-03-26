@@ -49,6 +49,14 @@ const modelLabels: Record<string, string> = {
 
 const filters = ["All", "Published", "Review", "Scheduled", "Approved", "Draft", "Failed"];
 
+/** Check if a video URL is a demo placeholder or otherwise non-playable */
+function isDemoOrInvalidUrl(url: string | null | undefined): boolean {
+  if (!url) return true;
+  if (url.startsWith("demo://")) return true;
+  if (url.startsWith("/api/demo-video")) return true;
+  return false;
+}
+
 function formatDuration(seconds: number): string {
   if (!seconds) return "0:08";
   const m = Math.floor(seconds / 60);
@@ -299,9 +307,11 @@ function VideoGridCard({
   const videoPreviewRef = useRef<HTMLVideoElement>(null);
   const [hovering, setHovering] = useState(false);
 
+  const hasPlayableVideo = !isDemoOrInvalidUrl(video.videoUrl);
+
   function handleMouseEnter() {
     setHovering(true);
-    if (video.videoUrl && videoPreviewRef.current) {
+    if (hasPlayableVideo && videoPreviewRef.current) {
       videoPreviewRef.current.play().catch(() => {});
     }
   }
@@ -323,10 +333,10 @@ function VideoGridCard({
     >
       <div className="aspect-video bg-white/[0.02] relative flex items-center justify-center overflow-hidden">
         {/* Hover video preview */}
-        {video.videoUrl && (
+        {hasPlayableVideo && (
           <video
             ref={videoPreviewRef}
-            src={video.videoUrl}
+            src={video.videoUrl!}
             muted
             loop
             playsInline
@@ -337,14 +347,19 @@ function VideoGridCard({
         )}
 
         {/* Thumbnail / fallback */}
-        {video.thumbnailUrl ? (
+        {video.thumbnailUrl && !isDemoOrInvalidUrl(video.thumbnailUrl) ? (
           <img
             src={video.thumbnailUrl}
             alt=""
             className={`w-full h-full object-cover transition-opacity duration-300 ${
-              hovering && video.videoUrl ? "opacity-0" : "opacity-100"
+              hovering && hasPlayableVideo ? "opacity-0" : "opacity-100"
             }`}
           />
+        ) : isDemoOrInvalidUrl(video.videoUrl) && video.status !== "generating" ? (
+          <div className="flex flex-col items-center justify-center gap-1">
+            <Film className="w-8 h-8 text-white/[0.06]" />
+            <span className="text-[10px] text-white/20">Demo mode</span>
+          </div>
         ) : (
           <Film className="w-8 h-8 text-white/[0.06]" />
         )}

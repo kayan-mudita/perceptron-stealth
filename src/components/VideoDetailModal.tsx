@@ -80,6 +80,14 @@ function formatContentType(ct: string): string {
     .replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
+/** Check if a video URL is a demo placeholder or otherwise non-playable */
+function isDemoOrInvalidUrl(url: string | null | undefined): boolean {
+  if (!url) return true;
+  if (url.startsWith("demo://")) return true;
+  if (url.startsWith("/api/demo-video")) return true;
+  return false;
+}
+
 export default function VideoDetailModal({
   video,
   onClose,
@@ -164,7 +172,7 @@ export default function VideoDetailModal({
 
         {/* Video Player / Generating Placeholder */}
         <div className="relative bg-black rounded-t-2xl overflow-hidden">
-          {video.videoUrl ? (
+          {video.videoUrl && !isDemoOrInvalidUrl(video.videoUrl) ? (
             <div
               className="relative w-full mx-auto"
               style={{ aspectRatio: "9/16", maxHeight: "50vh" }}
@@ -215,6 +223,16 @@ export default function VideoDetailModal({
                   </p>
                   <p className="text-xs text-white/15 mt-1">
                     {errorMessage || "Something went wrong. Try again."}
+                  </p>
+                </>
+              ) : isDemoOrInvalidUrl(video.videoUrl) && video.videoUrl ? (
+                <>
+                  <Film className="w-10 h-10 text-white/[0.08] mb-4" />
+                  <p className="text-sm text-white/25 font-medium">
+                    Demo mode — no real video
+                  </p>
+                  <p className="text-xs text-white/15 mt-1">
+                    This video was generated in demo mode without API keys configured.
                   </p>
                 </>
               ) : (

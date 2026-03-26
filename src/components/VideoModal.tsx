@@ -3,6 +3,14 @@
 import { useEffect, useRef, useCallback, useState } from "react";
 import { X, Volume2, VolumeX } from "lucide-react";
 
+/** Check if a video URL is a demo placeholder or otherwise non-playable */
+function isDemoOrInvalidUrl(url: string | null | undefined): boolean {
+  if (!url) return true;
+  if (url.startsWith("demo://")) return true;
+  if (url.startsWith("/api/demo-video")) return true;
+  return false;
+}
+
 interface VideoModalProps {
   src: string;
   title?: string;
@@ -109,30 +117,39 @@ export default function VideoModal({
 
         {/* Video container -- 9:16 aspect ratio */}
         <div className="relative rounded-xl overflow-hidden bg-black w-full sm:w-auto" style={{ aspectRatio: "9/16", maxHeight: "75vh" }}>
-          <video
-            ref={videoRef}
-            src={src}
-            controls
-            autoPlay
-            muted
-            playsInline
-            onPlay={handlePlay}
-            onPause={handlePause}
-            onSeeked={handleSeeked}
-            className="w-full h-full object-contain"
-          />
-          {/* Unmute button -- always visible on mobile, hover on desktop */}
-          <button
-            onClick={toggleMute}
-            className="absolute top-3 right-3 w-10 h-10 rounded-full bg-black/60 backdrop-blur-sm border border-white/10 flex items-center justify-center sm:opacity-0 sm:hover:opacity-100 sm:focus:opacity-100 opacity-100 transition-opacity duration-200 hover:bg-black/80 active:bg-black/90 z-10"
-            aria-label={isMuted ? "Unmute" : "Mute"}
-          >
-            {isMuted ? (
-              <VolumeX className="w-4 h-4 text-white/80" />
-            ) : (
-              <Volume2 className="w-4 h-4 text-white/80" />
-            )}
-          </button>
+          {isDemoOrInvalidUrl(src) ? (
+            <div className="w-full h-full flex flex-col items-center justify-center min-h-[300px]">
+              <p className="text-sm text-white/25 font-medium">Demo mode — no real video</p>
+              <p className="text-xs text-white/15 mt-1">This video was generated without API keys configured.</p>
+            </div>
+          ) : (
+            <>
+              <video
+                ref={videoRef}
+                src={src}
+                controls
+                autoPlay
+                muted
+                playsInline
+                onPlay={handlePlay}
+                onPause={handlePause}
+                onSeeked={handleSeeked}
+                className="w-full h-full object-contain"
+              />
+              {/* Unmute button -- always visible on mobile, hover on desktop */}
+              <button
+                onClick={toggleMute}
+                className="absolute top-3 right-3 w-10 h-10 rounded-full bg-black/60 backdrop-blur-sm border border-white/10 flex items-center justify-center sm:opacity-0 sm:hover:opacity-100 sm:focus:opacity-100 opacity-100 transition-opacity duration-200 hover:bg-black/80 active:bg-black/90 z-10"
+                aria-label={isMuted ? "Unmute" : "Mute"}
+              >
+                {isMuted ? (
+                  <VolumeX className="w-4 h-4 text-white/80" />
+                ) : (
+                  <Volume2 className="w-4 h-4 text-white/80" />
+                )}
+              </button>
+            </>
+          )}
         </div>
 
         {audioSrc && (

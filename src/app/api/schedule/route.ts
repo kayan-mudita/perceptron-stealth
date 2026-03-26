@@ -63,9 +63,18 @@ export async function POST(req: NextRequest) {
         platform,
         scheduledAt: new Date(scheduledAt),
       },
+      include: { video: true },
     });
 
-    return NextResponse.json(schedule);
+    return NextResponse.json(
+      {
+        ...schedule,
+        scheduledAt: schedule.scheduledAt.toISOString(),
+        publishedAt: schedule.publishedAt?.toISOString() ?? null,
+        createdAt: schedule.createdAt.toISOString(),
+      },
+      { status: 201 }
+    );
   } catch (error) {
     console.error("[POST /api/schedule] Unexpected error:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });

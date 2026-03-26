@@ -61,11 +61,11 @@ export async function POST(req: NextRequest) {
       where: { email: email.toLowerCase().trim() },
     });
 
+    const genericMessage = "If an account exists for that email, the password has been reset.";
+
     if (!user) {
-      // Return a generic message to avoid leaking whether the email exists
       return NextResponse.json(
-        { error: "If an account exists for that email, the password has been reset." },
-        // Still return 200 to not reveal account existence
+        { message: genericMessage },
         { status: 200 }
       );
     }
@@ -80,7 +80,7 @@ export async function POST(req: NextRequest) {
     });
 
     return NextResponse.json({
-      message: "Password has been reset successfully.",
+      message: genericMessage,
     });
   } catch (error) {
     console.error("[POST /api/auth/reset-password] Unexpected error:", error);
