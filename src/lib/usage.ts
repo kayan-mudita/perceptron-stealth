@@ -1,5 +1,5 @@
 import prisma from "./prisma";
-import { getPlan, PlanInfo, isStripeConfigured } from "./stripe";
+import { getPlan, PlanInfo, isStripeConfigured, FREE_VIDEO_LIMIT } from "./stripe";
 
 export interface UsageInfo {
   plan: PlanInfo;
@@ -46,20 +46,24 @@ export async function getUsage(userId: string): Promise<UsageInfo> {
     throw new Error("User not found");
   }
 
-  // If Stripe is not configured, skip enforcement
+  // If Stripe is not configured, enforce the free tier limit (1 video)
+  // so the UI correctly shows "0 of 1" instead of "0 (unlimited)".
   if (!isStripeConfigured()) {
+    const videosUsed = await countVideosThisMonth(userId);
+    const videosLimit = FREE_VIDEO_LIMIT;
+    const videosRemaining = Math.max(0, videosLimit - videosUsed);
     return {
       plan: {
         plan: (user.plan as any) || "free",
-        label: user.plan.charAt(0).toUpperCase() + user.plan.slice(1),
-        videoLimit: Infinity,
+        label: "Free",
+        videoLimit: videosLimit,
         isActive: true,
         currentPeriodEnd: null,
       },
-      videosUsed: 0,
-      videosLimit: Infinity,
-      canGenerate: true,
-      videosRemaining: Infinity,
+      videosUsed,
+      videosLimit,
+      canGenerate: videosRemaining > 0,
+      videosRemaining,
     };
   }
 

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
+import { useSession } from "next-auth/react";
 import {
   User,
   CreditCard,
@@ -93,6 +94,16 @@ interface UsageData {
   currentPeriodEnd: string | null;
 }
 
+interface UserProfile {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  company: string | null;
+  avatarUrl: string | null;
+  industry: string | null;
+}
+
 const availablePlans = [
   {
     id: "starter",
@@ -152,6 +163,7 @@ export default function SettingsPage() {
 
 function SettingsContent() {
   const searchParams = useSearchParams();
+  const { data: session } = useSession();
   const initialTab = searchParams.get("tab") || "profile";
   const successMsg = searchParams.get("success");
   const errorMsg = searchParams.get("error");
@@ -168,6 +180,10 @@ function SettingsContent() {
     type: "success" | "error";
     message: string;
   } | null>(null);
+
+  // Profile state
+  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [loadingProfile, setLoadingProfile] = useState(false);
 
   // Billing state
   const [usage, setUsage] = useState<UsageData | null>(null);
@@ -247,7 +263,26 @@ function SettingsContent() {
     }
   }, []);
 
+  // Fetch user profile for the profile tab
+  const fetchProfile = useCallback(async () => {
+    setLoadingProfile(true);
+    try {
+      const res = await fetch("/api/profile");
+      if (res.ok) {
+        const data = await res.json();
+        setProfile(data);
+      }
+    } catch (err) {
+      console.error("Failed to fetch profile:", err);
+    } finally {
+      setLoadingProfile(false);
+    }
+  }, []);
+
   useEffect(() => {
+    if (activeTab === "profile") {
+      fetchProfile();
+    }
     if (activeTab === "social") {
       fetchAccounts();
       fetchPlatformStatuses();
@@ -255,7 +290,7 @@ function SettingsContent() {
     if (activeTab === "plan") {
       fetchUsage();
     }
-  }, [activeTab, fetchAccounts, fetchPlatformStatuses, fetchUsage]);
+  }, [activeTab, fetchProfile, fetchAccounts, fetchPlatformStatuses, fetchUsage]);
 
   const handleConnect = (platformId: string) => {
     setConnecting(platformId);
@@ -408,64 +443,77 @@ function SettingsContent() {
       {activeTab === "profile" && (
         <div className="glass-card p-6 space-y-6">
           <h3 className="font-semibold">Personal Information</h3>
-          <div className="flex items-center gap-4 mb-6">
-            <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-xl">
-              R
+          {loadingProfile ? (
+            <div className="py-12 flex flex-col items-center justify-center gap-3 text-white/40">
+              <Loader2 className="w-5 h-5 animate-spin" />
+              <span className="text-sm">Loading profile...</span>
             </div>
-            <div>
-              <button className="text-sm text-blue-400 hover:text-blue-300">
-                Change avatar
+          ) : (
+            <>
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-xl">
+                  {profile?.firstName?.charAt(0) || session?.user?.name?.charAt(0) || "U"}
+                </div>
+                <div>
+                  <button className="text-sm text-blue-400 hover:text-blue-300">
+                    Change avatar
+                  </button>
+                  <p className="text-xs text-white/30 mt-0.5">
+                    JPG, PNG or GIF. Max 2MB.
+                  </p>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs text-white/40 mb-1.5">
+                    First Name
+                  </label>
+                  <input
+                    type="text"
+                    className="input-field !py-2.5 text-sm"
+                    defaultValue={profile?.firstName || ""}
+                    key={`fn-${profile?.firstName}`}
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs text-white/40 mb-1.5">
+                    Last Name
+                  </label>
+                  <input
+                    type="text"
+                    className="input-field !py-2.5 text-sm"
+                    defaultValue={profile?.lastName || ""}
+                    key={`ln-${profile?.lastName}`}
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs text-white/40 mb-1.5">
+                    Email
+                  </label>
+                  <input
+                    type="email"
+                    className="input-field !py-2.5 text-sm"
+                    defaultValue={profile?.email || session?.user?.email || ""}
+                    key={`em-${profile?.email}`}
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs text-white/40 mb-1.5">
+                    Company
+                  </label>
+                  <input
+                    type="text"
+                    className="input-field !py-2.5 text-sm"
+                    defaultValue={profile?.company || ""}
+                    key={`co-${profile?.company}`}
+                  />
+                </div>
+              </div>
+              <button className="btn-primary gap-2 text-sm !py-2.5">
+                <Check className="w-4 h-4" /> Save Changes
               </button>
-              <p className="text-xs text-white/30 mt-0.5">
-                JPG, PNG or GIF. Max 2MB.
-              </p>
-            </div>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-xs text-white/40 mb-1.5">
-                First Name
-              </label>
-              <input
-                type="text"
-                className="input-field !py-2.5 text-sm"
-                defaultValue="Ryan"
-              />
-            </div>
-            <div>
-              <label className="block text-xs text-white/40 mb-1.5">
-                Last Name
-              </label>
-              <input
-                type="text"
-                className="input-field !py-2.5 text-sm"
-                defaultValue="Rockwell"
-              />
-            </div>
-            <div>
-              <label className="block text-xs text-white/40 mb-1.5">
-                Email
-              </label>
-              <input
-                type="email"
-                className="input-field !py-2.5 text-sm"
-                defaultValue="ryan@rockwellrealty.com"
-              />
-            </div>
-            <div>
-              <label className="block text-xs text-white/40 mb-1.5">
-                Company
-              </label>
-              <input
-                type="text"
-                className="input-field !py-2.5 text-sm"
-                defaultValue="Rockwell Realty Group"
-              />
-            </div>
-          </div>
-          <button className="btn-primary gap-2 text-sm !py-2.5">
-            <Check className="w-4 h-4" /> Save Changes
-          </button>
+            </>
+          )}
         </div>
       )}
 

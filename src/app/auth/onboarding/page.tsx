@@ -43,6 +43,7 @@ interface PipelineStep {
 const INDUSTRIES = [
   { id: "real_estate", label: "Real Estate", sub: "Agents, brokers, property managers" },
   { id: "legal", label: "Legal", sub: "Attorneys, law firms, paralegals" },
+  { id: "finance", label: "Finance", sub: "Financial advisors, wealth managers, accountants" },
   { id: "medical", label: "Medical", sub: "Doctors, clinics, health practitioners" },
   { id: "creator", label: "Creator", sub: "Influencers, coaches, personal brands" },
   { id: "business", label: "Business", sub: "Consultants, agencies, startups" },
@@ -728,13 +729,20 @@ function OnboardingFlow() {
                   </button>
                 )}
                 <div className="hidden sm:block flex-1" />
-                <button
-                  onClick={enterCharacterStep}
-                  disabled={photos.length < 1}
-                  className="flex items-center justify-center gap-2 px-6 py-3.5 min-h-[48px] rounded-xl bg-white text-[#050508] text-[14px] font-medium hover:bg-white/90 active:bg-white/80 disabled:opacity-20 disabled:cursor-not-allowed transition-all"
-                >
-                  Continue <ArrowRight className="w-4 h-4" />
-                </button>
+                <div className="flex flex-col items-stretch sm:items-end gap-1.5">
+                  <button
+                    onClick={enterCharacterStep}
+                    disabled={photos.length < 1}
+                    className="flex items-center justify-center gap-2 px-6 py-3.5 min-h-[48px] rounded-xl bg-white text-[#050508] text-[14px] font-medium hover:bg-white/90 active:bg-white/80 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                  >
+                    Continue <ArrowRight className="w-4 h-4" />
+                  </button>
+                  {photos.length === 0 && (
+                    <p className="text-[12px] text-white/30 text-center sm:text-right">
+                      Please upload at least 1 photo
+                    </p>
+                  )}
+                </div>
               </div>
             </div>
           )}
