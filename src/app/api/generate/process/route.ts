@@ -113,15 +113,9 @@ export async function POST(req: NextRequest) {
         prompt: c.prompt,
       }));
 
-      // Pre-generate starting frame during expand step so the cut step
-      // doesn't block on Gemini image generation (which can take 30s+
-      // and would timeout on Netlify's 26s limit).
-      let startingFrameUrl: string | null = null;
-      try {
-        startingFrameUrl = await getOrGenerateStartingFrame(user.id);
-      } catch (err) {
-        console.warn("[process/expand] Starting frame pre-generation failed (non-fatal):", err);
-      }
+      // Don't generate starting frame here — it takes 30s+ and will timeout.
+      // The cut step will use the user's uploaded photo as fallback.
+      // Starting frame can be pre-generated during onboarding instead.
 
       await prisma.video.update({
         where: { id: videoId },
@@ -131,7 +125,7 @@ export async function POST(req: NextRequest) {
             cuts: cutData,
             format: selectedFormat,
             originalScript: rawScript,
-            startingFrameUrl,
+            startingFrameUrl: null,
             pipelineStep: "expand",
             pipelineCut: 0,
           }),
