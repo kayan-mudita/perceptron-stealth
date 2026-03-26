@@ -8,6 +8,10 @@ export interface UsageInfo {
   canGenerate: boolean;
   /** Number of videos remaining before hitting the limit */
   videosRemaining: number;
+  /** Recommended limit (included in plan) */
+  softLimit: number;
+  /** Enforced limit (hard cap). Infinity for paid plans. */
+  hardLimit: number;
 }
 
 /**
@@ -64,14 +68,24 @@ export async function getUsage(userId: string): Promise<UsageInfo> {
       videosLimit,
       canGenerate: videosRemaining > 0,
       videosRemaining,
+      softLimit: FREE_VIDEO_LIMIT,
+      hardLimit: FREE_VIDEO_LIMIT,
     };
   }
 
   const planInfo = getPlan(user);
   const videosUsed = await countVideosThisMonth(userId);
+  const isPaidPlan = planInfo.plan !== "free";
+
+  // For paid plans: track usage for analytics but never hard-cap generation
+  // softLimit = the recommended monthly allocation (30)
+  // hardLimit = Infinity for paid plans, FREE_VIDEO_LIMIT for free users
+  const softLimit = isPaidPlan ? 30 : FREE_VIDEO_LIMIT;
+  const hardLimit = isPaidPlan ? Infinity : FREE_VIDEO_LIMIT;
   const videosLimit = planInfo.videoLimit;
-  const videosRemaining = Math.max(0, videosLimit - videosUsed);
-  const canGenerate = videosRemaining > 0;
+  const videosRemaining = isPaidPlan ? Infinity : Math.max(0, videosLimit - videosUsed);
+  // Paid users can always generate; free users are capped
+  const canGenerate = isPaidPlan ? true : videosRemaining > 0;
 
   return {
     plan: planInfo,
@@ -79,6 +93,8 @@ export async function getUsage(userId: string): Promise<UsageInfo> {
     videosLimit,
     canGenerate,
     videosRemaining,
+    softLimit,
+    hardLimit,
   };
 }
 

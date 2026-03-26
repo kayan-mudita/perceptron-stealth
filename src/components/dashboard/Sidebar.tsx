@@ -17,6 +17,11 @@ import {
   ChevronLeft,
   ChevronRight,
   SlidersHorizontal,
+  Gift,
+  Brain,
+  Calculator,
+  Music,
+  FileText,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -27,7 +32,12 @@ const navItems = [
   { href: "/dashboard/approvals", label: "Approvals", icon: CheckCircle2 },
   { href: "/dashboard/calendar", label: "Calendar", icon: CalendarDays },
   { href: "/dashboard/analytics", label: "Analytics", icon: BarChart3 },
+  { href: "/dashboard/intelligence", label: "Intelligence", icon: Brain },
+  { href: "/dashboard/trending", label: "Trending", icon: Music },
+  { href: "/dashboard/reports", label: "Reports", icon: FileText },
+  { href: "/dashboard/roi", label: "ROI", icon: Calculator },
   { href: "/dashboard/vault", label: "Vault", icon: Shield },
+  { href: "/dashboard/referral", label: "Referrals", icon: Gift },
   { href: "/dashboard/settings", label: "Settings", icon: Settings },
   { href: "/dashboard/admin", label: "Admin", icon: SlidersHorizontal },
 ];

@@ -122,6 +122,42 @@ export const DEFAULT_CONFIGS = [
     label: "Character Sheet Backgrounds",
     category: "onboarding",
   },
+  {
+    key: "promo_enabled",
+    value: "true",
+    label: "Promotional Banner Enabled",
+    category: "promo",
+  },
+  {
+    key: "promo_label",
+    value: "Spring Launch Special",
+    label: "Promo Banner Label",
+    category: "promo",
+  },
+  {
+    key: "promo_price",
+    value: "$59",
+    label: "Promotional Price",
+    category: "promo",
+  },
+  {
+    key: "promo_original_price",
+    value: "$79",
+    label: "Original Price (struck through)",
+    category: "promo",
+  },
+  {
+    key: "promo_duration_days",
+    value: "14",
+    label: "Countdown Duration (days from first visit)",
+    category: "promo",
+  },
+  {
+    key: "promo_subtext",
+    value: "Lock in this rate forever",
+    label: "Promo Subtext",
+    category: "promo",
+  },
 ];
 
 /**

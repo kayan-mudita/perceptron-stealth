@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { Sparkles, Mail, Lock, User, ArrowRight, CheckCircle2, AlertCircle } from "lucide-react";
 import SessionProvider from "@/components/SessionProvider";
@@ -11,26 +11,39 @@ const benefits = [
   "AI video content powered by Kling 2.6 & Seedance 2.0",
   "Weekly personalized content using your face & voice",
   "Automated social media scheduling",
-  "Full consent-based control — nothing publishes without you",
-  "14-day free trial, no credit card required",
+  "Full consent-based control -- nothing publishes without you",
+  "7-day free trial, cancel anytime",
 ];
 
 function SignupForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const refParam = searchParams.get("ref");
   const [form, setForm] = useState({ firstName: "", lastName: "", email: "", password: "", industry: "real_estate", company: "" });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  // Persist ref parameter for cohort tracking
+  useEffect(() => {
+    if (refParam) {
+      try { localStorage.setItem("signup_ref", refParam); } catch {}
+    }
+  }, [refParam]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setLoading(true);
 
+    // Include ref parameter for cohort tracking
+    const signupRef = refParam || (() => { try { return localStorage.getItem("signup_ref"); } catch { return null; } })();
+    const payload = { ...form, ...(signupRef ? { ref: signupRef } : {}) };
+
     try {
       const res = await fetch("/api/auth/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify(payload),
       });
 
       const data = await res.json();
@@ -162,7 +175,9 @@ function SignupForm() {
 export default function SignupPage() {
   return (
     <SessionProvider>
-      <SignupForm />
+      <Suspense fallback={<div className="flex items-center justify-center min-h-screen" />}>
+        <SignupForm />
+      </Suspense>
     </SessionProvider>
   );
 }

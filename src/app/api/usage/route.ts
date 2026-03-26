@@ -17,6 +17,8 @@ export async function GET() {
       videosRemaining: usage.videosRemaining === Infinity ? null : usage.videosRemaining,
       canGenerate: usage.canGenerate,
       currentPeriodEnd: usage.plan.currentPeriodEnd?.toISOString() ?? null,
+      softLimit: usage.softLimit,
+      hardLimit: usage.hardLimit === Infinity ? null : usage.hardLimit,
     });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : "Failed to fetch usage";

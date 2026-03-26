@@ -1,7 +1,19 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Save, RefreshCw, Settings2, MessageSquare, Sparkles } from "lucide-react";
+import {
+  Save,
+  RefreshCw,
+  Settings2,
+  MessageSquare,
+  Sparkles,
+  DollarSign,
+  TrendingUp,
+  TrendingDown,
+  Users,
+  Film,
+  Loader2,
+} from "lucide-react";
 
 interface ConfigRow {
   id: string;
@@ -10,6 +22,38 @@ interface ConfigRow {
   label: string;
   category: string;
   updatedAt: string;
+}
+
+interface CostSummary {
+  totalUsers: number;
+  payingUsers: number;
+  totalVideosThisMonth: number;
+  totalVideosAllTime: number;
+  totalApiCostThisMonth: number;
+  totalApiCostAllTime: number;
+  revenueThisMonth: number;
+  grossMargin: number;
+  costPerMinute: number;
+  mrrPerUser: number;
+  month: string;
+}
+
+interface UserCost {
+  userId: string;
+  email: string;
+  name: string;
+  plan: string;
+  totalVideos: number;
+  totalPhotos: number;
+  totalVoiceSamples: number;
+  videosThisMonth: number;
+  estimatedCostThisMonth: number;
+  estimatedCostAllTime: number;
+}
+
+interface CostData {
+  summary: CostSummary;
+  perUser: UserCost[];
 }
 
 const MODEL_OPTIONS = [
@@ -25,6 +69,8 @@ const TABS = [
   { id: "models", label: "Models", icon: Sparkles },
   { id: "prompts", label: "Prompts", icon: MessageSquare },
   { id: "onboarding", label: "Onboarding", icon: Settings2 },
+  { id: "promo", label: "Promo", icon: Settings2 },
+  { id: "costs", label: "Cost Tracking", icon: DollarSign },
 ] as const;
 
 type TabId = (typeof TABS)[number]["id"];
@@ -36,10 +82,18 @@ export default function AdminPage() {
   const [saving, setSaving] = useState<string | null>(null);
   const [editedValues, setEditedValues] = useState<Record<string, string>>({});
   const [toast, setToast] = useState<string | null>(null);
+  const [costData, setCostData] = useState<CostData | null>(null);
+  const [costLoading, setCostLoading] = useState(false);
 
   useEffect(() => {
     loadConfigs();
   }, []);
+
+  useEffect(() => {
+    if (activeTab === "costs" && !costData) {
+      loadCosts();
+    }
+  }, [activeTab, costData]);
 
   async function loadConfigs() {
     setLoading(true);
@@ -48,7 +102,6 @@ export default function AdminPage() {
       if (res.ok) {
         const data = await res.json();
         setConfigs(data);
-        // Initialize edited values
         const values: Record<string, string> = {};
         data.forEach((c: ConfigRow) => {
           values[c.key] = c.value;
@@ -62,6 +115,21 @@ export default function AdminPage() {
     }
   }
 
+  async function loadCosts() {
+    setCostLoading(true);
+    try {
+      const res = await fetch("/api/admin/costs");
+      if (res.ok) {
+        const data = await res.json();
+        setCostData(data);
+      }
+    } catch (err) {
+      console.error("Failed to load costs:", err);
+    } finally {
+      setCostLoading(false);
+    }
+  }
+
   async function saveConfig(key: string) {
     setSaving(key);
     try {
@@ -72,10 +140,11 @@ export default function AdminPage() {
       });
       if (res.ok) {
         showToast(`Saved "${key}"`);
-        // Update local state with new timestamp
         setConfigs((prev) =>
           prev.map((c) =>
-            c.key === key ? { ...c, value: editedValues[key], updatedAt: new Date().toISOString() } : c
+            c.key === key
+              ? { ...c, value: editedValues[key], updatedAt: new Date().toISOString() }
+              : c
           )
         );
       } else {
@@ -96,6 +165,15 @@ export default function AdminPage() {
   function isChanged(key: string) {
     const original = configs.find((c) => c.key === key);
     return original && editedValues[key] !== original.value;
+  }
+
+  function formatCurrency(amount: number) {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 2,
+    }).format(amount);
   }
 
   const filtered = configs.filter((c) => c.category === activeTab);
@@ -128,15 +206,262 @@ export default function AdminPage() {
         ))}
       </div>
 
-      {/* Loading */}
-      {loading && (
+      {/* Loading for config tabs */}
+      {loading && activeTab !== "costs" && (
         <div className="flex items-center justify-center py-20">
           <RefreshCw className="w-5 h-5 text-white/30 animate-spin" />
         </div>
       )}
 
-      {/* Config List */}
-      {!loading && (
+      {/* Cost Tracking Tab */}
+      {activeTab === "costs" && (
+        <div>
+          {costLoading && (
+            <div className="flex items-center justify-center py-20">
+              <Loader2 className="w-5 h-5 text-white/30 animate-spin" />
+            </div>
+          )}
+
+          {!costLoading && costData && (
+            <div className="space-y-6">
+              {/* Summary Cards */}
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                <div className="bg-[#0f1420] border border-white/5 rounded-xl p-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Users className="w-4 h-4 text-blue-400/60" />
+                    <span className="text-[11px] text-white/30 uppercase tracking-wider">
+                      Total Users
+                    </span>
+                  </div>
+                  <p className="text-2xl font-bold text-white">
+                    {costData.summary.totalUsers}
+                  </p>
+                  <p className="text-[11px] text-white/25 mt-1">
+                    {costData.summary.payingUsers} paying
+                  </p>
+                </div>
+
+                <div className="bg-[#0f1420] border border-white/5 rounded-xl p-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Film className="w-4 h-4 text-purple-400/60" />
+                    <span className="text-[11px] text-white/30 uppercase tracking-wider">
+                      Videos This Month
+                    </span>
+                  </div>
+                  <p className="text-2xl font-bold text-white">
+                    {costData.summary.totalVideosThisMonth}
+                  </p>
+                  <p className="text-[11px] text-white/25 mt-1">
+                    {costData.summary.totalVideosAllTime} all time
+                  </p>
+                </div>
+
+                <div className="bg-[#0f1420] border border-white/5 rounded-xl p-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <DollarSign className="w-4 h-4 text-red-400/60" />
+                    <span className="text-[11px] text-white/30 uppercase tracking-wider">
+                      API Cost (Month)
+                    </span>
+                  </div>
+                  <p className="text-2xl font-bold text-white">
+                    {formatCurrency(costData.summary.totalApiCostThisMonth)}
+                  </p>
+                  <p className="text-[11px] text-white/25 mt-1">
+                    {formatCurrency(costData.summary.totalApiCostAllTime)} all time
+                  </p>
+                </div>
+
+                <div className="bg-[#0f1420] border border-white/5 rounded-xl p-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    {costData.summary.grossMargin >= 0 ? (
+                      <TrendingUp className="w-4 h-4 text-emerald-400/60" />
+                    ) : (
+                      <TrendingDown className="w-4 h-4 text-red-400/60" />
+                    )}
+                    <span className="text-[11px] text-white/30 uppercase tracking-wider">
+                      Gross Margin
+                    </span>
+                  </div>
+                  <p
+                    className={`text-2xl font-bold ${
+                      costData.summary.grossMargin >= 0
+                        ? "text-emerald-400"
+                        : "text-red-400"
+                    }`}
+                  >
+                    {costData.summary.grossMargin}%
+                  </p>
+                  <p className="text-[11px] text-white/25 mt-1">
+                    Revenue: {formatCurrency(costData.summary.revenueThisMonth)}
+                  </p>
+                </div>
+              </div>
+
+              {/* Revenue vs Cost Breakdown */}
+              <div className="bg-[#0f1420] border border-white/5 rounded-xl p-5">
+                <h3 className="text-sm font-semibold text-white mb-4">
+                  Monthly P&L Snapshot
+                </h3>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-white/50">
+                      Revenue ({costData.summary.payingUsers} users x $
+                      {costData.summary.mrrPerUser}/mo)
+                    </span>
+                    <span className="text-sm font-medium text-emerald-400">
+                      +{formatCurrency(costData.summary.revenueThisMonth)}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-white/50">
+                      API Costs ({costData.summary.totalVideosThisMonth} videos x $
+                      {costData.summary.costPerMinute}/min)
+                    </span>
+                    <span className="text-sm font-medium text-red-400">
+                      -{formatCurrency(costData.summary.totalApiCostThisMonth)}
+                    </span>
+                  </div>
+                  <div className="border-t border-white/5 pt-3 flex items-center justify-between">
+                    <span className="text-sm font-medium text-white">
+                      Gross Profit
+                    </span>
+                    <span
+                      className={`text-sm font-bold ${
+                        costData.summary.revenueThisMonth -
+                          costData.summary.totalApiCostThisMonth >=
+                        0
+                          ? "text-emerald-400"
+                          : "text-red-400"
+                      }`}
+                    >
+                      {formatCurrency(
+                        costData.summary.revenueThisMonth -
+                          costData.summary.totalApiCostThisMonth
+                      )}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Per-User Cost Table */}
+              <div className="bg-[#0f1420] border border-white/5 rounded-xl overflow-hidden">
+                <div className="px-5 py-4 border-b border-white/5">
+                  <h3 className="text-sm font-semibold text-white">
+                    Per-User Cost Breakdown
+                  </h3>
+                  <p className="text-[11px] text-white/30 mt-0.5">
+                    Estimated cost = $5 x (duration / 60s) per generated video
+                  </p>
+                </div>
+
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="border-b border-white/5">
+                        <th className="text-left px-5 py-3 text-[11px] text-white/30 uppercase tracking-wider font-medium">
+                          User
+                        </th>
+                        <th className="text-left px-3 py-3 text-[11px] text-white/30 uppercase tracking-wider font-medium">
+                          Plan
+                        </th>
+                        <th className="text-right px-3 py-3 text-[11px] text-white/30 uppercase tracking-wider font-medium">
+                          Videos (Total)
+                        </th>
+                        <th className="text-right px-3 py-3 text-[11px] text-white/30 uppercase tracking-wider font-medium">
+                          Videos (Month)
+                        </th>
+                        <th className="text-right px-3 py-3 text-[11px] text-white/30 uppercase tracking-wider font-medium">
+                          Cost (Month)
+                        </th>
+                        <th className="text-right px-5 py-3 text-[11px] text-white/30 uppercase tracking-wider font-medium">
+                          Cost (All Time)
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {costData.perUser.map((u) => (
+                        <tr
+                          key={u.userId}
+                          className="border-b border-white/[0.03] hover:bg-white/[0.02] transition-colors"
+                        >
+                          <td className="px-5 py-3">
+                            <div>
+                              <p className="text-white/80 font-medium text-[13px]">
+                                {u.name}
+                              </p>
+                              <p className="text-white/25 text-[11px]">
+                                {u.email}
+                              </p>
+                            </div>
+                          </td>
+                          <td className="px-3 py-3">
+                            <span
+                              className={`inline-flex px-2 py-0.5 rounded-full text-[10px] font-medium ${
+                                u.plan === "free"
+                                  ? "bg-white/5 text-white/30"
+                                  : u.plan === "authority"
+                                  ? "bg-purple-500/15 text-purple-400"
+                                  : "bg-blue-500/15 text-blue-400"
+                              }`}
+                            >
+                              {u.plan}
+                            </span>
+                          </td>
+                          <td className="px-3 py-3 text-right text-white/50 font-mono text-[13px]">
+                            {u.totalVideos}
+                          </td>
+                          <td className="px-3 py-3 text-right text-white/50 font-mono text-[13px]">
+                            {u.videosThisMonth}
+                          </td>
+                          <td className="px-3 py-3 text-right text-white/70 font-mono text-[13px]">
+                            {formatCurrency(u.estimatedCostThisMonth)}
+                          </td>
+                          <td className="px-5 py-3 text-right text-white/70 font-mono text-[13px]">
+                            {formatCurrency(u.estimatedCostAllTime)}
+                          </td>
+                        </tr>
+                      ))}
+                      {costData.perUser.length === 0 && (
+                        <tr>
+                          <td
+                            colSpan={6}
+                            className="text-center py-10 text-white/25"
+                          >
+                            No user data available
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* Refresh button */}
+              <div className="flex justify-end">
+                <button
+                  onClick={() => {
+                    setCostData(null);
+                    loadCosts();
+                  }}
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 text-white/40 text-sm hover:bg-white/10 hover:text-white/60 transition-all"
+                >
+                  <RefreshCw className="w-3.5 h-3.5" />
+                  Refresh Data
+                </button>
+              </div>
+            </div>
+          )}
+
+          {!costLoading && !costData && (
+            <div className="text-center py-20 text-white/30">
+              Failed to load cost data. You may not have admin access.
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Config List (for non-cost tabs) */}
+      {!loading && activeTab !== "costs" && (
         <div className="space-y-4">
           {filtered.length === 0 && (
             <div className="text-center py-12 text-white/30">
@@ -151,8 +476,12 @@ export default function AdminPage() {
             >
               <div className="flex items-start justify-between mb-3">
                 <div>
-                  <h3 className="text-sm font-semibold text-white">{config.label}</h3>
-                  <p className="text-xs text-white/30 font-mono mt-0.5">{config.key}</p>
+                  <h3 className="text-sm font-semibold text-white">
+                    {config.label}
+                  </h3>
+                  <p className="text-xs text-white/30 font-mono mt-0.5">
+                    {config.key}
+                  </p>
                 </div>
                 <div className="flex items-center gap-2">
                   {isChanged(config.key) && (
@@ -182,12 +511,19 @@ export default function AdminPage() {
                 <select
                   value={editedValues[config.key] || config.value}
                   onChange={(e) =>
-                    setEditedValues((prev) => ({ ...prev, [config.key]: e.target.value }))
+                    setEditedValues((prev) => ({
+                      ...prev,
+                      [config.key]: e.target.value,
+                    }))
                   }
                   className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500/50 appearance-none cursor-pointer"
                 >
                   {MODEL_OPTIONS.map((opt) => (
-                    <option key={opt.value} value={opt.value} className="bg-[#0f1420]">
+                    <option
+                      key={opt.value}
+                      value={opt.value}
+                      className="bg-[#0f1420]"
+                    >
                       {opt.label}
                     </option>
                   ))}
@@ -199,7 +535,10 @@ export default function AdminPage() {
                 <textarea
                   value={editedValues[config.key] || config.value}
                   onChange={(e) =>
-                    setEditedValues((prev) => ({ ...prev, [config.key]: e.target.value }))
+                    setEditedValues((prev) => ({
+                      ...prev,
+                      [config.key]: e.target.value,
+                    }))
                   }
                   rows={5}
                   className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white/80 focus:outline-none focus:border-blue-500/50 resize-y font-mono leading-relaxed"
@@ -211,11 +550,45 @@ export default function AdminPage() {
                 <textarea
                   value={editedValues[config.key] || config.value}
                   onChange={(e) =>
-                    setEditedValues((prev) => ({ ...prev, [config.key]: e.target.value }))
+                    setEditedValues((prev) => ({
+                      ...prev,
+                      [config.key]: e.target.value,
+                    }))
                   }
                   rows={3}
                   className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white/80 focus:outline-none focus:border-blue-500/50 resize-y font-mono"
                 />
+              )}
+
+              {/* Promo config — toggle and text inputs */}
+              {config.category === "promo" && (
+                config.key === "promo_enabled" ? (
+                  <select
+                    value={editedValues[config.key] || config.value}
+                    onChange={(e) =>
+                      setEditedValues((prev) => ({
+                        ...prev,
+                        [config.key]: e.target.value,
+                      }))
+                    }
+                    className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500/50 appearance-none cursor-pointer"
+                  >
+                    <option value="true" className="bg-[#0f1420]">Enabled</option>
+                    <option value="false" className="bg-[#0f1420]">Disabled</option>
+                  </select>
+                ) : (
+                  <input
+                    type="text"
+                    value={editedValues[config.key] || config.value}
+                    onChange={(e) =>
+                      setEditedValues((prev) => ({
+                        ...prev,
+                        [config.key]: e.target.value,
+                      }))
+                    }
+                    className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white/80 focus:outline-none focus:border-blue-500/50"
+                  />
+                )
               )}
 
               {/* Timestamp */}

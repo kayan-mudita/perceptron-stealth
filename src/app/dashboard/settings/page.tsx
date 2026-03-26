@@ -20,11 +20,17 @@ import {
   XCircle,
   ArrowUpRight,
   Zap,
+  Users,
+  Mail,
+  Crown,
+  Pencil,
+  Eye,
 } from "lucide-react";
 
 const tabs = [
   { id: "profile", label: "Profile", icon: User },
   { id: "plan", label: "Plan & Billing", icon: CreditCard },
+  { id: "team", label: "Team", icon: Users },
   { id: "social", label: "Connected Accounts", icon: Link2 },
   { id: "notifications", label: "Notifications", icon: Bell },
   { id: "privacy", label: "Privacy & Data", icon: Shield },
@@ -92,6 +98,8 @@ interface UsageData {
   videosRemaining: number | null;
   canGenerate: boolean;
   currentPeriodEnd: string | null;
+  softLimit: number;
+  hardLimit: number | null;
 }
 
 interface UserProfile {
@@ -107,29 +115,15 @@ interface UserProfile {
 const availablePlans = [
   {
     id: "starter",
-    name: "Starter",
+    name: "Everything Plan",
     price: "$79",
     period: "/month",
     features: [
       "30 videos per month",
-      "3 platforms",
-      "Basic analytics",
-      "Voice cloning",
-      "AI digital twin",
-    ],
-    popular: false,
-  },
-  {
-    id: "authority",
-    name: "Authority",
-    price: "$149",
-    period: "/month",
-    features: [
-      "100 videos per month",
       "All platforms",
-      "Advanced analytics",
-      "Priority generation",
-      "Content calendar",
+      "Voice cloning & AI digital twin",
+      "Multi-cut composition",
+      "Analytics & auto-posting",
     ],
     popular: true,
   },
@@ -589,13 +583,14 @@ function SettingsContent() {
                     <div className="flex items-center justify-between text-xs">
                       <span className="text-white/40">Videos this month</span>
                       <span className="text-white/60 font-medium">
-                        {usage.videosUsed}
-                        {usage.videosLimit !== null
-                          ? ` / ${usage.videosLimit}`
-                          : " (unlimited)"}
+                        {isPaidPlan
+                          ? `${usage.videosUsed} created (${usage.softLimit} videos included, unlimited generation)`
+                          : usage.videosLimit !== null
+                            ? `${usage.videosUsed} / ${usage.videosLimit}`
+                            : `${usage.videosUsed} (unlimited)`}
                       </span>
                     </div>
-                    {usage.videosLimit !== null && (
+                    {!isPaidPlan && usage.videosLimit !== null && (
                       <div className="w-full h-2 bg-white/5 rounded-full overflow-hidden">
                         <div
                           className={`h-full rounded-full transition-all duration-500 ${
@@ -609,7 +604,15 @@ function SettingsContent() {
                         />
                       </div>
                     )}
-                    {usage.videosLimit !== null && !usage.canGenerate && (
+                    {isPaidPlan && (
+                      <div className="flex items-center gap-2 text-xs text-blue-400/80 bg-blue-500/10 border border-blue-500/15 rounded-lg p-3 mt-2">
+                        <Info className="w-3.5 h-3.5 flex-shrink-0" />
+                        <span>
+                          {usage.softLimit} videos included in your plan. Generation is unlimited for active subscribers.
+                        </span>
+                      </div>
+                    )}
+                    {!isPaidPlan && usage.videosLimit !== null && !usage.canGenerate && (
                       <div className="flex items-center gap-2 text-xs text-amber-400/80 bg-amber-500/10 border border-amber-500/15 rounded-lg p-3 mt-2">
                         <Zap className="w-3.5 h-3.5 flex-shrink-0" />
                         <span>
@@ -627,15 +630,14 @@ function SettingsContent() {
                 <h4 className="text-sm font-medium text-white/50 mb-4">
                   {isPaidPlan ? "Change plan" : "Choose a plan"}
                 </h4>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {availablePlans.map((plan) => {
                     const isCurrent = usage?.plan === plan.id;
                     const isEnterprise = plan.id === "enterprise";
                     const isUpgrade =
                       !isCurrent &&
                       !isEnterprise &&
-                      (usage?.plan === "free" ||
-                        (usage?.plan === "starter" && plan.id === "authority"));
+                      usage?.plan === "free";
                     const isCheckingOut = billingAction === plan.id;
 
                     return (
@@ -727,6 +729,9 @@ function SettingsContent() {
           )}
         </div>
       )}
+
+      {/* Team Tab */}
+      {activeTab === "team" && <TeamTabContent />}
 
       {/* Connected Accounts Tab */}
       {activeTab === "social" && (
@@ -996,6 +1001,247 @@ function SettingsContent() {
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+// ─── Team Tab ────────────────────────────────────────────────────
+
+interface TeamMember {
+  id: string;
+  name: string;
+  email: string;
+  avatarUrl: string | null;
+  role: "owner" | "admin" | "editor" | "viewer";
+  videosCreated: number;
+  status: "active" | "pending" | "inactive";
+  joinedAt: string;
+}
+
+interface TeamData {
+  members: TeamMember[];
+  seats: { used: number; limit: number; pricePerSeat: number };
+  pendingInvites: Array<{ email: string; role: string; status: string }>;
+}
+
+const roleIcons: Record<string, typeof Crown> = {
+  owner: Crown,
+  admin: Shield,
+  editor: Pencil,
+  viewer: Eye,
+};
+
+const roleColors: Record<string, string> = {
+  owner: "text-amber-400 bg-amber-500/10",
+  admin: "text-blue-400 bg-blue-500/10",
+  editor: "text-green-400 bg-green-500/10",
+  viewer: "text-white/40 bg-white/[0.06]",
+};
+
+function TeamTabContent() {
+  const [teamData, setTeamData] = useState<TeamData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [inviteEmail, setInviteEmail] = useState("");
+  const [inviteRole, setInviteRole] = useState("editor");
+  const [inviting, setInviting] = useState(false);
+  const [inviteResult, setInviteResult] = useState<{
+    type: "success" | "error";
+    message: string;
+  } | null>(null);
+
+  useEffect(() => {
+    fetch("/api/team")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        setTeamData(d);
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
+  }, []);
+
+  const handleInvite = async () => {
+    if (!inviteEmail.trim() || !inviteEmail.includes("@")) return;
+    setInviting(true);
+    setInviteResult(null);
+    try {
+      const res = await fetch("/api/team/invite", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: inviteEmail, role: inviteRole }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setInviteResult({
+          type: "success",
+          message: `Invite sent to ${inviteEmail}`,
+        });
+        setInviteEmail("");
+      } else {
+        setInviteResult({
+          type: "error",
+          message: data.error || "Failed to send invite",
+        });
+      }
+    } catch {
+      setInviteResult({ type: "error", message: "Failed to send invite" });
+    } finally {
+      setInviting(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="py-12 flex flex-col items-center justify-center gap-3 text-white/40">
+        <Loader2 className="w-5 h-5 animate-spin" />
+        <span className="text-sm">Loading team...</span>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Pricing info */}
+      <div className="rounded-xl border border-blue-500/10 bg-blue-500/[0.03] p-4 sm:p-5">
+        <div className="flex items-center gap-3">
+          <Users className="w-5 h-5 text-blue-400/70 flex-shrink-0" />
+          <div>
+            <div className="text-[14px] sm:text-[15px] font-medium text-white/85">
+              Team & Agency Mode
+            </div>
+            <div className="text-xs sm:text-sm text-white/30">
+              $79/seat/month. Add team members to collaborate on video creation.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Invite form */}
+      <div className="glass-card p-6 space-y-4">
+        <h3 className="font-semibold text-white/90">Invite Team Member</h3>
+        <div className="flex flex-col sm:flex-row gap-3">
+          <div className="flex-1">
+            <input
+              type="email"
+              value={inviteEmail}
+              onChange={(e) => setInviteEmail(e.target.value)}
+              placeholder="colleague@company.com"
+              className="input-field !py-2.5 text-sm w-full"
+              onKeyDown={(e) => {
+                if (e.key === "Enter") handleInvite();
+              }}
+            />
+          </div>
+          <select
+            value={inviteRole}
+            onChange={(e) => setInviteRole(e.target.value)}
+            className="px-3 py-2.5 rounded-xl border border-white/[0.06] bg-transparent text-sm text-white/60 hover:border-white/10 transition-all appearance-none cursor-pointer"
+          >
+            <option value="admin" className="bg-[#0c1018]">
+              Admin
+            </option>
+            <option value="editor" className="bg-[#0c1018]">
+              Editor
+            </option>
+            <option value="viewer" className="bg-[#0c1018]">
+              Viewer
+            </option>
+          </select>
+          <button
+            onClick={handleInvite}
+            disabled={inviting || !inviteEmail.trim()}
+            className="flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-white text-[#050508] text-sm font-medium hover:bg-white/90 transition-all disabled:opacity-50 flex-shrink-0"
+          >
+            {inviting ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <>
+                <Mail className="w-4 h-4" /> Send Invite
+              </>
+            )}
+          </button>
+        </div>
+        {inviteResult && (
+          <div
+            className={`flex items-center gap-2 p-3 rounded-lg text-sm ${
+              inviteResult.type === "success"
+                ? "bg-green-500/10 border border-green-500/20 text-green-400"
+                : "bg-red-500/10 border border-red-500/20 text-red-400"
+            }`}
+          >
+            {inviteResult.type === "success" ? (
+              <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
+            ) : (
+              <XCircle className="w-4 h-4 flex-shrink-0" />
+            )}
+            {inviteResult.message}
+          </div>
+        )}
+      </div>
+
+      {/* Team members list */}
+      <div className="glass-card overflow-hidden">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-white/[0.04]">
+          <h3 className="font-semibold text-white/90">Team Members</h3>
+          <span className="text-xs text-white/30">
+            {teamData?.seats.used || 0} / {teamData?.seats.limit || 1} seats
+          </span>
+        </div>
+        <div className="divide-y divide-white/[0.03]">
+          {teamData?.members.map((member) => {
+            const RoleIcon = roleIcons[member.role] || User;
+            const roleColor = roleColors[member.role] || roleColors.viewer;
+            return (
+              <div
+                key={member.id}
+                className="flex items-center gap-4 px-6 py-4 hover:bg-white/[0.015] transition-colors"
+              >
+                {/* Avatar */}
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+                  {member.name.charAt(0)}
+                </div>
+
+                {/* Info */}
+                <div className="flex-1 min-w-0">
+                  <div className="text-sm font-medium text-white/85 truncate">
+                    {member.name}
+                  </div>
+                  <div className="text-xs text-white/30 truncate">
+                    {member.email}
+                  </div>
+                </div>
+
+                {/* Videos created */}
+                <div className="hidden sm:block text-right">
+                  <div className="text-sm font-medium text-white/60">
+                    {member.videosCreated}
+                  </div>
+                  <div className="text-[10px] text-white/25">videos</div>
+                </div>
+
+                {/* Role badge */}
+                <div
+                  className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium capitalize ${roleColor}`}
+                >
+                  <RoleIcon className="w-3 h-3" />
+                  {member.role}
+                </div>
+
+                {/* Status */}
+                <div
+                  className={`w-2 h-2 rounded-full flex-shrink-0 ${
+                    member.status === "active"
+                      ? "bg-green-400"
+                      : member.status === "pending"
+                      ? "bg-yellow-400"
+                      : "bg-white/20"
+                  }`}
+                  title={member.status}
+                />
+              </div>
+            );
+          })}
+        </div>
+      </div>
     </div>
   );
 }

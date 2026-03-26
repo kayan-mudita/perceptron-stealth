@@ -16,6 +16,12 @@ import {
   Calendar,
   BarChart3,
   Play,
+  AlertTriangle,
+  Info,
+  TrendingUp,
+  MessageSquare,
+  User,
+  Star,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import SessionProvider from "@/components/SessionProvider";
@@ -41,10 +47,10 @@ interface PipelineStep {
 }
 
 const INDUSTRIES = [
-  { id: "real_estate", label: "Real Estate", sub: "Agents, brokers, property managers" },
   { id: "legal", label: "Legal", sub: "Attorneys, law firms, paralegals" },
-  { id: "finance", label: "Finance", sub: "Financial advisors, wealth managers, accountants" },
   { id: "medical", label: "Medical", sub: "Doctors, clinics, health practitioners" },
+  { id: "real_estate", label: "Real Estate", sub: "Agents, brokers, property managers" },
+  { id: "finance", label: "Finance", sub: "Financial advisors, wealth managers, accountants" },
   { id: "creator", label: "Creator", sub: "Influencers, coaches, personal brands" },
   { id: "business", label: "Business", sub: "Consultants, agencies, startups" },
   { id: "other", label: "Other", sub: "Something different entirely" },
@@ -55,7 +61,188 @@ interface UploadedPhoto {
   filename: string;
   url: string;
   previewUrl?: string;
+  quality?: PhotoQuality;
 }
+
+// ─── Photo Quality Scorer (Item 6) ──────────────────────────────────────
+interface PhotoQuality {
+  passed: boolean;
+  width: number;
+  height: number;
+  sizeKB: number;
+  message: string;
+}
+
+function analyzePhotoQuality(file: File): Promise<PhotoQuality> {
+  return new Promise((resolve) => {
+    const img = new Image();
+    const objectUrl = URL.createObjectURL(file);
+    img.onload = () => {
+      const width = img.naturalWidth;
+      const height = img.naturalHeight;
+      const sizeKB = Math.round(file.size / 1024);
+      const dimOk = width >= 300 && height >= 300;
+      const sizeOk = sizeKB >= 50;
+      const passed = dimOk && sizeOk;
+      const message = passed
+        ? "Great photo!"
+        : !dimOk
+          ? "Try a clearer photo"
+          : "File too small, try a higher quality image";
+      URL.revokeObjectURL(objectUrl);
+      resolve({ passed, width, height, sizeKB, message });
+    };
+    img.onerror = () => {
+      URL.revokeObjectURL(objectUrl);
+      resolve({ passed: false, width: 0, height: 0, sizeKB: 0, message: "Could not read image" });
+    };
+    img.src = objectUrl;
+  });
+}
+
+// ─── Photo Quality Badge ────────────────────────────────────────────────
+function PhotoQualityBadge({ quality }: { quality?: PhotoQuality }) {
+  if (!quality) return null;
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 4 }}
+      animate={{ opacity: 1, y: 0 }}
+      className={`absolute bottom-2 left-2 right-2 flex items-center gap-1.5 px-2 py-1 rounded-lg text-[11px] font-medium backdrop-blur-md ${
+        quality.passed
+          ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/20"
+          : "bg-amber-500/20 text-amber-300 border border-amber-500/20"
+      }`}
+    >
+      {quality.passed ? (
+        <Check className="w-3 h-3 flex-shrink-0" />
+      ) : (
+        <AlertTriangle className="w-3 h-3 flex-shrink-0" />
+      )}
+      <span className="truncate">{quality.message}</span>
+    </motion.div>
+  );
+}
+
+// ─── Progress Breadcrumbs (Item 7) ──────────────────────────────────────
+const STEP_LABELS: { key: Step; label: string; time: string }[] = [
+  { key: "industry", label: "Industry", time: "~30 seconds" },
+  { key: "photos", label: "Photos", time: "~30 seconds" },
+  { key: "character", label: "Character Sheet", time: "~30 seconds" },
+  { key: "video", label: "Your Video", time: "~2 minutes" },
+];
+
+function ProgressBreadcrumbs({ currentStep }: { currentStep: Step }) {
+  const currentIndex = STEP_LABELS.findIndex((s) => s.key === currentStep);
+  return (
+    <div className="flex flex-col items-center gap-2">
+      <div className="flex items-center gap-1 sm:gap-2">
+        {STEP_LABELS.map((s, i) => {
+          const isCompleted = i < currentIndex;
+          const isCurrent = i === currentIndex;
+          const isFuture = i > currentIndex;
+          return (
+            <div key={s.key} className="flex items-center gap-1 sm:gap-2">
+              {i > 0 && (
+                <div className={`hidden sm:block w-4 h-px ${isCompleted ? "bg-blue-400/40" : "bg-white/[0.06]"}`} />
+              )}
+              <div className="flex items-center gap-1.5">
+                {isCompleted ? (
+                  <div className="w-5 h-5 rounded-full bg-blue-500/20 border border-blue-500/30 flex items-center justify-center flex-shrink-0">
+                    <Check className="w-3 h-3 text-blue-400" />
+                  </div>
+                ) : isCurrent ? (
+                  <div className="w-5 h-5 rounded-full bg-white/10 border border-white/20 flex items-center justify-center flex-shrink-0">
+                    <div className="w-2 h-2 rounded-full bg-white" />
+                  </div>
+                ) : null}
+                <span
+                  className={`text-[12px] sm:text-[13px] font-medium whitespace-nowrap transition-colors ${
+                    isCurrent
+                      ? "text-white"
+                      : isCompleted
+                        ? "text-white/40"
+                        : "text-white/15"
+                  }`}
+                >
+                  {s.label}
+                </span>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+      {/* Estimated time for current step */}
+      <span className="text-[11px] text-white/20">
+        {STEP_LABELS[currentIndex]?.time}
+      </span>
+      {/* Underline indicator */}
+      <div className="flex gap-1 w-full max-w-xs">
+        {STEP_LABELS.map((s, i) => (
+          <div
+            key={s.key}
+            className={`flex-1 h-0.5 rounded-full transition-all duration-500 ${
+              i < currentIndex
+                ? "bg-blue-400/40"
+                : i === currentIndex
+                  ? "bg-blue-400"
+                  : "bg-white/[0.06]"
+            }`}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ─── Video Format Picker (Item 10) ──────────────────────────────────────
+interface VideoFormat {
+  id: string;
+  title: string;
+  description: string;
+  duration: string;
+  icon: typeof Video;
+  contentType: string;
+  script: string;
+}
+
+const VIDEO_FORMATS: VideoFormat[] = [
+  {
+    id: "market_update",
+    title: "Market Update",
+    description: "Share the latest trends and insights in your industry",
+    duration: "~15 seconds",
+    icon: TrendingUp,
+    contentType: "market_update",
+    script: "A confident professional delivering a concise market update about current trends in their industry. Informative, data-driven, like a trusted advisor.",
+  },
+  {
+    id: "quick_tip",
+    title: "Quick Tip",
+    description: "Share a useful tip your audience can use today",
+    duration: "~15 seconds",
+    icon: MessageSquare,
+    contentType: "quick_tip_8",
+    script: "A confident professional sharing a quick tip relevant to their industry. Natural, conversational, like talking to a friend.",
+  },
+  {
+    id: "personal_intro",
+    title: "Personal Introduction",
+    description: "Introduce yourself to new followers",
+    duration: "~15 seconds",
+    icon: User,
+    contentType: "brand_intro",
+    script: "A warm, authentic personal introduction. Share who you are, what you do, and why you love it. Welcoming and approachable.",
+  },
+  {
+    id: "client_testimonial",
+    title: "Client Testimonial",
+    description: "Highlight a great client experience or result",
+    duration: "~15 seconds",
+    icon: Star,
+    contentType: "testimonial",
+    script: "A professional sharing a client success story. Genuine, specific, and inspiring. Focus on the transformation and results.",
+  },
+];
 
 // ─── Animated Orb (premium loading indicator) ────────────────────────────
 function PulseOrb({ size = 48 }: { size?: number }) {
@@ -202,6 +389,9 @@ function OnboardingFlow() {
   const [pipelineProgress, setPipelineProgress] = useState<ProgressType | null>(null);
   const videoPlayerRef = useRef<HTMLVideoElement>(null);
 
+  // Item 10: Video format selection
+  const [selectedFormat, setSelectedFormat] = useState<VideoFormat | null>(null);
+
   const stepIndex = ["industry", "photos", "character", "video"].indexOf(step);
 
   // Clean up on unmount
@@ -234,6 +424,9 @@ function OnboardingFlow() {
           if (!file.type.startsWith("image/")) continue;
           if (file.size > 10 * 1024 * 1024) { setError("Max 10MB per photo"); continue; }
 
+          // Item 6: Analyze photo quality before upload
+          const quality = await analyzePhotoQuality(file);
+
           const previewUrl = URL.createObjectURL(file);
           const formData = new FormData();
           formData.append("file", file);
@@ -255,7 +448,7 @@ function OnboardingFlow() {
 
           if (photoRes.ok) {
             const saved = await photoRes.json();
-            setPhotos((prev) => [...prev, { ...saved, previewUrl }]);
+            setPhotos((prev) => [...prev, { ...saved, previewUrl, quality }]);
           }
         }
       } catch (err: any) {
@@ -319,6 +512,15 @@ function OnboardingFlow() {
 
   const enterVideoStep = () => {
     setStep("video");
+    // Item 10: Show format picker first instead of auto-generating
+    setVideoPhase("flashback");
+    setSelectedFormat(null);
+    abortRef.current = false;
+  };
+
+  // Item 10: Called after user selects a format
+  const startVideoGeneration = (format: VideoFormat) => {
+    setSelectedFormat(format);
     setVideoPhase("flashback");
     abortRef.current = false;
 
@@ -326,7 +528,7 @@ function OnboardingFlow() {
     setTimeout(() => {
       if (!abortRef.current) {
         setVideoPhase("generating");
-        if (!videoUrl && !videoGenerating) generateFirstVideo();
+        if (!videoUrl && !videoGenerating) generateFirstVideo(format);
       }
     }, 2500);
   };
@@ -347,7 +549,8 @@ function OnboardingFlow() {
 
   const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
-  const generateFirstVideo = async () => {
+  const generateFirstVideo = async (format?: VideoFormat) => {
+    const activeFormat = format || selectedFormat || VIDEO_FORMATS[1]; // fallback to Quick Tip
     setVideoGenerating(true);
     setVideoError(null);
 
@@ -361,14 +564,14 @@ function OnboardingFlow() {
     ]);
 
     try {
-      // Step 1: Create a video record
+      // Step 1: Create a video record (Item 10: use selected format)
       const res = await fetch("/api/videos", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          title: "Your First AI Video",
+          title: `Your First AI Video - ${activeFormat.title}`,
           description: "Generated during onboarding",
-          contentType: "quick_tip_8",
+          contentType: activeFormat.contentType,
           model: "kling_2.6",
         }),
       });
@@ -378,7 +581,7 @@ function OnboardingFlow() {
       updatePipelineStep("create", "done");
       if (abortRef.current) return;
 
-      // Step 2: Kick off generation
+      // Step 2: Kick off generation (Item 10: use selected format's script)
       updatePipelineStep("expand", "active");
       const gen = await fetch("/api/generate", {
         method: "POST",
@@ -386,8 +589,8 @@ function OnboardingFlow() {
         body: JSON.stringify({
           videoId: vid.id,
           model: "kling_2.6",
-          format: "quick_tip_8",
-          script: "A confident professional introducing themselves and sharing a quick tip relevant to their industry. Natural, conversational, like talking to a friend.",
+          format: activeFormat.contentType,
+          script: activeFormat.script,
         }),
       });
 
@@ -599,7 +802,7 @@ function OnboardingFlow() {
     setVideoError(null);
     setVideoUrl(null);
     setVideoPhase("generating");
-    generateFirstVideo();
+    generateFirstVideo(selectedFormat || undefined);
   };
 
   const handleVideoEnded = () => {
@@ -611,28 +814,19 @@ function OnboardingFlow() {
 
   return (
     <div className="min-h-screen bg-[#050508] flex flex-col">
-      {/* Top bar -- hidden during reveal/reaction for immersive feel */}
+      {/* Top bar with logo + breadcrumbs (Item 7) -- hidden during reveal/reaction for immersive feel */}
       <AnimatePresence>
         {!(step === "video" && (videoPhase === "reveal" || videoPhase === "reaction")) && (
           <motion.div
             initial={{ opacity: 1 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.4 }}
-            className="flex items-center justify-between px-6 py-5"
+            className="flex flex-col items-center gap-4 px-6 py-5"
           >
             <span className="text-[15px] font-semibold tracking-tight text-white/90">
               Official <span className="text-blue-400">AI</span>
             </span>
-            <div className="flex items-center gap-1.5">
-              {[0, 1, 2, 3].map((i) => (
-                <div
-                  key={i}
-                  className={`h-1 rounded-full transition-all duration-500 ${
-                    i <= stepIndex ? "bg-white w-6" : "bg-white/10 w-4"
-                  }`}
-                />
-              ))}
-            </div>
+            <ProgressBreadcrumbs currentStep={step} />
           </motion.div>
         )}
       </AnimatePresence>
@@ -652,7 +846,6 @@ function OnboardingFlow() {
           {/* ════ STEP 1: INDUSTRY ════ */}
           {step === "industry" && (
             <div>
-              <p className="text-sm text-white/30 mb-2">Step 1</p>
               <h1 className="text-[28px] font-semibold tracking-tight text-white leading-tight mb-1">
                 What do you do?
               </h1>
@@ -687,7 +880,6 @@ function OnboardingFlow() {
           {/* ════ STEP 2: PHOTOS ════ */}
           {step === "photos" && (
             <div>
-              <p className="text-sm text-white/30 mb-2">Step 2</p>
               <h1 className="text-[28px] font-semibold tracking-tight text-white leading-tight mb-1">
                 Upload your photos
               </h1>
@@ -710,7 +902,7 @@ function OnboardingFlow() {
                 </div>
               )}
 
-              {/* Photo slots */}
+              {/* Photo slots with quality badges (Item 6) */}
               <div className="flex gap-3 mb-8">
                 {[0, 1, 2].map((i) => {
                   const photo = photos[i];
@@ -735,6 +927,8 @@ function OnboardingFlow() {
                           </div>
                         )}
                       </div>
+                      {/* Item 6: Quality badge overlay */}
+                      {photo && <PhotoQualityBadge quality={photo.quality} />}
                       {photo && (
                         <button
                           onClick={() => setPhotos((prev) => prev.filter((_, j) => j !== i))}
@@ -780,6 +974,16 @@ function OnboardingFlow() {
                   )}
                 </div>
               </div>
+
+              {/* Item 8: Skip for now link */}
+              <div className="flex justify-end mt-6">
+                <button
+                  onClick={() => router.push("/dashboard/overview")}
+                  className="text-[13px] text-white/20 hover:text-white/40 transition-colors"
+                >
+                  Skip for now <span aria-hidden="true">&rarr;</span>
+                </button>
+              </div>
             </div>
           )}
 
@@ -791,10 +995,31 @@ function OnboardingFlow() {
                   <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-white/[0.04] mb-6">
                     <Loader2 className="w-5 h-5 text-white/40 animate-spin" />
                   </div>
-                  <h1 className="text-[22px] font-semibold text-white/90 mb-2">Building your avatar</h1>
-                  <p className="text-[14px] text-white/30 max-w-xs mx-auto">
-                    Analyzing your photos and generating a character model. About 20 seconds.
+                  <h1 className="text-[22px] font-semibold text-white/90 mb-2">Building your digital twin</h1>
+                  {/* Item 9: Educational text while generating */}
+                  <p className="text-[14px] text-white/30 max-w-sm mx-auto mb-6">
+                    Mapping your face from 9 angles for perfect video consistency...
                   </p>
+                  <div className="mx-auto max-w-sm rounded-xl border border-white/[0.04] bg-white/[0.02] px-4 py-3">
+                    <div className="flex items-start gap-2.5">
+                      <Info className="w-4 h-4 text-blue-400/60 mt-0.5 flex-shrink-0" />
+                      <div>
+                        <p className="text-[12px] font-medium text-white/50 mb-1">Why 9 angles?</p>
+                        <p className="text-[11px] text-white/25 leading-relaxed">
+                          Traditional AI video uses 1 photo and guesses the rest. We build a complete 3D reference so there&apos;s no uncanny valley.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  {/* Item 8: Skip for now */}
+                  <div className="flex justify-center mt-8">
+                    <button
+                      onClick={() => router.push("/dashboard/overview")}
+                      className="text-[13px] text-white/20 hover:text-white/40 transition-colors"
+                    >
+                      Skip for now <span aria-hidden="true">&rarr;</span>
+                    </button>
+                  </div>
                 </div>
               ) : genError ? (
                 <div className="text-center py-16">
@@ -809,16 +1034,29 @@ function OnboardingFlow() {
                 </div>
               ) : characterSheetUrl ? (
                 <div>
-                  <p className="text-sm text-white/30 mb-2">Step 3</p>
                   <h1 className="text-[28px] font-semibold tracking-tight text-white leading-tight mb-1">
                     Your AI avatar
                   </h1>
-                  <p className="text-[15px] text-white/40 mb-8">
-                    Does this look like you?
+                  {/* Item 9: Explanation text after generated */}
+                  <p className="text-[15px] text-white/40 mb-4">
+                    Your digital twin is ready. We captured your likeness from every angle so videos look like you whether you&apos;re facing the camera or turning to the side.
                   </p>
 
-                  <div className="rounded-2xl overflow-hidden ring-1 ring-white/[0.06] mb-8">
+                  <div className="rounded-2xl overflow-hidden ring-1 ring-white/[0.06] mb-4">
                     <img src={characterSheetUrl} alt="Character Sheet" className="w-full" />
+                  </div>
+
+                  {/* Item 9: Info card about 9 angles */}
+                  <div className="rounded-xl border border-blue-500/10 bg-blue-500/[0.03] px-4 py-3 mb-8">
+                    <div className="flex items-start gap-2.5">
+                      <Info className="w-4 h-4 text-blue-400/60 mt-0.5 flex-shrink-0" />
+                      <div>
+                        <p className="text-[12px] font-medium text-white/50 mb-1">Why 9 angles?</p>
+                        <p className="text-[11px] text-white/25 leading-relaxed">
+                          Traditional AI video uses 1 photo and guesses the rest. We build a complete 3D reference so there&apos;s no uncanny valley.
+                        </p>
+                      </div>
+                    </div>
                   </div>
 
                   <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
@@ -844,6 +1082,16 @@ function OnboardingFlow() {
                       Looks like me <ArrowRight className="w-4 h-4" />
                     </button>
                   </div>
+
+                  {/* Item 8: Skip for now */}
+                  <div className="flex justify-end mt-6">
+                    <button
+                      onClick={() => router.push("/dashboard/overview")}
+                      className="text-[13px] text-white/20 hover:text-white/40 transition-colors"
+                    >
+                      Skip for now <span aria-hidden="true">&rarr;</span>
+                    </button>
+                  </div>
                 </div>
               ) : (
                 <div className="text-center py-16">
@@ -867,8 +1115,58 @@ function OnboardingFlow() {
           {step === "video" && (
             <AnimatePresence mode="wait">
 
-              {/* ── Phase: Flashback (character sheet recall) ── */}
-              {videoPhase === "flashback" && (
+              {/* ── Phase: Flashback — Item 10: Format Picker or transition animation ── */}
+              {videoPhase === "flashback" && !selectedFormat && (
+                <motion.div
+                  key="format-picker"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                  className="py-4"
+                >
+                  <h1 className="text-[28px] font-semibold tracking-tight text-white leading-tight mb-1">
+                    Choose your first video
+                  </h1>
+                  <p className="text-[15px] text-white/40 mb-8">
+                    Pick a format and we&apos;ll generate a personalized video with your AI avatar.
+                  </p>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8">
+                    {VIDEO_FORMATS.map((format) => (
+                      <button
+                        key={format.id}
+                        onClick={() => startVideoGeneration(format)}
+                        className="group text-left px-5 py-5 rounded-xl border border-white/[0.04] hover:border-white/10 hover:bg-white/[0.02] active:bg-white/[0.04] transition-all"
+                      >
+                        <div className="flex items-start gap-3">
+                          <div className="w-9 h-9 rounded-lg bg-white/[0.04] flex items-center justify-center flex-shrink-0 group-hover:bg-white/[0.06] transition-colors">
+                            <format.icon className="w-4.5 h-4.5 text-blue-400/70" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="text-[14px] font-medium text-white/90 mb-0.5">{format.title}</div>
+                            <div className="text-[12px] text-white/30 leading-relaxed">{format.description}</div>
+                            <div className="text-[11px] text-white/15 mt-2">{format.duration}</div>
+                          </div>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Item 8: Skip for now */}
+                  <div className="flex justify-end">
+                    <button
+                      onClick={() => router.push("/dashboard/overview")}
+                      className="text-[13px] text-white/20 hover:text-white/40 transition-colors"
+                    >
+                      Skip for now <span aria-hidden="true">&rarr;</span>
+                    </button>
+                  </div>
+                </motion.div>
+              )}
+
+              {/* ── Phase: Flashback with format selected (transition animation) ── */}
+              {videoPhase === "flashback" && selectedFormat && (
                 <motion.div
                   key="flashback"
                   initial={{ opacity: 0 }}
@@ -887,7 +1185,6 @@ function OnboardingFlow() {
                       <div className="rounded-2xl overflow-hidden ring-1 ring-white/[0.08]">
                         <img src={characterSheetUrl} alt="Your avatar" className="w-full" />
                       </div>
-                      {/* Ambient glow behind the image */}
                       <div
                         className="absolute inset-0 -z-10 rounded-2xl blur-3xl opacity-20"
                         style={{ background: "linear-gradient(135deg, #4c6ef5, #7c3aed)" }}
@@ -912,7 +1209,7 @@ function OnboardingFlow() {
                     transition={{ delay: 0.3, duration: 0.6 }}
                     className="text-[18px] font-medium text-white/70"
                   >
-                    Now let&apos;s bring you to life
+                    Creating your {selectedFormat.title}...
                   </motion.p>
 
                   <motion.div

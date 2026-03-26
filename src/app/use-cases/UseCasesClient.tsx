@@ -17,29 +17,6 @@ import CTASection from "@/components/marketing/CTASection";
 
 const useCases = [
   {
-    icon: Home,
-    industry: "Real Estate",
-    headline: "Post market updates daily without leaving a single showing.",
-    scenario:
-      "Sarah is a top-producing real estate agent in Austin. She knows she needs to post daily market updates, listing tours, and neighborhood guides to stay top-of-mind. But between showings, open houses, and client calls, she never has time to film.",
-    solution:
-      "With Official AI, Sarah uploaded three photos and recorded a 30-second voice sample on Sunday night. By Monday morning, she had a week of content queued up — market update Monday, listing spotlight Tuesday, neighborhood guide Wednesday, home-buying tip Thursday, client testimonial Friday. All featuring her face, her voice, and her branding.",
-    results: [
-      { label: "Videos per week", value: "5" },
-      { label: "Time filming", value: "0 min" },
-      { label: "New leads from content", value: "12/mo" },
-    ],
-    contentTypes: [
-      "Market updates",
-      "Listing tours",
-      "Neighborhood guides",
-      "Home-buying tips",
-      "Client testimonials",
-      "Just-sold announcements",
-    ],
-    accent: "blue",
-  },
-  {
     icon: Scale,
     industry: "Legal",
     headline: "Share legal tips that generate consultations, not liability.",
@@ -63,29 +40,6 @@ const useCases = [
     accent: "violet",
   },
   {
-    icon: TrendingUp,
-    industry: "Financial Services",
-    headline: "Become the go-to advisor in your market with daily commentary.",
-    scenario:
-      "Rachel is a financial advisor managing $50M AUM in Denver. Her competitors are posting daily market commentary on LinkedIn and Instagram. She has the knowledge but posting content feels like a second job she does not have bandwidth for.",
-    solution:
-      "Rachel set up Official AI with her brand colors, headshot, and voice. Now the AI monitors market news and generates daily commentary videos in her voice. She reviews them over morning coffee, approves the ones she likes, and they auto-post to LinkedIn, Instagram, and YouTube by 8am.",
-    results: [
-      { label: "Posts per week", value: "7" },
-      { label: "LinkedIn impressions", value: "45K/mo" },
-      { label: "New AUM inquiries", value: "3/mo" },
-    ],
-    contentTypes: [
-      "Market commentary",
-      "Financial tips",
-      "Retirement planning basics",
-      "Economic news reactions",
-      "Investment strategy explainers",
-      "Tax planning tips",
-    ],
-    accent: "emerald",
-  },
-  {
     icon: HeartPulse,
     industry: "Medical",
     headline: "Share health education without the production overhead.",
@@ -107,6 +61,52 @@ const useCases = [
       "FAQ answers",
     ],
     accent: "rose",
+  },
+  {
+    icon: Home,
+    industry: "Real Estate",
+    headline: "Post market updates daily without leaving a single showing.",
+    scenario:
+      "Sarah is a top-producing real estate agent in Austin. She knows she needs to post daily market updates, listing tours, and neighborhood guides to stay top-of-mind. But between showings, open houses, and client calls, she never has time to film.",
+    solution:
+      "With Official AI, Sarah uploaded three photos and recorded a 30-second voice sample on Sunday night. By Monday morning, she had a week of content queued up -- market update Monday, listing spotlight Tuesday, neighborhood guide Wednesday, home-buying tip Thursday, client testimonial Friday. All featuring her face, her voice, and her branding.",
+    results: [
+      { label: "Videos per week", value: "5" },
+      { label: "Time filming", value: "0 min" },
+      { label: "New leads from content", value: "12/mo" },
+    ],
+    contentTypes: [
+      "Market updates",
+      "Listing tours",
+      "Neighborhood guides",
+      "Home-buying tips",
+      "Client testimonials",
+      "Just-sold announcements",
+    ],
+    accent: "blue",
+  },
+  {
+    icon: TrendingUp,
+    industry: "Financial Services",
+    headline: "Become the go-to advisor in your market with daily commentary.",
+    scenario:
+      "Rachel is a financial advisor managing $50M AUM in Denver. Her competitors are posting daily market commentary on LinkedIn and Instagram. She has the knowledge but posting content feels like a second job she does not have bandwidth for.",
+    solution:
+      "Rachel set up Official AI with her brand colors, headshot, and voice. Now the AI monitors market news and generates daily commentary videos in her voice. She reviews them over morning coffee, approves the ones she likes, and they auto-post to LinkedIn, Instagram, and YouTube by 8am.",
+    results: [
+      { label: "Posts per week", value: "7" },
+      { label: "LinkedIn impressions", value: "45K/mo" },
+      { label: "New AUM inquiries", value: "3/mo" },
+    ],
+    contentTypes: [
+      "Market commentary",
+      "Financial tips",
+      "Retirement planning basics",
+      "Economic news reactions",
+      "Investment strategy explainers",
+      "Tax planning tips",
+    ],
+    accent: "emerald",
   },
   {
     icon: Megaphone,

@@ -36,6 +36,8 @@ export interface GenerateVideoParams {
   duration?: number;
   usePromptEngine?: boolean;
   industry?: string;
+  /** Item 41: Pass true for onboarding videos to personalize the script with the user's name */
+  isOnboarding?: boolean;
 }
 
 export interface GenerateResult {
@@ -366,6 +368,7 @@ export async function generateVideo(params: GenerateVideoParams): Promise<Genera
         userId: params.userId,
         industry: params.industry,
         duration: params.duration,
+        isOnboarding: params.isOnboarding,
       });
       finalScript = expanded.expandedPrompt;
       expandedPrompt = expanded.expandedPrompt;

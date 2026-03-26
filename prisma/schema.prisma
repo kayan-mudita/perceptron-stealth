@@ -24,6 +24,7 @@ model User {
   stripeSubscriptionId    String?
   stripeCurrentPeriodEnd  DateTime?
   emailVerified           Boolean   @default(false)
+  signupRef      String?
   onboarded      Boolean  @default(false)
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
@@ -34,6 +35,7 @@ model User {
   schedules               Schedule[]
   socialAccounts          SocialAccount[]
   brandProfile            BrandProfile?
+  brandKit                BrandKit?
   analytics               AnalyticsEvent[]
   passwordResetTokens     PasswordResetToken[]
   emailVerificationTokens EmailVerificationToken[]
@@ -188,6 +190,34 @@ model CharacterSheetImage {
   position         Int
   angle            String?
   createdAt        DateTime       @default(now())
+}
+
+// ─── Brand Kit ──────────────────────────────────────────────────
+
+model BrandKit {
+  id             String   @id @default(uuid())
+  userId         String   @unique
+  user           User     @relation(fields: [userId], references: [id])
+  logoUrl        String?
+  primaryColor   String   @default("#4c6ef5")
+  secondaryColor String   @default("#7c3aed")
+  introStyle     String   @default("professional") // professional | casual | bold
+  outroTemplate  String   @default("standard")     // standard | minimal | animated
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+// ─── Lifecycle Events (PLG tracking) ─────────────────────────────
+
+model LifecycleEvent {
+  id        String   @id @default(uuid())
+  userId    String
+  event     String   // signup, first_photo, first_video, first_publish, day_7, day_30
+  metadata  String?  // JSON string for extra context
+  createdAt DateTime @default(now())
+
+  @@index([userId, event])
+  @@index([event, createdAt])
 }
 
 // ─── System Configuration ───────────────────────────────────────

@@ -38,6 +38,9 @@ export async function POST(req: NextRequest) {
     }
 
     const { email, password, firstName, lastName, industry, company } = validation.data;
+    // Extract optional ref parameter for cohort tracking (e.g., ref=go from /go landing page)
+    const ref = (body as Record<string, unknown>)?.ref;
+    const signupRef = typeof ref === "string" ? ref.slice(0, 50) : undefined;
 
     const existing = await prisma.user.findUnique({ where: { email } });
     if (existing) {
@@ -54,6 +57,7 @@ export async function POST(req: NextRequest) {
         industry: industry || "other",
         company,
         emailVerified: true,
+        ...(signupRef ? { signupRef } : {}),
       },
     });
 

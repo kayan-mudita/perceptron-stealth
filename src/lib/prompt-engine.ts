@@ -23,6 +23,8 @@ export interface PromptEngineInput {
   industry?: string;
   duration?: number;           // seconds
   format?: "9:16" | "16:9" | "1:1";
+  /** Item 41: If true, injects the user's first name into the prompt for personalized onboarding */
+  isOnboarding?: boolean;
 }
 
 export interface PromptEngineOutput {
@@ -181,6 +183,17 @@ export async function expandPrompt(input: PromptEngineInput): Promise<PromptEngi
   // Get custom system prompt from admin config (if edited)
   const customSystemAdditions = await getConfig("prompt_video_default", "");
 
+  // Item 41: For onboarding videos, inject the user's first name so the avatar addresses them personally
+  let onboardingPersonalization = "";
+  if (input.isOnboarding) {
+    const user = await prisma.user.findUnique({
+      where: { id: input.userId },
+      select: { firstName: true },
+    });
+    const firstName = user?.firstName || "there";
+    onboardingPersonalization = `\n\nONBOARDING PERSONALIZATION: This is the user's very first video. The script MUST address the user by name. Open with: "Hey ${firstName}, I'm your AI content partner..." Make the tone warm, excited, and personal. This video sells the subscription — make the user feel like the AI knows them.`;
+  }
+
   const userMessage = `${modelInstructions}
 
 CHARACTER CONTEXT:${characterContext || "\nNo character details available — create a realistic, relatable person with specific quirks and real clothing. NO generic descriptions."}
@@ -189,7 +202,7 @@ VIDEO REQUEST: "${input.userRequest}"
 FORMAT: ${format} vertical
 TARGET DURATION: ${duration} seconds
 INDUSTRY: ${input.industry || "general"}
-
+${onboardingPersonalization}
 ${customSystemAdditions ? `ADDITIONAL INSTRUCTIONS FROM ADMIN:\n${customSystemAdditions}` : ""}
 
 Generate the full production prompt now. Return valid JSON only.`;
