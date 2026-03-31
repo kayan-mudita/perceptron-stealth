@@ -98,6 +98,13 @@ export async function POST(req: NextRequest) {
 
     const rawScript = script || video?.script || "";
 
+    if (!rawScript.trim()) {
+      return NextResponse.json(
+        { error: "Script is required to generate a video" },
+        { status: 400 }
+      );
+    }
+
     // Plan the composition (pure logic, no API calls)
     const plan = planComposition(selectedFormat, rawScript);
 

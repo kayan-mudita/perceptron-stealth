@@ -50,6 +50,7 @@ export async function POST(req: NextRequest) {
         filename: data.filename,
         url: data.url,
         isPrimary: data.isPrimary,
+        ...(data.photoAnalysis ? { photoAnalysis: data.photoAnalysis } : {}),
       },
     });
 

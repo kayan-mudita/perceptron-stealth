@@ -9,6 +9,12 @@ const VALID_EVENTS = [
   "first_publish",
   "day_7",
   "day_30",
+  // Onboarding funnel
+  "onboarding_photo_captured",
+  "onboarding_character_selected",
+  "onboarding_paywall_viewed",
+  "onboarding_trial_started",
+  "onboarding_skipped",
 ] as const;
 
 type EventName = (typeof VALID_EVENTS)[number];
@@ -43,6 +49,11 @@ export async function POST(req: NextRequest) {
       "first_photo",
       "first_video",
       "first_publish",
+      "onboarding_photo_captured",
+      "onboarding_character_selected",
+      "onboarding_paywall_viewed",
+      "onboarding_trial_started",
+      "onboarding_skipped",
     ];
     if (uniqueEvents.includes(body.event as EventName)) {
       const existing = await prisma.lifecycleEvent.findFirst({

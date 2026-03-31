@@ -70,6 +70,7 @@ export const photoUploadSchema = z.object({
     ),
   url: z.string().url("Invalid URL"),
   isPrimary: z.boolean().optional().default(false),
+  photoAnalysis: z.string().optional(),
 });
 
 export type PhotoUploadInput = z.infer<typeof photoUploadSchema>;
