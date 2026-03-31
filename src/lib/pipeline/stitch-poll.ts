@@ -63,7 +63,8 @@ export async function handleStitchPoll(
     meta.stitchStatus = job.status;
 
     // ---- Completed ----
-    if (job.status === "completed" && job.url) {
+    // Shotstack stage/sandbox returns "done"; production returns "completed"
+    if ((job.status === "completed" || job.status === "done") && job.url) {
       const storedUrl = await ensurePermanentUrl(
         job.url,
         videoKey(userId, videoId, "mp4"),

@@ -4,6 +4,26 @@ import { requireAuth } from "@/lib/api-helpers";
 import { videoUpdateSchema } from "@/lib/validations";
 import { validateBody } from "@/lib/validate";
 
+export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+  try {
+    const { error, user } = await requireAuth();
+    if (error) return error;
+
+    const video = await prisma.video.findFirst({
+      where: { id: params.id, userId: user.id },
+    });
+
+    if (!video) {
+      return NextResponse.json({ error: "Video not found" }, { status: 404 });
+    }
+
+    return NextResponse.json(video);
+  } catch (error) {
+    console.error("[GET /api/videos/:id] Unexpected error:", error);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  }
+}
+
 export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
   try {
     const { error, user } = await requireAuth();

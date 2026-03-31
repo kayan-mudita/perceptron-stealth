@@ -51,6 +51,7 @@ type ShotstackStatus =
   | "rendering"
   | "finalizing"
   | "completed"
+  | "done"       // stage/sandbox environment returns "done" instead of "completed"
   | "failed";
 
 export interface StitchJob {
@@ -132,18 +133,20 @@ function buildTimeline(options: StitchOptions) {
       src: cut.videoUrl,
     };
 
-    // Shotstack clip-level `trim`: seconds to skip from the start of the
+    // Shotstack asset-level `trim`: seconds to skip from the start of the
     // source video.  E.g. trim=0 means "start from the very beginning."
+    // NOTE: `trim` lives on the asset object, NOT on the clip.
     const trimOffset = cut.startFrom && cut.startFrom > 0 ? cut.startFrom : 0;
+    if (trimOffset > 0) {
+      asset.trim = trimOffset;
+    }
 
-    // Build the clip object with explicit trim + length for proper cutting.
+    // Build the clip object with explicit length for proper cutting.
     // `length` = how many seconds this clip plays in the final video
-    // `trim`   = where in the source video to begin playback (seconds)
     const clip: Record<string, unknown> = {
       asset,
       start: currentTime,
       length: cut.trimTo,   // target duration (e.g. 2s for a hook)
-      trim: trimOffset,      // source offset (usually 0 = start from beginning)
       fit: "cover",
     };
 
@@ -374,8 +377,8 @@ export async function waitForStitch(
   while (Date.now() - start < maxWaitMs) {
     const status = await getStitchStatus(jobId);
 
-    // Shotstack returns "completed" (not "done") when the render is finished
-    if (status.status === "completed") {
+    // Shotstack stage returns "done"; production returns "completed"
+    if (status.status === "completed" || status.status === "done") {
       log(`Job ${jobId} completed in ${((Date.now() - start) / 1000).toFixed(1)}s`);
       return status;
     }

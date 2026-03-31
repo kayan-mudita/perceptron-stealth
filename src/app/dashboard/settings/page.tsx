@@ -181,6 +181,8 @@ function SettingsContent() {
   // Profile state
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loadingProfile, setLoadingProfile] = useState(false);
+  const [savingProfile, setSavingProfile] = useState(false);
+  const [profileForm, setProfileForm] = useState({ firstName: "", lastName: "", company: "", industry: "" });
 
   // Billing state
   const [usage, setUsage] = useState<UsageData | null>(null);
@@ -260,6 +262,30 @@ function SettingsContent() {
     }
   }, []);
 
+  // Save profile changes
+  const handleSaveProfile = async () => {
+    setSavingProfile(true);
+    try {
+      const res = await fetch("/api/profile", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(profileForm),
+      });
+      if (res.ok) {
+        const updated = await res.json();
+        setProfile(updated);
+        setToast({ type: "success", message: "Profile saved successfully" });
+      } else {
+        const data = await res.json().catch(() => ({}));
+        setToast({ type: "error", message: data.error || "Failed to save profile" });
+      }
+    } catch {
+      setToast({ type: "error", message: "Failed to save profile" });
+    } finally {
+      setSavingProfile(false);
+    }
+  };
+
   // Fetch user profile for the profile tab
   const fetchProfile = useCallback(async () => {
     setLoadingProfile(true);
@@ -268,6 +294,12 @@ function SettingsContent() {
       if (res.ok) {
         const data = await res.json();
         setProfile(data);
+        setProfileForm({
+          firstName: data.firstName || "",
+          lastName: data.lastName || "",
+          company: data.company || "",
+          industry: data.industry || "",
+        });
       }
     } catch (err) {
       console.error("Failed to fetch profile:", err);
@@ -483,8 +515,8 @@ function SettingsContent() {
                   <input
                     type="text"
                     className="input-field !py-2.5 text-sm"
-                    defaultValue={profile?.firstName || ""}
-                    key={`fn-${profile?.firstName}`}
+                    value={profileForm.firstName}
+                    onChange={(e) => setProfileForm((f) => ({ ...f, firstName: e.target.value }))}
                   />
                 </div>
                 <div>
@@ -494,8 +526,8 @@ function SettingsContent() {
                   <input
                     type="text"
                     className="input-field !py-2.5 text-sm"
-                    defaultValue={profile?.lastName || ""}
-                    key={`ln-${profile?.lastName}`}
+                    value={profileForm.lastName}
+                    onChange={(e) => setProfileForm((f) => ({ ...f, lastName: e.target.value }))}
                   />
                 </div>
                 <div>
@@ -504,9 +536,9 @@ function SettingsContent() {
                   </label>
                   <input
                     type="email"
-                    className="input-field !py-2.5 text-sm"
-                    defaultValue={profile?.email || session?.user?.email || ""}
-                    key={`em-${profile?.email}`}
+                    className="input-field !py-2.5 text-sm opacity-50 cursor-not-allowed"
+                    value={profile?.email || session?.user?.email || ""}
+                    readOnly
                   />
                 </div>
                 <div>
@@ -516,13 +548,18 @@ function SettingsContent() {
                   <input
                     type="text"
                     className="input-field !py-2.5 text-sm"
-                    defaultValue={profile?.company || ""}
-                    key={`co-${profile?.company}`}
+                    value={profileForm.company}
+                    onChange={(e) => setProfileForm((f) => ({ ...f, company: e.target.value }))}
                   />
                 </div>
               </div>
-              <button className="btn-primary gap-2 text-sm !py-2.5">
-                <Check className="w-4 h-4" /> Save Changes
+              <button
+                onClick={handleSaveProfile}
+                disabled={savingProfile}
+                className="btn-primary gap-2 text-sm !py-2.5 disabled:opacity-50"
+              >
+                {savingProfile ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
+                {savingProfile ? "Saving..." : "Save Changes"}
               </button>
             </>
           )}

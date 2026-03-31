@@ -50,26 +50,23 @@ export async function getUsage(userId: string): Promise<UsageInfo> {
     throw new Error("User not found");
   }
 
-  // If Stripe is not configured, enforce the free tier limit (1 video)
-  // so the UI correctly shows "0 of 1" instead of "0 (unlimited)".
+  // In dev mode (no Stripe), give unlimited access so testing isn't blocked
   if (!isStripeConfigured()) {
     const videosUsed = await countVideosThisMonth(userId);
-    const videosLimit = FREE_VIDEO_LIMIT;
-    const videosRemaining = Math.max(0, videosLimit - videosUsed);
     return {
       plan: {
-        plan: (user.plan as any) || "free",
-        label: "Free",
-        videoLimit: videosLimit,
+        plan: (user.plan as any) || "authority",
+        label: "Authority (Dev)",
+        videoLimit: Infinity,
         isActive: true,
         currentPeriodEnd: null,
       },
       videosUsed,
-      videosLimit,
-      canGenerate: videosRemaining > 0,
-      videosRemaining,
-      softLimit: FREE_VIDEO_LIMIT,
-      hardLimit: FREE_VIDEO_LIMIT,
+      videosLimit: Infinity,
+      canGenerate: true,
+      videosRemaining: Infinity,
+      softLimit: Infinity,
+      hardLimit: Infinity,
     };
   }
 
