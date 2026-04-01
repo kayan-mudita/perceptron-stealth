@@ -1,31 +1,24 @@
 "use client";
 
-import { useState, useCallback, useEffect, useRef } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Check } from "lucide-react";
 import SessionProvider from "@/components/SessionProvider";
 import CameraCapture from "@/components/onboarding/CameraCapture";
 import CharacterSheetReveal from "@/components/onboarding/CharacterSheetReveal";
+import VoiceCapture from "@/components/onboarding/VoiceCapture";
 import PaywallStep from "@/components/onboarding/PaywallStep";
 
-type Step = "photo" | "character" | "paywall";
-
-const INDUSTRIES = [
-  { id: "legal", label: "⚖️ Legal" },
-  { id: "real_estate", label: "🏠 Real Estate" },
-  { id: "medical", label: "🩺 Medical" },
-  { id: "finance", label: "📈 Finance" },
-  { id: "creator", label: "🎬 Creator" },
-  { id: "business", label: "💼 Business" },
-];
+type Step = "photo" | "character" | "voice" | "paywall";
 
 const STEP_CONFIG: { key: Step; label: string; emoji: string }[] = [
-  { key: "photo", label: "Your photo", emoji: "📸" },
-  { key: "character", label: "AI twin", emoji: "🤖" },
-  { key: "paywall", label: "Go live", emoji: "🚀" },
+  { key: "photo", label: "Your photo", emoji: "\uD83D\uDCF8" },
+  { key: "character", label: "AI twin", emoji: "\uD83E\uDD16" },
+  { key: "voice", label: "Your voice", emoji: "\uD83C\uDF99\uFE0F" },
+  { key: "paywall", label: "Go live", emoji: "\uD83D\uDE80" },
 ];
 
-// ── Ambient background orbs ──────────────────────────────────────────
+// -- Ambient background orbs --
 function AmbientBg() {
   return (
     <div className="fixed inset-0 pointer-events-none overflow-hidden" aria-hidden>
@@ -51,7 +44,7 @@ function AmbientBg() {
   );
 }
 
-// ── Step bar ──────────────────────────────────────────────────────────
+// -- Step bar --
 function StepBar({ current }: { current: Step }) {
   const idx = STEP_CONFIG.findIndex((s) => s.key === current);
   return (
@@ -63,13 +56,13 @@ function StepBar({ current }: { current: Step }) {
           <div key={s.key} className="flex items-center gap-1.5">
             {i > 0 && (
               <motion.div
-                className="w-8 h-px"
+                className="w-6 h-px"
                 animate={{ backgroundColor: done ? "rgba(99,102,241,0.6)" : "rgba(255,255,255,0.08)" }}
                 transition={{ duration: 0.5 }}
               />
             )}
             <motion.div
-              className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold transition-all"
+              className="flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-semibold transition-all"
               animate={{
                 backgroundColor: active
                   ? "rgba(99,102,241,0.15)"
@@ -106,18 +99,22 @@ function StepBar({ current }: { current: Step }) {
   );
 }
 
-// ── Step headlines ────────────────────────────────────────────────────
+// -- Step headlines --
 const STEP_CONTENT: Record<Step, { heading: string; sub: string }> = {
   photo: {
-    heading: "Let's see that face. 📸",
+    heading: "Let's see that face.",
     sub: "One photo. That's all it takes.",
   },
   character: {
-    heading: "Building your AI twin... 🤖",
-    sub: "Give us 5–8 seconds. You're going to love this.",
+    heading: "Building your AI twin...",
+    sub: "Give us a few seconds. You're going to love this.",
+  },
+  voice: {
+    heading: "Now let's hear you.",
+    sub: "5 seconds is all we need to clone your voice.",
   },
   paywall: {
-    heading: "Your AI twin is alive. 🔥",
+    heading: "Your AI twin is alive.",
     sub: "Start posting daily. Zero effort.",
   },
 };
@@ -133,9 +130,16 @@ function trackEvent(event: string, metadata?: Record<string, unknown>) {
 function OnboardingFlow() {
   const [step, setStep] = useState<Step>("photo");
   const [uploading, setUploading] = useState(false);
+  const [voiceUploading, setVoiceUploading] = useState(false);
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
-  const [industry, setIndustry] = useState("business");
   const [characterSheetUrl, setCharacterSheetUrl] = useState<string | null>(null);
+  const [videoUrl, setVideoUrl] = useState<string | null>(null);
+  const [videoGenerating, setVideoGenerating] = useState(false);
+
+  // Track step transitions
+  useEffect(() => {
+    trackEvent(`onboarding_step_${step}`);
+  }, [step]);
 
   const handlePhotoCapture = useCallback(async (file: File) => {
     setUploading(true);
@@ -158,21 +162,67 @@ function OnboardingFlow() {
         body: JSON.stringify({ filename: file.name, url: uploadedUrl, isPrimary: true }),
       });
 
-      trackEvent("onboarding_photo_captured", { industry });
+      trackEvent("onboarding_photo_captured");
       setPhotoUrl(uploadedUrl);
       setStep("character");
     } catch {
+      // Still advance so user isn't stuck
       setStep("character");
     } finally {
       setUploading(false);
     }
-  }, [industry]);
+  }, []);
 
   const handleSheetSelect = useCallback((poseUrl: string) => {
     trackEvent("onboarding_character_selected");
     setCharacterSheetUrl(poseUrl);
-    setStep("paywall");
+    setStep("voice");
   }, []);
+
+  // Kick off preview video generation in the background
+  const generatePreviewVideo = useCallback(async () => {
+    setVideoGenerating(true);
+    try {
+      const res = await fetch("/api/onboarding/preview-video", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ characterSheetUrl, photoUrl }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.videoUrl) setVideoUrl(data.videoUrl);
+      }
+    } catch {
+      // Non-blocking — paywall still works without the video
+    } finally {
+      setVideoGenerating(false);
+    }
+  }, [characterSheetUrl, photoUrl]);
+
+  const handleVoiceCapture = useCallback(async (audioBlob: Blob) => {
+    setVoiceUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append("audio", audioBlob, `voice-${Date.now()}.webm`);
+
+      const res = await fetch("/api/onboarding/voice", { method: "POST", body: formData });
+      if (res.ok) {
+        trackEvent("onboarding_voice_cloned");
+      }
+    } catch {
+      // Non-blocking: voice clone can be retried later
+    } finally {
+      setVoiceUploading(false);
+      setStep("paywall");
+      generatePreviewVideo();
+    }
+  }, [generatePreviewVideo]);
+
+  const handleSkipVoice = useCallback(() => {
+    trackEvent("onboarding_voice_skipped");
+    setStep("paywall");
+    generatePreviewVideo();
+  }, [generatePreviewVideo]);
 
   const { heading, sub } = STEP_CONTENT[step];
 
@@ -188,7 +238,7 @@ function OnboardingFlow() {
           className="flex items-center gap-2"
         >
           <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center">
-            <span className="text-[12px]">✦</span>
+            <span className="text-[12px]">{"\u2726"}</span>
           </div>
           <span className="text-[15px] font-bold text-white tracking-tight">Official AI</span>
         </motion.div>
@@ -231,35 +281,7 @@ function OnboardingFlow() {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -24 }}
                 transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-                className="space-y-5"
               >
-                {/* Industry picker */}
-                <div className="space-y-2.5">
-                  <p className="text-[11px] font-bold text-white/30 uppercase tracking-[0.12em]">
-                    What do you do?
-                  </p>
-                  <div className="flex flex-wrap gap-2">
-                    {INDUSTRIES.map((ind, i) => (
-                      <motion.button
-                        key={ind.id}
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: i * 0.04 }}
-                        onClick={() => setIndustry(ind.id)}
-                        className={`px-3 py-1.5 rounded-xl text-[12px] font-semibold transition-all ${
-                          industry === ind.id
-                            ? "bg-indigo-500/20 border border-indigo-400/40 text-indigo-300 shadow-[0_0_12px_rgba(99,102,241,0.2)]"
-                            : "bg-white/[0.04] border border-white/[0.07] text-white/40 hover:text-white/60 hover:border-white/[0.12]"
-                        }`}
-                      >
-                        {ind.label}
-                      </motion.button>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="h-px bg-gradient-to-r from-transparent via-white/[0.06] to-transparent" />
-
                 <CameraCapture
                   onCapture={handlePhotoCapture}
                   uploading={uploading}
@@ -277,9 +299,31 @@ function OnboardingFlow() {
               >
                 <CharacterSheetReveal
                   photoUrl={photoUrl}
-                  industry={industry}
+                  industry="business"
                   onSelect={handleSheetSelect}
                 />
+              </motion.div>
+            )}
+
+            {step === "voice" && (
+              <motion.div
+                key="voice"
+                initial={{ opacity: 0, x: 24 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -24 }}
+                transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                className="space-y-3"
+              >
+                <VoiceCapture
+                  onCapture={handleVoiceCapture}
+                  uploading={voiceUploading}
+                />
+                <button
+                  onClick={handleSkipVoice}
+                  className="w-full py-2 text-[12px] text-white/15 hover:text-white/30 transition-colors"
+                >
+                  Skip for now — you can add your voice later
+                </button>
               </motion.div>
             )}
 
@@ -291,7 +335,7 @@ function OnboardingFlow() {
                 exit={{ opacity: 0, x: -24 }}
                 transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
               >
-                <PaywallStep characterSheetUrl={characterSheetUrl ?? undefined} />
+                <PaywallStep videoUrl={videoUrl ?? undefined} videoGenerating={videoGenerating} />
               </motion.div>
             )}
 

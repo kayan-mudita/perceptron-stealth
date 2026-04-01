@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Check, ArrowRight, Loader2, Zap, Star, TrendingUp, Clock } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { Play, ArrowRight, Loader2, Zap, Star, TrendingUp, Clock } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const FEATURES = [
@@ -19,7 +19,8 @@ const SOCIAL_PROOF = [
 ];
 
 interface PaywallStepProps {
-  characterSheetUrl?: string;
+  videoUrl?: string;
+  videoGenerating?: boolean;
 }
 
 function trackEvent(event: string) {
@@ -30,9 +31,11 @@ function trackEvent(event: string) {
   }).catch(() => {});
 }
 
-export default function PaywallStep({ characterSheetUrl }: PaywallStepProps) {
+export default function PaywallStep({ videoUrl, videoGenerating }: PaywallStepProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [videoPlaying, setVideoPlaying] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   // Track paywall view once on mount
   useEffect(() => { trackEvent("onboarding_paywall_viewed"); }, []);
@@ -76,31 +79,65 @@ export default function PaywallStep({ characterSheetUrl }: PaywallStepProps) {
   return (
     <div className="w-full max-w-sm mx-auto space-y-5">
 
-      {/* Character sheet peek */}
-      {characterSheetUrl && (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-          className="relative rounded-2xl overflow-hidden h-32"
-        >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={characterSheetUrl}
-            alt="Your AI twin"
-            className="w-full h-full object-cover object-top opacity-50 scale-110"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#060610] via-[#060610]/60 to-transparent" />
-          <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/10 via-transparent to-violet-500/10" />
-          <div className="absolute bottom-0 inset-x-0 p-4">
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <p className="text-[13px] font-bold text-white">Your AI twin is ready</p>
-            </div>
-            <p className="text-[11px] text-white/40 mt-0.5">Waiting for you to go live</p>
+      {/* Video preview */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+        className="relative rounded-2xl overflow-hidden aspect-[9/16] max-h-[280px] bg-black/40 border border-white/[0.08]"
+      >
+        {videoGenerating && !videoUrl && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
+            <motion.div
+              className="w-10 h-10 border-2 border-indigo-500/40 border-t-indigo-400 rounded-full"
+              animate={{ rotate: 360 }}
+              transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+            />
+            <p className="text-[13px] font-semibold text-white/50">Rendering your first video...</p>
+            <p className="text-[11px] text-white/25">Your face. Your voice. Almost ready.</p>
           </div>
-        </motion.div>
-      )}
+        )}
+
+        {videoUrl && (
+          <>
+            <video
+              ref={videoRef}
+              src={videoUrl}
+              className="w-full h-full object-cover"
+              playsInline
+              loop
+              onPlay={() => setVideoPlaying(true)}
+              onPause={() => setVideoPlaying(false)}
+              onClick={() => {
+                if (videoRef.current?.paused) videoRef.current.play();
+                else videoRef.current?.pause();
+              }}
+            />
+            {!videoPlaying && (
+              <div
+                className="absolute inset-0 flex items-center justify-center bg-black/30 cursor-pointer"
+                onClick={() => videoRef.current?.play()}
+              >
+                <motion.div
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  className="w-14 h-14 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center"
+                >
+                  <Play className="w-6 h-6 text-white ml-0.5" />
+                </motion.div>
+              </div>
+            )}
+          </>
+        )}
+
+        {!videoGenerating && !videoUrl && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
+            <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            <p className="text-[13px] font-bold text-white">Your AI twin is ready</p>
+            <p className="text-[11px] text-white/40">Video preview coming soon</p>
+          </div>
+        )}
+      </motion.div>
 
       {/* Main pricing card */}
       <motion.div
