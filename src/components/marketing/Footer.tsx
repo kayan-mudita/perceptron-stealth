@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ArrowRight, Play } from "lucide-react";
 
 const footerLinks = {
   Product: [
@@ -6,9 +7,8 @@ const footerLinks = {
     { label: "Features", href: "/features" },
     { label: "Pricing", href: "/pricing" },
     { label: "Compare", href: "/compare" },
-    { label: "Demo", href: "/demo" },
   ],
-  Industries: [
+  Solutions: [
     { label: "Real Estate", href: "/for/realtors" },
     { label: "Legal", href: "/for/attorneys" },
     { label: "Medical", href: "/for/doctors" },
@@ -18,25 +18,57 @@ const footerLinks = {
   Learn: [
     { label: "Guides", href: "/learn" },
     { label: "Blog", href: "/blog" },
-    { label: "Use Cases", href: "/use-cases" },
-    { label: "Compare", href: "/compare" },
   ],
   Company: [
     { label: "About", href: "/about" },
     { label: "Privacy Policy", href: "/privacy" },
     { label: "Terms of Service", href: "/terms" },
   ],
-  Account: [
-    { label: "Log in", href: "/auth/login" },
-    { label: "Sign up", href: "/auth/signup" },
-  ],
 };
 
 export default function Footer() {
   return (
     <footer className="border-t border-white/[0.04]">
-      <div className="max-w-6xl mx-auto px-6 py-16">
-        <div className="grid grid-cols-2 md:grid-cols-6 gap-10">
+      {/* Footer CTA banner */}
+      <div className="max-w-6xl mx-auto px-6 pt-16 pb-10">
+        <div className="relative p-8 sm:p-10 rounded-2xl card-hairline overflow-hidden">
+          {/* Background glow */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[300px] pointer-events-none">
+            <div className="absolute inset-0 bg-blue-500/[0.04] rounded-full blur-[80px]" />
+          </div>
+
+          <div className="relative flex flex-col sm:flex-row items-center justify-between gap-6">
+            <div>
+              <h3 className="text-[20px] sm:text-[24px] font-bold text-white mb-2">
+                See your AI twin in 30 seconds
+              </h3>
+              <p className="text-[14px] text-white/30 max-w-md">
+                Upload one photo, no signup required. See what AI video looks like with your face.
+              </p>
+            </div>
+            <div className="flex items-center gap-3 flex-shrink-0">
+              <Link
+                href="/demo"
+                className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-white text-[#050508] text-[14px] font-semibold hover:bg-white/90 transition-all"
+              >
+                <Play className="w-4 h-4" />
+                Try the demo
+              </Link>
+              <Link
+                href="/auth/signup"
+                className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl border border-white/[0.1] text-white/50 text-[14px] font-medium hover:text-white/70 hover:border-white/[0.15] transition-all"
+              >
+                Sign up
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Footer columns */}
+      <div className="max-w-6xl mx-auto px-6 pb-16">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-10">
           {/* Brand column */}
           <div className="col-span-2 md:col-span-1">
             <Link href="/" className="text-[15px] font-semibold tracking-tight">
@@ -46,7 +78,6 @@ export default function Footer() {
               Your AI twin, posting for you. Studio-quality video content without filming.
             </p>
 
-            {/* Contact */}
             <a
               href="mailto:hello@officialai.com"
               className="block text-[13px] text-white/25 hover:text-white/50 transition-colors mt-4"

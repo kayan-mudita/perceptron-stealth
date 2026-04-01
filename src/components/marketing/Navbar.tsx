@@ -12,10 +12,11 @@ import {
   HeartPulse,
   TrendingUp,
   Sparkles,
-  BarChart3,
+  BookOpen,
   FileText,
   ArrowRightLeft,
-  BookOpen,
+  ArrowRight,
+  Play,
 } from "lucide-react";
 
 const mainLinks = [
@@ -24,11 +25,11 @@ const mainLinks = [
   { label: "Pricing", href: "/pricing" },
 ];
 
-const industryLinks = [
-  { label: "Real Estate", href: "/for/realtors", icon: Home, desc: "Listing tours, market updates" },
-  { label: "Legal", href: "/for/attorneys", icon: Scale, desc: "Know-your-rights, case results" },
-  { label: "Medical", href: "/for/doctors", icon: HeartPulse, desc: "Health tips, patient education" },
-  { label: "Financial Advisors", href: "/for/advisors", icon: TrendingUp, desc: "Market commentary, tips" },
+const solutionLinks = [
+  { label: "For Real Estate", href: "/for/realtors", icon: Home, desc: "Listing tours, market updates" },
+  { label: "For Legal", href: "/for/attorneys", icon: Scale, desc: "Know-your-rights, case results" },
+  { label: "For Medical", href: "/for/doctors", icon: HeartPulse, desc: "Health tips, patient education" },
+  { label: "For Financial Advisors", href: "/for/advisors", icon: TrendingUp, desc: "Market commentary, tips" },
 ];
 
 const learnLinks = [
@@ -36,7 +37,6 @@ const learnLinks = [
   { label: "Use Cases", href: "/use-cases", icon: Sparkles, desc: "How professionals use Official AI" },
   { label: "Compare", href: "/compare", icon: ArrowRightLeft, desc: "Official AI vs alternatives" },
   { label: "Blog", href: "/blog", icon: FileText, desc: "AI video & content strategy" },
-  { label: "About", href: "/about", icon: BarChart3, desc: "Our mission and team" },
 ];
 
 export default function Navbar() {
@@ -69,14 +69,12 @@ export default function Navbar() {
     };
   }, [mobileOpen]);
 
-  // Close on route change
   useEffect(() => {
     setMobileOpen(false);
     setActiveDropdown(null);
     setMobileAccordion(null);
   }, [pathname]);
 
-  // Close dropdown on click outside
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
       if (navRef.current && !navRef.current.contains(e.target as Node)) {
@@ -116,40 +114,26 @@ export default function Navbar() {
 
           {/* Desktop nav */}
           <div className="hidden md:flex items-center gap-1">
-            {mainLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={`px-4 py-2 text-[13px] transition-colors rounded-lg hover:bg-white/[0.03] ${
-                  pathname === link.href
-                    ? "text-white/70"
-                    : "text-white/40 hover:text-white/70"
-                }`}
-              >
-                {link.label}
-              </Link>
-            ))}
-
-            {/* Industries dropdown */}
+            {/* Solutions dropdown — leads the nav */}
             <div className="relative">
               <button
-                onClick={() => toggleDropdown("industries")}
+                onClick={() => toggleDropdown("solutions")}
                 className={`flex items-center gap-1 px-4 py-2 text-[13px] transition-colors rounded-lg hover:bg-white/[0.03] ${
-                  activeDropdown === "industries" || pathname.startsWith("/for/")
+                  activeDropdown === "solutions" || pathname.startsWith("/for/")
                     ? "text-white/70"
                     : "text-white/40 hover:text-white/70"
                 }`}
               >
-                Industries
+                Solutions
                 <ChevronDown
                   className={`w-3 h-3 transition-transform duration-200 ${
-                    activeDropdown === "industries" ? "rotate-180" : ""
+                    activeDropdown === "solutions" ? "rotate-180" : ""
                   }`}
                 />
               </button>
-              {activeDropdown === "industries" && (
+              {activeDropdown === "solutions" && (
                 <div className="absolute top-full left-0 mt-2 w-[280px] p-2 rounded-xl border border-white/[0.08] bg-[#0a0e17]/95 backdrop-blur-xl shadow-2xl shadow-black/40">
-                  {industryLinks.map((link) => (
+                  {solutionLinks.map((link) => (
                     <Link
                       key={link.href}
                       href={link.href}
@@ -168,16 +152,42 @@ export default function Navbar() {
                       </div>
                     </Link>
                   ))}
+                  {/* Dropdown CTA */}
+                  <div className="mt-1 pt-2 border-t border-white/[0.06]">
+                    <Link
+                      href="/use-cases"
+                      className="flex items-center justify-between p-3 rounded-lg hover:bg-white/[0.04] transition-colors group"
+                    >
+                      <span className="text-[12px] text-white/30 group-hover:text-white/50 transition-colors">
+                        View all use cases
+                      </span>
+                      <ArrowRight className="w-3 h-3 text-white/20 group-hover:text-white/40 transition-colors" />
+                    </Link>
+                  </div>
                 </div>
               )}
             </div>
+
+            {mainLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={`px-4 py-2 text-[13px] transition-colors rounded-lg hover:bg-white/[0.03] ${
+                  pathname === link.href
+                    ? "text-white/70"
+                    : "text-white/40 hover:text-white/70"
+                }`}
+              >
+                {link.label}
+              </Link>
+            ))}
 
             {/* Learn dropdown */}
             <div className="relative">
               <button
                 onClick={() => toggleDropdown("learn")}
                 className={`flex items-center gap-1 px-4 py-2 text-[13px] transition-colors rounded-lg hover:bg-white/[0.03] ${
-                  activeDropdown === "learn"
+                  activeDropdown === "learn" || pathname.startsWith("/learn") || pathname.startsWith("/blog")
                     ? "text-white/70"
                     : "text-white/40 hover:text-white/70"
                 }`}
@@ -215,11 +225,18 @@ export default function Navbar() {
             </div>
           </div>
 
-          {/* Desktop CTA */}
+          {/* Desktop CTA — dual path: demo (low friction) + signup */}
           <div className="hidden md:flex items-center gap-3 z-10">
             <Link
+              href="/demo"
+              className="text-[13px] text-white/40 hover:text-white/70 transition-colors px-4 py-2 flex items-center gap-1.5"
+            >
+              <Play className="w-3 h-3" />
+              Demo
+            </Link>
+            <Link
               href="/auth/login"
-              className="text-[13px] text-white/40 hover:text-white/70 transition-colors px-4 py-2"
+              className="text-[13px] text-white/40 hover:text-white/70 transition-colors px-3 py-2"
             >
               Log in
             </Link>
@@ -264,37 +281,22 @@ export default function Navbar() {
           }`}
         >
           <div className="max-w-sm mx-auto space-y-1">
-            {/* Main links */}
-            {mainLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={`block text-[16px] py-3 px-4 rounded-lg transition-colors ${
-                  pathname === link.href
-                    ? "text-white/90 bg-white/[0.04]"
-                    : "text-white/50 active:text-white/90 active:bg-white/[0.04]"
-                }`}
-              >
-                {link.label}
-              </Link>
-            ))}
-
-            {/* Industries accordion */}
+            {/* Solutions accordion — leads mobile nav */}
             <div>
               <button
-                onClick={() => setMobileAccordion(mobileAccordion === "industries" ? null : "industries")}
+                onClick={() => setMobileAccordion(mobileAccordion === "solutions" ? null : "solutions")}
                 className="w-full flex items-center justify-between text-[16px] py-3 px-4 rounded-lg text-white/50 active:text-white/90 transition-colors"
               >
-                Industries
+                Solutions
                 <ChevronDown
                   className={`w-4 h-4 transition-transform duration-200 ${
-                    mobileAccordion === "industries" ? "rotate-180" : ""
+                    mobileAccordion === "solutions" ? "rotate-180" : ""
                   }`}
                 />
               </button>
-              {mobileAccordion === "industries" && (
+              {mobileAccordion === "solutions" && (
                 <div className="pl-4 space-y-1 mt-1">
-                  {industryLinks.map((link) => (
+                  {solutionLinks.map((link) => (
                     <Link
                       key={link.href}
                       href={link.href}
@@ -311,6 +313,21 @@ export default function Navbar() {
                 </div>
               )}
             </div>
+
+            {/* Main links */}
+            {mainLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={`block text-[16px] py-3 px-4 rounded-lg transition-colors ${
+                  pathname === link.href
+                    ? "text-white/90 bg-white/[0.04]"
+                    : "text-white/50 active:text-white/90 active:bg-white/[0.04]"
+                }`}
+              >
+                {link.label}
+              </Link>
+            ))}
 
             {/* Learn accordion */}
             <div>
@@ -345,20 +362,41 @@ export default function Navbar() {
               )}
             </div>
 
-            {/* Divider + auth */}
+            {/* About — standalone, not inside Learn */}
+            <Link
+              href="/about"
+              className={`block text-[16px] py-3 px-4 rounded-lg transition-colors ${
+                pathname === "/about"
+                  ? "text-white/90 bg-white/[0.04]"
+                  : "text-white/50 active:text-white/90 active:bg-white/[0.04]"
+              }`}
+            >
+              About
+            </Link>
+
+            {/* Divider + dual CTA: Demo (low friction) + Signup */}
             <div className="pt-4 mt-4 border-t border-white/[0.06] space-y-2">
               <Link
-                href="/auth/login"
-                className="block text-center text-[15px] text-white/40 active:text-white/70 transition-colors py-3 px-4 rounded-lg"
+                href="/demo"
+                className="flex items-center justify-center gap-2 text-[15px] px-6 py-3.5 rounded-xl bg-white text-[#050508] font-semibold active:bg-white/80 transition-colors"
               >
-                Log in
+                <Play className="w-4 h-4" />
+                Try the demo — no signup
               </Link>
-              <Link
-                href="/auth/signup"
-                className="block text-center text-[15px] px-6 py-3.5 rounded-xl bg-white text-[#050508] font-semibold active:bg-white/80 transition-colors"
-              >
-                Start free trial
-              </Link>
+              <div className="flex items-center gap-3">
+                <Link
+                  href="/auth/login"
+                  className="flex-1 text-center text-[14px] text-white/40 active:text-white/70 transition-colors py-3 px-4 rounded-lg border border-white/[0.06]"
+                >
+                  Log in
+                </Link>
+                <Link
+                  href="/auth/signup"
+                  className="flex-1 text-center text-[14px] text-white/60 active:text-white/90 transition-colors py-3 px-4 rounded-lg border border-white/[0.08] bg-white/[0.04]"
+                >
+                  Sign up
+                </Link>
+              </div>
             </div>
           </div>
         </div>
