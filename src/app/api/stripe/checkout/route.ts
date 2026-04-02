@@ -44,8 +44,8 @@ export async function POST(req: NextRequest) {
       userEmail: dbUser.email,
       plan,
       stripeCustomerId: dbUser.stripeCustomerId,
-      successUrl: `${origin}/dashboard/settings?tab=plan&checkout=success`,
-      cancelUrl: `${origin}/dashboard/settings?tab=plan&checkout=cancelled`,
+      successUrl: `${origin}/dashboard/welcome?checkout=success`,
+      cancelUrl: `${origin}/auth/onboarding?checkout=cancelled`,
     });
 
     return NextResponse.json({ url: session.url });

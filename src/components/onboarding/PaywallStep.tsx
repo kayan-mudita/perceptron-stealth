@@ -60,8 +60,8 @@ export default function PaywallStep({ videoUrl, videoGenerating }: PaywallStepPr
       if (data.url) {
         window.location.href = data.url;
       } else {
-        await fetch("/api/onboarding/complete", { method: "POST" }).catch(() => {});
-        window.location.href = "/dashboard";
+        // Dev mode (Stripe not configured) — go to industry collection
+        window.location.href = "/dashboard/welcome";
       }
     } catch {
       setError("Something went wrong — please try again");
@@ -72,8 +72,7 @@ export default function PaywallStep({ videoUrl, videoGenerating }: PaywallStepPr
   const skipToDashboard = async () => {
     trackEvent("onboarding_skipped");
     setLoading(true);
-    await fetch("/api/onboarding/complete", { method: "POST" }).catch(() => {});
-    window.location.href = "/dashboard";
+    window.location.href = "/dashboard/welcome";
   };
 
   return (

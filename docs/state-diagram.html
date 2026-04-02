@@ -535,16 +535,16 @@
      ═══════════════════════════════════════════════════════════ -->
 <div class="swim-lane">
   <div class="swim-lane-header">
-    <span class="swim-lane-label">Onboarding Flow</span>
+    <span class="swim-lane-label">Onboarding Flow (V2)</span>
     <span class="swim-lane-badge onboarding">User-Facing</span>
     <span style="font-size:11px;color:var(--text-dim);margin-left:8px;">
-      /auth/onboarding &mdash; 4 steps: Industry &rarr; Photos &rarr; Character Sheet &rarr; First Video
+      /auth/onboarding &mdash; 4 steps: Photo &rarr; AI Twin (Character Sheet) &rarr; Your Voice &rarr; Go Live (Paywall + Video Preview)
     </span>
   </div>
 
   <div class="flow-row">
 
-    <!-- 1. SIGNUP -->
+    <!-- 0. SIGNUP -->
     <div class="state-box api" onclick="toggle(this)">
       <span class="expand-hint">click</span>
       <div class="state-head">
@@ -552,7 +552,7 @@
         <div>
           <div class="state-title">Signup</div>
           <div class="state-method"><span class="method method-post">POST</span> /api/auth/signup</div>
-          <div class="state-desc">Create user account with email, password, name, industry, optional ref code</div>
+          <div class="state-desc">Create user account with email, password, name. Industry moved to post-payment.</div>
         </div>
       </div>
       <div class="state-detail">
@@ -563,8 +563,6 @@
             <li>password: string</li>
             <li>firstName: string</li>
             <li>lastName: string</li>
-            <li>industry?: string</li>
-            <li>company?: string</li>
             <li>ref?: string (cohort tracking)</li>
           </ul>
         </div>
@@ -573,8 +571,7 @@
           <ul class="detail-list output">
             <li>id: string (user ID)</li>
             <li>email: string</li>
-            <li>firstName: string</li>
-            <li>lastName: string</li>
+            <li>firstName, lastName: string</li>
           </ul>
         </div>
         <div class="detail-section">
@@ -590,51 +587,15 @@
 
     <div class="arrow-connector"><svg class="arrow-svg" viewBox="0 0 40 20"><path d="M0 10 L30 10" stroke="#2a2a3a" stroke-width="1.5" fill="none"/><path d="M26 5 L34 10 L26 15" stroke="#4c6ef5" stroke-width="1.5" fill="none"/></svg></div>
 
-    <!-- 2. INDUSTRY SELECTION -->
-    <div class="state-box user" onclick="toggle(this)">
-      <span class="expand-hint">click</span>
-      <div class="state-head">
-        <div class="state-icon user">1</div>
-        <div>
-          <div class="state-title">Select Industry</div>
-          <div class="state-method"><span class="method method-user">UI</span> Step 1 of 4</div>
-          <div class="state-desc">User picks one of 7 industries. Determines background presets, prompt context, and character sheet generation.</div>
-        </div>
-      </div>
-      <div class="state-detail">
-        <div class="detail-section">
-          <div class="detail-label input">Available Industries</div>
-          <ul class="detail-list input">
-            <li>legal</li>
-            <li>medical</li>
-            <li>real_estate</li>
-            <li>finance</li>
-            <li>creator</li>
-            <li>business</li>
-            <li>other</li>
-          </ul>
-        </div>
-        <div class="detail-section">
-          <div class="detail-label output">Outputs</div>
-          <ul class="detail-list output">
-            <li>selectedIndustry: string</li>
-            <li>Auto-advances to Step 2 after 250ms</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-
-    <div class="arrow-connector"><svg class="arrow-svg" viewBox="0 0 40 20"><path d="M0 10 L30 10" stroke="#2a2a3a" stroke-width="1.5" fill="none"/><path d="M26 5 L34 10 L26 15" stroke="#f59e0b" stroke-width="1.5" fill="none"/></svg></div>
-
-    <!-- 3. PHOTO UPLOAD -->
+    <!-- 1. PHOTO CAPTURE -->
     <div class="state-box api" onclick="toggle(this)">
       <span class="expand-hint">click</span>
       <div class="state-head">
-        <div class="state-icon api">2</div>
+        <div class="state-icon api">1</div>
         <div>
-          <div class="state-title">Upload Photos</div>
+          <div class="state-title">Photo Capture</div>
           <div class="state-method"><span class="method method-post">POST</span> /api/upload</div>
-          <div class="state-desc">1-3 photos uploaded to Supabase Storage. Client-side quality scoring. DB record created per photo.</div>
+          <div class="state-desc">Webcam capture (getUserMedia) or file upload. 1-3 photos to Supabase Storage. Client-side quality scoring.</div>
         </div>
       </div>
       <div class="state-detail">
@@ -642,7 +603,7 @@
           <div class="detail-label input">Inputs</div>
           <ul class="detail-list input">
             <li>file: File (multipart/form-data)</li>
-            <li>type: "photo"</li>
+            <li>Source: webcam shutter OR file upload</li>
             <li>MIME: jpeg, png, webp, heic, heif</li>
             <li>Max size: 10 MB</li>
             <li>Client quality check: 300x300px min</li>
@@ -664,159 +625,172 @@
             <li><span class="ext-badge prisma">Prisma</span> Photo.create() &mdash; first photo is isPrimary: true</li>
           </ul>
         </div>
+        <div class="detail-section">
+          <div class="detail-label">Analytics Event</div>
+          <ul class="detail-list input">
+            <li>trackEvent("onboarding_photo_uploaded")</li>
+          </ul>
+        </div>
       </div>
     </div>
 
     <div class="arrow-connector"><svg class="arrow-svg" viewBox="0 0 40 20"><path d="M0 10 L30 10" stroke="#2a2a3a" stroke-width="1.5" fill="none"/><path d="M26 5 L34 10 L26 15" stroke="#4c6ef5" stroke-width="1.5" fill="none"/></svg></div>
 
-    <!-- 4. CHARACTER SHEET -->
+    <!-- 2. CHARACTER SHEET (AI TWIN) -->
     <div class="state-box ext" onclick="toggle(this)">
       <span class="expand-hint">click</span>
       <div class="state-head">
-        <div class="state-icon ext">3</div>
+        <div class="state-icon ext">2</div>
         <div>
-          <div class="state-title">Character Sheet Generation</div>
+          <div class="state-title">AI Twin (Character Sheet)</div>
           <div class="state-method"><span class="method method-post">POST</span> /api/character-sheet</div>
-          <div class="state-desc">Generates poses sheet (3x3 grid, user-facing) and 360-degree sheet (2x3 grid, backend-only) in parallel via Gemini.</div>
+          <div class="state-desc">Generates poses sheet (3x3) + 360&deg; sheet in parallel via Gemini. Reveals with confetti animation &mdash; first "wow moment."</div>
         </div>
       </div>
       <div class="state-detail">
         <div class="detail-section">
           <div class="detail-label input">Inputs</div>
           <ul class="detail-list input">
-            <li>photoUrls: string[] (from upload step)</li>
-            <li>industry: string (from step 1)</li>
+            <li>photoUrls: string[] (from step 1)</li>
+            <li>industry: "business" (hardcoded, moved post-paywall)</li>
             <li>userId: from auth session</li>
           </ul>
         </div>
         <div class="detail-section">
           <div class="detail-label output">Outputs</div>
           <ul class="detail-list output">
-            <li>poses.id: string (CharacterSheet ID)</li>
-            <li>poses.compositeUrl: string (3x3 grid image)</li>
-            <li>poses.status: "complete" | "failed"</li>
-            <li>threeD.id: string (backend-only sheet)</li>
-            <li>threeD.status: "complete" | "failed"</li>
+            <li>poses.compositeUrl: string (3x3 grid &mdash; shown to user)</li>
+            <li>threeD.compositeUrl: string (360&deg; &mdash; backend only)</li>
+            <li>Both sheets stored as CharacterSheet records</li>
           </ul>
         </div>
         <div class="detail-section">
           <div class="detail-label ext-call">External Services</div>
           <ul class="detail-list ext-call">
-            <li><span class="ext-badge gemini">Gemini</span> Nano Banana Pro &mdash; generateContent with image modality</li>
-            <li>Parallel: generatePosesSheet() + generate3DSheet()</li>
-            <li>Poses: 9 poses with industry-specific backgrounds (6 presets per industry)</li>
-            <li>3D: 6 angles (front, 3/4 right, right profile, back, 3/4 left, left profile)</li>
-            <li><span class="ext-badge supabase">Supabase</span> Upload generated images to Storage</li>
+            <li><span class="ext-badge gemini">Gemini</span> Nano Banana Pro &mdash; parallel image generation</li>
+            <li>Poses: 9 poses with industry-specific backgrounds</li>
+            <li>3D: 6 angles (front, 3/4 R, R profile, back, 3/4 L, L profile)</li>
+            <li><span class="ext-badge supabase">Supabase</span> Upload generated images</li>
             <li><span class="ext-badge prisma">Prisma</span> CharacterSheet.create() + CharacterSheetImage.create()</li>
           </ul>
         </div>
+        <div class="detail-section">
+          <div class="detail-label">Background: Starting Frame</div>
+          <ul class="detail-list output">
+            <li>Non-blocking POST /api/starting-frame fires after sheet completes</li>
+            <li>Generates anchor image for video consistency</li>
+            <li>User does not wait for this</li>
+          </ul>
+        </div>
+        <div class="detail-section">
+          <div class="detail-label">Analytics Event</div>
+          <ul class="detail-list input">
+            <li>trackEvent("onboarding_character_sheet_complete")</li>
+          </ul>
+        </div>
       </div>
     </div>
 
     <div class="arrow-connector"><svg class="arrow-svg" viewBox="0 0 40 20"><path d="M0 10 L30 10" stroke="#2a2a3a" stroke-width="1.5" fill="none"/><path d="M26 5 L34 10 L26 15" stroke="#a855f7" stroke-width="1.5" fill="none"/></svg></div>
 
-    <!-- 4b. STARTING FRAME (background) -->
-    <div class="state-box ext" onclick="toggle(this)">
+    <!-- 3. VOICE CLONE -->
+    <div class="state-box api" onclick="toggle(this)">
       <span class="expand-hint">click</span>
       <div class="state-head">
-        <div class="state-icon ext">SF</div>
+        <div class="state-icon api">3</div>
         <div>
-          <div class="state-title">Starting Frame (Background)</div>
-          <div class="state-method"><span class="method method-post">POST</span> /api/starting-frame</div>
-          <div class="state-desc">Non-blocking. Anchor image for character consistency across all video cuts. Fired after character sheet completes.</div>
+          <div class="state-title">Voice Clone</div>
+          <div class="state-method"><span class="method method-post">POST</span> /api/onboarding/voice</div>
+          <div class="state-desc">Record voice via MediaRecorder (min 5s). Upload audio blob for cloning. Skippable &mdash; "add your voice later."</div>
         </div>
       </div>
       <div class="state-detail">
         <div class="detail-section">
           <div class="detail-label input">Inputs</div>
           <ul class="detail-list input">
-            <li>userId: from auth session</li>
-            <li>sceneDescription?: string (optional)</li>
-            <li>industry: from user profile</li>
-            <li>Reference images: user photos + character sheet composite</li>
+            <li>audio: Blob (FormData, multipart)</li>
+            <li>Captured via MediaRecorder + AnalyserNode waveform</li>
+            <li>Max size: 10 MB</li>
+            <li>Min duration: 5 seconds (client-enforced)</li>
+            <li>4 rotating script prompts for user to read</li>
           </ul>
         </div>
         <div class="detail-section">
           <div class="detail-label output">Outputs</div>
           <ul class="detail-list output">
-            <li>imageUrl: string (Supabase URL)</li>
-            <li>photoId: string (Photo record with "sf--" prefix)</li>
-            <li>status: "complete" | "failed" | "demo"</li>
+            <li>voiceId: string (placeholder &mdash; ElevenLabs integration TODO)</li>
+            <li>Or: skipped (user clicks "add your voice later")</li>
           </ul>
         </div>
         <div class="detail-section">
-          <div class="detail-label ext-call">External Services</div>
+          <div class="detail-label ext-call">External Services (TODO)</div>
           <ul class="detail-list ext-call">
-            <li><span class="ext-badge gemini">Gemini</span> Nano Banana Pro &mdash; single portrait generation</li>
-            <li>Downloads user photos + character sheet as base64 reference</li>
-            <li><span class="ext-badge supabase">Supabase</span> Upload to starting-frames/{userId}/</li>
-            <li><span class="ext-badge prisma">Prisma</span> Photo.create() with filename: "sf--{timestamp}.jpg"</li>
+            <li><span class="ext-badge supabase">Supabase</span> Upload audio to voices/{userId}/</li>
+            <li><span class="ext-badge gemini">ElevenLabs</span> Voice clone API (stubbed)</li>
+            <li><span class="ext-badge prisma">Prisma</span> VoiceSample.create()</li>
+          </ul>
+        </div>
+        <div class="detail-section">
+          <div class="detail-label">Analytics Event</div>
+          <ul class="detail-list input">
+            <li>trackEvent("onboarding_voice_captured") or trackEvent("onboarding_voice_skipped")</li>
           </ul>
         </div>
       </div>
     </div>
 
-    <div class="arrow-connector"><svg class="arrow-svg" viewBox="0 0 40 20"><path d="M0 10 L30 10" stroke="#2a2a3a" stroke-width="1.5" fill="none"/><path d="M26 5 L34 10 L26 15" stroke="#a855f7" stroke-width="1.5" fill="none"/></svg></div>
+    <div class="arrow-connector"><svg class="arrow-svg" viewBox="0 0 40 20"><path d="M0 10 L30 10" stroke="#2a2a3a" stroke-width="1.5" fill="none"/><path d="M26 5 L34 10 L26 15" stroke="#4c6ef5" stroke-width="1.5" fill="none"/></svg></div>
 
-    <!-- 5. FORMAT SELECTION -->
+    <!-- 4. PAYWALL + VIDEO PREVIEW -->
     <div class="state-box user" onclick="toggle(this)">
       <span class="expand-hint">click</span>
       <div class="state-head">
         <div class="state-icon user">4</div>
         <div>
-          <div class="state-title">Select Video Format</div>
-          <div class="state-method"><span class="method method-user">UI</span> Step 4 of 4</div>
-          <div class="state-desc">User picks a format: Market Update, Quick Tip, Personal Intro, or Client Testimonial. Triggers first video generation.</div>
+          <div class="state-title">Go Live (Paywall)</div>
+          <div class="state-method"><span class="method method-post">POST</span> /api/stripe/checkout</div>
+          <div class="state-desc">Shows generated preview video + pricing. Video generates in background via /api/onboarding/preview-video. Stripe checkout on CTA.</div>
         </div>
       </div>
       <div class="state-detail">
         <div class="detail-section">
-          <div class="detail-label input">Available Formats</div>
+          <div class="detail-label input">Inputs</div>
           <ul class="detail-list input">
-            <li>Market Update (contentType: "market_update")</li>
-            <li>Quick Tip (contentType: "quick_tip_8")</li>
-            <li>Personal Intro (contentType: "brand_intro")</li>
-            <li>Client Testimonial (contentType: "testimonial")</li>
+            <li>characterSheetUrl: from step 2</li>
+            <li>photoUrl: from step 1</li>
+            <li>videoUrl: generated async via /api/onboarding/preview-video</li>
+            <li>videoGenerating: boolean (loading state)</li>
           </ul>
         </div>
         <div class="detail-section">
-          <div class="detail-label output">Triggers</div>
+          <div class="detail-label output">Paywall UI</div>
           <ul class="detail-list output">
-            <li>2.5s flashback (character sheet recall)</li>
-            <li>Then: triggers full video generation pipeline</li>
-            <li>Passes: format.contentType, format.script, model: "kling_2.6"</li>
+            <li>Video player: loading spinner while generating, play button when ready</li>
+            <li>Pricing card with feature list</li>
+            <li>CTA: "Start creating" &rarr; Stripe checkout</li>
+            <li>Graceful fallback when no video yet (shows pricing only)</li>
           </ul>
         </div>
-      </div>
-    </div>
-
-    <div class="arrow-connector"><svg class="arrow-svg" viewBox="0 0 40 20"><path d="M0 10 L30 10" stroke="#2a2a3a" stroke-width="1.5" fill="none"/><path d="M26 5 L34 10 L26 15" stroke="#f59e0b" stroke-width="1.5" fill="none"/></svg></div>
-
-    <!-- 6. COMPLETE -->
-    <div class="state-box user" onclick="toggle(this)">
-      <span class="expand-hint">click</span>
-      <div class="state-head">
-        <div class="state-icon user">&#10003;</div>
-        <div>
-          <div class="state-title">Complete Onboarding</div>
-          <div class="state-method"><span class="method method-post">POST</span> /api/onboarding/complete</div>
-          <div class="state-desc">After video reveal + reaction phases. Marks onboarding done, redirects to /dashboard/generate.</div>
-        </div>
-      </div>
-      <div class="state-detail">
         <div class="detail-section">
-          <div class="detail-label input">Phases Before Completion</div>
+          <div class="detail-label ext-call">External Services</div>
+          <ul class="detail-list ext-call">
+            <li><span class="ext-badge shotstack">Stripe</span> Checkout session creation</li>
+            <li><span class="ext-badge fal">FAL</span> Preview video generation (background, stubbed)</li>
+          </ul>
+        </div>
+        <div class="detail-section">
+          <div class="detail-label">Post-Payment Flow</div>
+          <ul class="detail-list output">
+            <li>Industry selection collected AFTER checkout</li>
+            <li>Business info collected AFTER checkout</li>
+            <li>POST /api/onboarding/complete &rarr; redirect to /dashboard</li>
+          </ul>
+        </div>
+        <div class="detail-section">
+          <div class="detail-label">Analytics Event</div>
           <ul class="detail-list input">
-            <li>flashback &rarr; generating &rarr; reveal &rarr; reaction</li>
-            <li>Video auto-plays in reveal phase</li>
-            <li>Post-watch "This is you" moment in reaction phase</li>
-          </ul>
-        </div>
-        <div class="detail-section">
-          <div class="detail-label output">Result</div>
-          <ul class="detail-list output">
-            <li>User redirected to /dashboard/generate</li>
-            <li>Onboarding flag set on user record</li>
+            <li>trackEvent("onboarding_paywall_shown")</li>
+            <li>trackEvent("onboarding_checkout_started")</li>
           </ul>
         </div>
       </div>

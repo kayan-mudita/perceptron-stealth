@@ -9,12 +9,22 @@ const VALID_EVENTS = [
   "first_publish",
   "day_7",
   "day_30",
-  // Onboarding funnel
+  // Onboarding funnel — step transitions
+  "onboarding_step_photo",
+  "onboarding_step_character",
+  "onboarding_step_voice",
+  "onboarding_step_paywall",
+  // Onboarding funnel — actions
   "onboarding_photo_captured",
   "onboarding_character_selected",
+  "onboarding_voice_cloned",
+  "onboarding_voice_skipped",
   "onboarding_paywall_viewed",
   "onboarding_trial_started",
   "onboarding_skipped",
+  // Post-checkout
+  "onboarding_industry_selected",
+  "onboarding_industry_skipped",
 ] as const;
 
 type EventName = (typeof VALID_EVENTS)[number];
