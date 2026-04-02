@@ -1,361 +1,420 @@
 "use client";
 
-import { useState, useCallback } from "react";
-import Link from "next/link";
-import {
-  Upload,
-  Camera,
-  Sparkles,
-  Film,
-  Check,
-  ArrowRight,
-  Play,
-  Lock,
-  Image as ImageIcon,
-} from "lucide-react";
-import FadeIn from "@/components/motion/FadeIn";
+import { useState, useCallback, useEffect } from "react";
+import { useSession, signIn } from "next-auth/react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Check } from "lucide-react";
+import SessionProvider from "@/components/SessionProvider";
+import CameraCapture from "@/components/onboarding/CameraCapture";
+import CharacterSheetReveal from "@/components/onboarding/CharacterSheetReveal";
+import VoiceCapture from "@/components/onboarding/VoiceCapture";
+import PaywallStep from "@/components/onboarding/PaywallStep";
 
-type DemoStage = "upload" | "processing" | "done";
+type Step = "photo" | "character" | "voice" | "paywall";
 
-const processingSteps = [
-  { icon: Camera, label: "Analyzing your photo", duration: 1800 },
-  { icon: Sparkles, label: "Building your AI character", duration: 2200 },
-  { icon: Film, label: "Generating your video", duration: 2500 },
-  { icon: Check, label: "Adding finishing touches", duration: 1200 },
+const STEP_CONFIG: { key: Step; label: string; emoji: string }[] = [
+  { key: "photo", label: "Your photo", emoji: "\uD83D\uDCF8" },
+  { key: "character", label: "AI twin", emoji: "\uD83E\uDD16" },
+  { key: "voice", label: "Your voice", emoji: "\uD83C\uDF99\uFE0F" },
+  { key: "paywall", label: "Go live", emoji: "\uD83D\uDE80" },
 ];
 
-export default function DemoPage() {
-  const [stage, setStage] = useState<DemoStage>("upload");
-  const [dragActive, setDragActive] = useState(false);
-  const [currentStep, setCurrentStep] = useState(0);
-  const [fileName, setFileName] = useState("");
+const STEP_CONTENT: Record<Step, { heading: string; sub: string }> = {
+  photo: {
+    heading: "Let's see that face.",
+    sub: "One photo. That's all it takes.",
+  },
+  character: {
+    heading: "Building your AI twin...",
+    sub: "Give us a few seconds. You're going to love this.",
+  },
+  voice: {
+    heading: "Now let's hear you.",
+    sub: "5 seconds is all we need to clone your voice.",
+  },
+  paywall: {
+    heading: "Your AI twin is alive.",
+    sub: "Start posting daily. Zero effort.",
+  },
+};
 
-  const simulateProcessing = useCallback(() => {
-    setStage("processing");
-    setCurrentStep(0);
+function AmbientBg() {
+  return (
+    <div className="fixed inset-0 pointer-events-none overflow-hidden" aria-hidden>
+      <motion.div
+        className="absolute top-[-20%] left-[-10%] w-[600px] h-[600px] rounded-full"
+        style={{ background: "radial-gradient(circle, rgba(79,110,247,0.12) 0%, transparent 70%)" }}
+        animate={{ x: [0, 40, 0], y: [0, 20, 0] }}
+        transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
+      />
+      <motion.div
+        className="absolute top-[30%] right-[-15%] w-[500px] h-[500px] rounded-full"
+        style={{ background: "radial-gradient(circle, rgba(139,92,246,0.10) 0%, transparent 70%)" }}
+        animate={{ x: [0, -30, 0], y: [0, -40, 0] }}
+        transition={{ duration: 22, repeat: Infinity, ease: "easeInOut", delay: 3 }}
+      />
+      <motion.div
+        className="absolute bottom-[-10%] left-[30%] w-[400px] h-[400px] rounded-full"
+        style={{ background: "radial-gradient(circle, rgba(6,182,212,0.08) 0%, transparent 70%)" }}
+        animate={{ x: [0, 20, 0], y: [0, -20, 0] }}
+        transition={{ duration: 16, repeat: Infinity, ease: "easeInOut", delay: 6 }}
+      />
+    </div>
+  );
+}
 
-    let step = 0;
-    const advanceStep = () => {
-      step++;
-      if (step < processingSteps.length) {
-        setCurrentStep(step);
-        setTimeout(advanceStep, processingSteps[step].duration);
+function StepBar({ current }: { current: Step }) {
+  const idx = STEP_CONFIG.findIndex((s) => s.key === current);
+  return (
+    <div className="flex items-center gap-1.5">
+      {STEP_CONFIG.map((s, i) => {
+        const done = i < idx;
+        const active = i === idx;
+        return (
+          <div key={s.key} className="flex items-center gap-1.5">
+            {i > 0 && (
+              <motion.div
+                className="w-6 h-px"
+                animate={{ backgroundColor: done ? "rgba(99,102,241,0.6)" : "rgba(255,255,255,0.08)" }}
+                transition={{ duration: 0.5 }}
+              />
+            )}
+            <motion.div
+              className="flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-semibold transition-all"
+              animate={{
+                backgroundColor: active
+                  ? "rgba(99,102,241,0.15)"
+                  : done
+                    ? "rgba(99,102,241,0.06)"
+                    : "transparent",
+                borderColor: active
+                  ? "rgba(99,102,241,0.35)"
+                  : done
+                    ? "rgba(99,102,241,0.2)"
+                    : "rgba(255,255,255,0.06)",
+              }}
+              style={{ border: "1px solid" }}
+            >
+              {done ? (
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  className="w-3.5 h-3.5 rounded-full bg-indigo-500 flex items-center justify-center"
+                >
+                  <Check className="w-2 h-2 text-white" />
+                </motion.div>
+              ) : (
+                <span>{s.emoji}</span>
+              )}
+              <span className={active ? "text-indigo-300" : done ? "text-white/40" : "text-white/15"}>
+                {s.label}
+              </span>
+            </motion.div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function trackEvent(event: string, metadata?: Record<string, unknown>) {
+  fetch("/api/events", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ event, metadata }),
+  }).catch(() => {});
+}
+
+// -- Loading screen while demo session is created --
+function DemoLoading() {
+  return (
+    <div className="relative min-h-screen bg-[#060610] flex items-center justify-center">
+      <AmbientBg />
+      <div className="relative z-10 text-center space-y-4">
+        <motion.div
+          className="w-12 h-12 mx-auto border-2 border-indigo-500/40 border-t-indigo-400 rounded-full"
+          animate={{ rotate: 360 }}
+          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+        />
+        <p className="text-[15px] font-semibold text-white/60">Setting up your demo...</p>
+        <p className="text-[12px] text-white/25">No signup needed</p>
+      </div>
+    </div>
+  );
+}
+
+// -- The real onboarding flow, identical to /auth/onboarding --
+function DemoOnboardingFlow() {
+  const [step, setStep] = useState<Step>("photo");
+  const [uploading, setUploading] = useState(false);
+  const [voiceUploading, setVoiceUploading] = useState(false);
+  const [photoUrl, setPhotoUrl] = useState<string | null>(null);
+  const [characterSheetUrl, setCharacterSheetUrl] = useState<string | null>(null);
+  const [videoUrl, setVideoUrl] = useState<string | null>(null);
+  const [videoGenerating, setVideoGenerating] = useState(false);
+  const [videoId, setVideoId] = useState<string | null>(null);
+
+  useEffect(() => {
+    trackEvent(`demo_step_${step}`);
+  }, [step]);
+
+  const handlePhotoCapture = useCallback(async (file: File) => {
+    setUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("type", "photo");
+
+      let uploadedUrl: string;
+      const uploadRes = await fetch("/api/upload", { method: "POST", body: formData });
+      if (uploadRes.ok) {
+        uploadedUrl = (await uploadRes.json()).url;
       } else {
-        setTimeout(() => setStage("done"), 800);
+        uploadedUrl = URL.createObjectURL(file);
       }
-    };
-    setTimeout(advanceStep, processingSteps[0].duration);
+
+      await fetch("/api/photos", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ filename: file.name, url: uploadedUrl, isPrimary: true }),
+      }).catch(() => {});
+
+      trackEvent("demo_photo_captured");
+      setPhotoUrl(uploadedUrl);
+      setStep("character");
+    } catch {
+      // Use blob URL as fallback so character step still renders
+      setPhotoUrl(URL.createObjectURL(file));
+      setStep("character");
+    } finally {
+      setUploading(false);
+    }
   }, []);
 
-  const handleFile = useCallback(
-    (file: File | undefined) => {
-      if (!file) return;
-      if (!file.type.startsWith("image/")) return;
-      setFileName(file.name);
-      simulateProcessing();
-    },
-    [simulateProcessing],
-  );
+  const handleSheetSelect = useCallback((poseUrl: string) => {
+    trackEvent("demo_character_selected");
+    setCharacterSheetUrl(poseUrl);
+    setStep("voice");
+  }, []);
 
-  const handleDrop = useCallback(
-    (e: React.DragEvent) => {
-      e.preventDefault();
-      setDragActive(false);
-      handleFile(e.dataTransfer.files[0]);
-    },
-    [handleFile],
-  );
+  const pollVideoStatus = useCallback(async (vid: string) => {
+    const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
+    for (let attempt = 0; attempt < 60; attempt++) {
+      await wait(5000);
+      try {
+        const res = await fetch(`/api/onboarding/preview-video/status?videoId=${vid}`);
+        if (!res.ok) continue;
+        const data = await res.json();
+        if (data.status === "completed" && data.videoUrl) {
+          setVideoUrl(data.videoUrl);
+          setVideoGenerating(false);
+          return;
+        }
+        if (data.status === "failed") {
+          setVideoGenerating(false);
+          return;
+        }
+      } catch {
+        // keep trying
+      }
+    }
+    setVideoGenerating(false);
+  }, []);
 
-  const handleChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      handleFile(e.target.files?.[0]);
-    },
-    [handleFile],
-  );
+  const generatePreviewVideo = useCallback(async () => {
+    setVideoGenerating(true);
+    try {
+      const res = await fetch("/api/onboarding/preview-video", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({}),
+      });
+      if (!res.ok) { setVideoGenerating(false); return; }
+      const data = await res.json();
+
+      if (data.videoUrl) {
+        setVideoUrl(data.videoUrl);
+        setVideoGenerating(false);
+        return;
+      }
+
+      if (data.videoId) {
+        setVideoId(data.videoId);
+        pollVideoStatus(data.videoId);
+      }
+    } catch {
+      setVideoGenerating(false);
+    }
+  }, [pollVideoStatus]);
+
+  const handleVoiceCapture = useCallback(async (audioBlob: Blob) => {
+    setVoiceUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append("audio", audioBlob, `voice-${Date.now()}.webm`);
+
+      const res = await fetch("/api/onboarding/voice", { method: "POST", body: formData });
+      if (res.ok) {
+        trackEvent("demo_voice_cloned");
+      }
+    } catch {
+      // Non-blocking
+    } finally {
+      setVoiceUploading(false);
+      setStep("paywall");
+      generatePreviewVideo();
+    }
+  }, [generatePreviewVideo]);
+
+  const handleSkipVoice = useCallback(() => {
+    trackEvent("demo_voice_skipped");
+    setStep("paywall");
+    generatePreviewVideo();
+  }, [generatePreviewVideo]);
+
+  const { heading, sub } = STEP_CONTENT[step];
 
   return (
-    <div className="min-h-screen bg-[#050508] overflow-x-hidden">
-      {/* Minimal header — no login required */}
-      <nav className="fixed top-0 left-0 right-0 z-50 border-b border-transparent bg-transparent">
-        <div className="max-w-6xl mx-auto px-6 flex items-center justify-between h-14">
-          <Link
-            href="/"
-            className="text-[15px] font-semibold tracking-tight text-white"
-          >
-            Official <span className="text-blue-400">AI</span>
-          </Link>
-        </div>
-      </nav>
+    <div className="relative min-h-screen bg-[#060610] flex flex-col overflow-hidden">
+      <AmbientBg />
 
-      <main className="pt-32 pb-24 px-6">
-        {/* Background glow */}
-        <div className="fixed top-20 left-1/2 -translate-x-1/2 w-[800px] h-[600px] pointer-events-none">
-          <div className="absolute top-0 left-1/4 w-[400px] h-[400px] bg-blue-500/[0.04] rounded-full blur-[120px]" />
-          <div className="absolute top-20 right-1/4 w-[300px] h-[300px] bg-violet-500/[0.04] rounded-full blur-[100px]" />
-        </div>
+      {/* Header */}
+      <div className="relative z-10 flex items-center justify-between px-6 py-5">
+        <motion.div
+          initial={{ opacity: 0, x: -8 }}
+          animate={{ opacity: 1, x: 0 }}
+          className="flex items-center gap-2"
+        >
+          <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center">
+            <span className="text-[12px]">{"\u2726"}</span>
+          </div>
+          <span className="text-[15px] font-bold text-white tracking-tight">Official AI</span>
+          <span className="ml-2 px-2 py-0.5 rounded-full bg-indigo-500/15 border border-indigo-400/25 text-[10px] font-bold text-indigo-300 uppercase tracking-wide">
+            Demo
+          </span>
+        </motion.div>
+        <motion.div
+          initial={{ opacity: 0, x: 8 }}
+          animate={{ opacity: 1, x: 0 }}
+        >
+          <StepBar current={step} />
+        </motion.div>
+      </div>
 
-        <div className="relative max-w-lg mx-auto">
-          {/* ────── UPLOAD STAGE ────── */}
-          {stage === "upload" && (
-            <FadeIn duration={0.6}>
-              <div className="text-center mb-10">
-                <h1 className="text-[36px] sm:text-[46px] font-bold tracking-[-0.03em] leading-[1.08] text-white mb-4">
-                  See yourself
-                  <br />
-                  <span className="bg-gradient-to-r from-blue-400 via-violet-400 to-blue-400 bg-clip-text text-transparent">
-                    in 30 seconds
-                  </span>
-                </h1>
-                <p className="text-[16px] text-white/35 font-light">
-                  Upload one photo. No signup required.
-                </p>
-              </div>
+      {/* Content */}
+      <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-6 pb-16 pt-2">
+        <div className="w-full max-w-sm">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={step + "-h"}
+              initial={{ opacity: 0, y: 16, filter: "blur(4px)" }}
+              animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+              exit={{ opacity: 0, y: -16, filter: "blur(4px)" }}
+              transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+              className="text-center mb-8"
+            >
+              <h1 className="text-[28px] font-extrabold text-white tracking-tight leading-tight">
+                {heading}
+              </h1>
+              <p className="text-[14px] text-white/40 mt-2 font-medium">{sub}</p>
+            </motion.div>
+          </AnimatePresence>
 
-              {/* Drop zone */}
-              <div
-                className={`relative rounded-2xl border-2 border-dashed transition-all duration-300 cursor-pointer ${
-                  dragActive
-                    ? "border-blue-400/50 bg-blue-500/[0.05]"
-                    : "border-white/[0.08] bg-white/[0.015] hover:border-white/[0.15] hover:bg-white/[0.025]"
-                }`}
-                onDragOver={(e) => {
-                  e.preventDefault();
-                  setDragActive(true);
-                }}
-                onDragLeave={() => setDragActive(false)}
-                onDrop={handleDrop}
-                onClick={() =>
-                  document.getElementById("demo-file-input")?.click()
-                }
+          <AnimatePresence mode="wait">
+            {step === "photo" && (
+              <motion.div
+                key="photo"
+                initial={{ opacity: 0, x: 24 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -24 }}
+                transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
               >
-                <input
-                  id="demo-file-input"
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  onChange={handleChange}
+                <CameraCapture onCapture={handlePhotoCapture} uploading={uploading} />
+              </motion.div>
+            )}
+
+            {step === "character" && photoUrl && (
+              <motion.div
+                key="character"
+                initial={{ opacity: 0, x: 24 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -24 }}
+                transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+              >
+                <CharacterSheetReveal
+                  photoUrl={photoUrl}
+                  industry="business"
+                  onSelect={handleSheetSelect}
                 />
+              </motion.div>
+            )}
 
-                <div className="flex flex-col items-center justify-center py-20 px-8">
-                  <div className="w-16 h-16 rounded-2xl bg-white/[0.04] border border-white/[0.06] flex items-center justify-center mb-6">
-                    {dragActive ? (
-                      <Upload className="w-7 h-7 text-blue-400/70" />
-                    ) : (
-                      <ImageIcon className="w-7 h-7 text-white/30" />
-                    )}
-                  </div>
-
-                  <p className="text-[16px] text-white/60 font-medium mb-2">
-                    {dragActive
-                      ? "Drop your photo here"
-                      : "Drag and drop your photo"}
-                  </p>
-                  <p className="text-[13px] text-white/25 mb-6">
-                    or click to browse
-                  </p>
-
-                  <div className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/[0.04] border border-white/[0.06]">
-                    <Upload className="w-3.5 h-3.5 text-white/30" />
-                    <span className="text-[13px] text-white/40 font-medium">
-                      Choose a photo
-                    </span>
-                  </div>
-
-                  <p className="text-[11px] text-white/15 mt-6">
-                    JPG, PNG, or WEBP. Max 10MB.
-                  </p>
-                </div>
-              </div>
-
-              {/* Trust signals */}
-              <div className="flex items-center justify-center gap-4 mt-6">
-                <div className="flex items-center gap-1.5 text-[11px] text-white/20">
-                  <Lock className="w-3 h-3" />
-                  Deleted after demo
-                </div>
-                <div className="w-px h-3 bg-white/[0.06]" />
-                <div className="text-[11px] text-white/20">
-                  No account needed
-                </div>
-              </div>
-            </FadeIn>
-          )}
-
-          {/* ────── PROCESSING STAGE ────── */}
-          {stage === "processing" && (
-            <FadeIn duration={0.5}>
-              <div className="text-center mb-10">
-                <h2 className="text-[28px] sm:text-[34px] font-bold tracking-tight text-white mb-3">
-                  Creating your video
-                </h2>
-                <p className="text-[14px] text-white/30">
-                  {fileName && (
-                    <span className="text-white/40">{fileName}</span>
-                  )}
-                </p>
-              </div>
-
-              {/* Progress steps */}
-              <div className="space-y-3 mb-10">
-                {processingSteps.map((step, i) => {
-                  const isActive = i === currentStep;
-                  const isDone = i < currentStep;
-
-                  return (
-                    <div
-                      key={i}
-                      className={`flex items-center gap-4 p-4 rounded-xl border transition-all duration-500 ${
-                        isActive
-                          ? "border-blue-500/20 bg-blue-500/[0.04]"
-                          : isDone
-                          ? "border-white/[0.06] bg-white/[0.015]"
-                          : "border-white/[0.04] bg-transparent"
-                      }`}
-                    >
-                      <div
-                        className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 transition-all duration-500 ${
-                          isActive
-                            ? "bg-blue-500/15 border border-blue-500/25"
-                            : isDone
-                            ? "bg-emerald-500/10 border border-emerald-500/20"
-                            : "bg-white/[0.03] border border-white/[0.06]"
-                        }`}
-                      >
-                        {isDone ? (
-                          <Check className="w-3.5 h-3.5 text-emerald-400" />
-                        ) : (
-                          <step.icon
-                            className={`w-3.5 h-3.5 ${
-                              isActive
-                                ? "text-blue-400 animate-pulse"
-                                : "text-white/20"
-                            }`}
-                          />
-                        )}
-                      </div>
-                      <span
-                        className={`text-[14px] font-medium transition-colors duration-500 ${
-                          isActive
-                            ? "text-white/80"
-                            : isDone
-                            ? "text-white/40"
-                            : "text-white/20"
-                        }`}
-                      >
-                        {step.label}
-                        {isActive && (
-                          <span className="text-blue-400/60 ml-1.5">...</span>
-                        )}
-                        {isDone && (
-                          <span className="text-emerald-400/60 ml-1.5">
-                            Done
-                          </span>
-                        )}
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
-
-              {/* Overall progress bar */}
-              <div className="h-1 rounded-full bg-white/[0.04] overflow-hidden">
-                <div
-                  className="h-full rounded-full bg-gradient-to-r from-blue-400 to-violet-400 transition-all duration-1000 ease-out"
-                  style={{
-                    width: `${
-                      ((currentStep + 1) / processingSteps.length) * 100
-                    }%`,
-                  }}
-                />
-              </div>
-            </FadeIn>
-          )}
-
-          {/* ────── DONE STAGE ────── */}
-          {stage === "done" && (
-            <FadeIn duration={0.6}>
-              <div className="text-center mb-8">
-                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 mb-6">
-                  <Check className="w-3 h-3 text-emerald-400" />
-                  <span className="text-[12px] text-emerald-400/80 font-medium">
-                    Video ready
-                  </span>
-                </div>
-                <h2 className="text-[28px] sm:text-[34px] font-bold tracking-tight text-white mb-2">
-                  Your video is ready
-                </h2>
-                <p className="text-[14px] text-white/30">
-                  Here is what AI created from your photo.
-                </p>
-              </div>
-
-              {/* Video result with frosted overlay */}
-              <div className="relative max-w-xs mx-auto mb-10">
-                {/* 9:16 video frame */}
-                <div className="relative aspect-[9/16] rounded-2xl overflow-hidden border border-white/[0.08] bg-gradient-to-b from-white/[0.03] to-white/[0.01]">
-                  {/* Simulated video content */}
-                  <div className="absolute inset-0 bg-gradient-to-b from-blue-900/20 via-[#0a0e17] to-violet-900/20" />
-
-                  {/* Subtle grid overlay */}
-                  <div
-                    className="absolute inset-0 opacity-[0.03]"
-                    style={{
-                      backgroundImage:
-                        "linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)",
-                      backgroundSize: "40px 40px",
-                    }}
-                  />
-
-                  {/* Play button center */}
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="relative">
-                      <div className="absolute inset-0 bg-white/10 rounded-full blur-xl scale-150 animate-pulse-slow" />
-                      <div className="relative w-14 h-14 rounded-full bg-white/[0.1] border border-white/[0.15] flex items-center justify-center">
-                        <Play className="w-5 h-5 text-white/90 ml-0.5" />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Frosted overlay */}
-                  <div className="absolute inset-0 bg-[#050508]/40 backdrop-blur-[6px]" />
-
-                  {/* Overlay CTA content */}
-                  <div className="absolute inset-0 flex flex-col items-center justify-center px-8">
-                    <Lock className="w-6 h-6 text-white/40 mb-4" />
-                    <p className="text-[15px] text-white/70 font-medium text-center mb-2">
-                      Love it?
-                    </p>
-                    <p className="text-[13px] text-white/35 text-center mb-6">
-                      Sign up to download and share your AI video.
-                    </p>
-                    <Link
-                      href="/auth/signup"
-                      className="btn-cta-glow inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-white text-[#050508] text-[14px] font-semibold hover:bg-white/90 active:bg-white/80 transition-all"
-                    >
-                      Sign up to download
-                      <ArrowRight className="w-4 h-4" />
-                    </Link>
-                  </div>
-                </div>
-              </div>
-
-              {/* Secondary CTA */}
-              <div className="text-center">
+            {step === "voice" && (
+              <motion.div
+                key="voice"
+                initial={{ opacity: 0, x: 24 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -24 }}
+                transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                className="space-y-3"
+              >
+                <VoiceCapture onCapture={handleVoiceCapture} uploading={voiceUploading} />
                 <button
-                  onClick={() => {
-                    setStage("upload");
-                    setFileName("");
-                    setCurrentStep(0);
-                  }}
-                  className="text-[13px] text-blue-400/70 hover:text-blue-400 transition-colors"
+                  onClick={handleSkipVoice}
+                  className="w-full py-2 text-[12px] text-white/15 hover:text-white/30 transition-colors"
                 >
-                  Try another photo &rarr;
+                  Skip for now — you can add your voice later
                 </button>
-              </div>
-            </FadeIn>
-          )}
+              </motion.div>
+            )}
+
+            {step === "paywall" && (
+              <motion.div
+                key="paywall"
+                initial={{ opacity: 0, x: 24 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -24 }}
+                transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+              >
+                <PaywallStep
+                  videoUrl={videoUrl ?? undefined}
+                  videoGenerating={videoGenerating}
+                  demoMode
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
-      </main>
+      </div>
     </div>
+  );
+}
+
+// -- Auto-login wrapper --
+function DemoGate() {
+  const { status } = useSession();
+  const [signingIn, setSigningIn] = useState(false);
+
+  useEffect(() => {
+    if (status === "unauthenticated" && !signingIn) {
+      setSigningIn(true);
+      signIn("demo", { redirect: false }).then(() => {
+        setSigningIn(false);
+      });
+    }
+  }, [status, signingIn]);
+
+  if (status === "loading" || status === "unauthenticated") {
+    return <DemoLoading />;
+  }
+
+  return <DemoOnboardingFlow />;
+}
+
+export default function DemoPage() {
+  return (
+    <SessionProvider>
+      <DemoGate />
+    </SessionProvider>
   );
 }

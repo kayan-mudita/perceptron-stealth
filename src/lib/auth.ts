@@ -1,5 +1,6 @@
 import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import { randomUUID } from "crypto";
 import bcrypt from "bcryptjs";
 import prisma from "./prisma";
 
@@ -30,6 +31,35 @@ export const authOptions: NextAuthOptions = {
           id: user.id,
           email: user.email,
           name: `${user.firstName} ${user.lastName}`,
+          industry: user.industry,
+          plan: user.plan,
+          onboarded: user.onboarded,
+        };
+      },
+    }),
+    CredentialsProvider({
+      id: "demo",
+      name: "demo",
+      credentials: {},
+      async authorize() {
+        const tag = randomUUID().slice(0, 8);
+        const email = `demo-${tag}@officialai.local`;
+        const user = await prisma.user.create({
+          data: {
+            email,
+            passwordHash: "demo",
+            firstName: "Demo",
+            lastName: "User",
+            industry: "general",
+            plan: "free",
+            onboarded: false,
+            emailVerified: false,
+          },
+        });
+        return {
+          id: user.id,
+          email: user.email,
+          name: "Demo User",
           industry: user.industry,
           plan: user.plan,
           onboarded: user.onboarded,

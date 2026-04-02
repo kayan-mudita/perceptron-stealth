@@ -21,6 +21,7 @@ const SOCIAL_PROOF = [
 interface PaywallStepProps {
   videoUrl?: string;
   videoGenerating?: boolean;
+  demoMode?: boolean;
 }
 
 function trackEvent(event: string) {
@@ -31,7 +32,7 @@ function trackEvent(event: string) {
   }).catch(() => {});
 }
 
-export default function PaywallStep({ videoUrl, videoGenerating }: PaywallStepProps) {
+export default function PaywallStep({ videoUrl, videoGenerating, demoMode }: PaywallStepProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [videoPlaying, setVideoPlaying] = useState(false);
@@ -41,6 +42,11 @@ export default function PaywallStep({ videoUrl, videoGenerating }: PaywallStepPr
   useEffect(() => { trackEvent("onboarding_paywall_viewed"); }, []);
 
   const handleSubscribe = async () => {
+    if (demoMode) {
+      trackEvent("demo_signup_clicked");
+      window.location.href = "/auth/signup";
+      return;
+    }
     trackEvent("onboarding_trial_started");
     setLoading(true);
     setError(null);
@@ -295,7 +301,7 @@ export default function PaywallStep({ videoUrl, videoGenerating }: PaywallStepPr
             <Loader2 className="w-5 h-5 animate-spin" />
           ) : (
             <>
-              <span>Start free trial</span>
+              <span>{demoMode ? "Create your account" : "Start free trial"}</span>
               <ArrowRight className="w-4 h-4" />
             </>
           )}
