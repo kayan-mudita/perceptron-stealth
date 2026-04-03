@@ -7,6 +7,7 @@ import Breadcrumbs from "@/components/marketing/Breadcrumbs";
 import ShareButtons from "@/components/marketing/ShareButtons";
 import FadeIn from "@/components/motion/FadeIn";
 import PillarSidebar from "@/components/pillar/PillarSidebar";
+import MobileSidebarNav from "@/components/pillar/MobileSidebarNav";
 import ReferencesSection from "@/components/pillar/ReferencesSection";
 import { getPillarBySlug } from "@/data/topic-libraries";
 
@@ -123,6 +124,17 @@ export default function PillarPageTemplate({ slug, toc, children }: PillarPageTe
           />
 
           <div className="flex-1 min-w-0">
+            {/* Mobile sidebar nav — visible below lg */}
+            <MobileSidebarNav
+              pillarSlug={slug}
+              pillarTitle={pillar.title}
+              accentColor={pillar.accentColor}
+              subTopics={pillar.subTopics.map((st) => ({ slug: st.slug, title: st.title }))}
+              relatedBlogSlugs={allBlogSlugs}
+              relatedIndustryPageSlugs={pillar.relatedIndustryPageSlugs}
+              crossLinkPillarSlugs={pillar.crossLinkPillarSlugs}
+            />
+
             {/* Table of Contents */}
             <FadeIn duration={0.5}>
               <div className="p-6 rounded-xl card-hairline mb-10">

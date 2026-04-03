@@ -7,6 +7,7 @@ import Breadcrumbs from "@/components/marketing/Breadcrumbs";
 import ShareButtons from "@/components/marketing/ShareButtons";
 import FadeIn from "@/components/motion/FadeIn";
 import SubTopicSidebar from "@/components/pillar/SubTopicSidebar";
+import MobileSidebarNav from "@/components/pillar/MobileSidebarNav";
 import ReferencesSection from "@/components/pillar/ReferencesSection";
 import { getSubTopic } from "@/data/topic-libraries";
 
@@ -112,6 +113,17 @@ export default function SubTopicPageTemplate({
           />
 
           <div className="flex-1 min-w-0">
+            {/* Mobile sidebar nav — visible below lg */}
+            <MobileSidebarNav
+              pillarSlug={pillarSlug}
+              pillarTitle={pillar.title}
+              accentColor={pillar.accentColor}
+              subTopics={pillar.subTopics.map((st) => ({ slug: st.slug, title: st.title }))}
+              currentSubTopicSlug={subTopicSlug}
+              relatedBlogSlugs={subTopic.blogSlugs}
+              relatedIndustryPageSlugs={subTopic.industryPageSlugs}
+            />
+
             {/* Prose content */}
             <FadeIn duration={0.6}>
               <div className="prose prose-invert prose-lg max-w-none prose-headings:text-white prose-headings:tracking-tight prose-p:text-white/50 prose-p:leading-relaxed prose-a:text-blue-400 prose-a:no-underline hover:prose-a:underline prose-strong:text-white/70 prose-li:text-white/50 prose-blockquote:border-blue-500/30 prose-blockquote:text-white/40 prose-h2:text-[22px] prose-h2:mt-10 prose-h2:mb-4 prose-h3:text-[17px] prose-h3:mt-8 prose-h3:mb-3">
