@@ -76,17 +76,17 @@ export default function BlogPostTemplate({
             />
 
             {/* Category badge */}
-            <div className={`inline-flex items-center px-3 py-1 rounded-full border text-[12px] font-medium mb-6 ${categoryStyle}`}>
+            <div className={`inline-flex items-center px-3 py-1 rounded-full border text-p3 font-medium mb-6 ${categoryStyle}`}>
               {category}
             </div>
 
             {/* Title */}
-            <h1 className="text-[36px] sm:text-[46px] font-bold tracking-[-0.03em] leading-[1.08] text-white mb-6">
+            <h1 className="text-h2 sm:text-h1 font-bold tracking-[-0.03em] leading-[1.08] text-white mb-6">
               {title}
             </h1>
 
             {/* Meta */}
-            <div className="flex flex-wrap items-center gap-4 text-[13px] text-white/30 mb-8 pb-8 border-b border-white/[0.06]">
+            <div className="flex flex-wrap items-center gap-4 text-p3 text-white/30 mb-8 pb-8 border-b border-white/[0.06]">
               <div className="flex items-center gap-1.5">
                 <User className="w-3.5 h-3.5" />
                 {author}
@@ -117,7 +117,7 @@ export default function BlogPostTemplate({
             <div className="flex items-center justify-between mt-12 pt-8 border-t border-white/[0.06]">
               <Link
                 href="/blog"
-                className="inline-flex items-center gap-2 text-[13px] text-white/30 hover:text-white/50 transition-colors"
+                className="inline-flex items-center gap-2 text-p3 text-white/30 hover:text-white/50 transition-colors"
               >
                 <ArrowLeft className="w-3.5 h-3.5" />
                 Back to blog
@@ -129,15 +129,15 @@ export default function BlogPostTemplate({
           {/* CTA */}
           <FadeIn delay={0.3} duration={0.6}>
             <div className="mt-16 p-8 rounded-2xl card-hairline text-center">
-              <h3 className="text-[20px] font-bold text-white mb-2">
+              <h3 className="text-h4 font-bold text-white mb-2">
                 Ready to try it yourself?
               </h3>
-              <p className="text-[14px] text-white/30 mb-6">
+              <p className="text-p2 text-white/30 mb-6">
                 Upload a photo and see AI create a video of you in 30 seconds.
               </p>
               <Link
                 href="/demo"
-                className="btn-cta-glow inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-white text-[#050508] text-[14px] font-semibold hover:bg-white/90 transition-all"
+                className="btn-cta-glow inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-white text-[#050508] text-p2 font-semibold hover:bg-white/90 transition-all"
               >
                 Try the free demo
               </Link>

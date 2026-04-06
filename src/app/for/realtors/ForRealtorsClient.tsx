@@ -42,14 +42,14 @@ export default function ForRealtorsClient() {
           <FadeIn delay={0} duration={0.6}>
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-500/[0.08] border border-blue-500/[0.12] mb-8">
               <Home className="w-3.5 h-3.5 text-blue-400" />
-              <span className="text-[12px] text-blue-400/80 font-medium">
+              <span className="text-p3 text-blue-400/80 font-medium">
                 Built for real estate professionals
               </span>
             </div>
           </FadeIn>
 
           <FadeIn delay={0.1} duration={0.7}>
-            <h1 className="text-[46px] sm:text-[64px] font-bold tracking-[-0.03em] leading-[1.05] text-white mb-6">
+            <h1 className="text-h0 font-bold tracking-[-0.03em] leading-[1.05] text-white mb-6">
               Your AI content team.
               <br />
               <span className="bg-gradient-to-r from-blue-400 via-emerald-400 to-blue-400 bg-clip-text text-transparent">
@@ -59,7 +59,7 @@ export default function ForRealtorsClient() {
           </FadeIn>
 
           <FadeIn delay={0.2} duration={0.7}>
-            <p className="text-[17px] sm:text-[19px] text-white/35 max-w-xl mx-auto mb-10 leading-relaxed font-light">
+            <p className="text-title text-white/35 max-w-xl mx-auto mb-10 leading-relaxed font-light">
               Generate listing tours, market updates, and neighborhood guides --
               using your face and voice. Post daily without ever touching a camera.
             </p>
@@ -69,19 +69,19 @@ export default function ForRealtorsClient() {
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-6">
               <Link
                 href="/auth/signup"
-                className="btn-cta-glow group inline-flex items-center justify-center gap-2.5 px-7 py-3.5 min-h-[48px] w-full sm:w-auto rounded-xl bg-white text-[#050508] text-[15px] font-semibold hover:bg-white/90 active:bg-white/80 transition-all"
+                className="btn-cta-glow group inline-flex items-center justify-center gap-2.5 px-7 py-3.5 min-h-[48px] w-full sm:w-auto rounded-xl bg-white text-[#050508] text-p2 font-semibold hover:bg-white/90 active:bg-white/80 transition-all"
               >
                 Start your free week
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
               </Link>
               <Link
                 href="/use-cases#real-estate"
-                className="inline-flex items-center justify-center gap-2 px-7 py-3.5 min-h-[48px] w-full sm:w-auto rounded-xl text-[15px] text-white/40 hover:text-white/60 active:text-white/70 transition-all"
+                className="inline-flex items-center justify-center gap-2 px-7 py-3.5 min-h-[48px] w-full sm:w-auto rounded-xl text-p2 text-white/40 hover:text-white/60 active:text-white/70 transition-all"
               >
                 See real estate examples
               </Link>
             </div>
-            <p className="text-[13px] text-white/15">
+            <p className="text-p3 text-white/15">
               Try free for 7 days. Cancel anytime.
             </p>
           </FadeIn>
@@ -93,8 +93,8 @@ export default function ForRealtorsClient() {
           <div className="max-w-4xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
             {results.map((stat, i) => (
               <div key={i} className="space-y-1">
-                <div className="text-[32px] font-bold tracking-tight text-white">{stat.value}</div>
-                <div className="text-[13px] text-white/25">{stat.label}</div>
+                <div className="text-h2 font-bold tracking-tight text-white">{stat.value}</div>
+                <div className="text-p3 text-white/25">{stat.label}</div>
               </div>
             ))}
           </div>
@@ -105,10 +105,10 @@ export default function ForRealtorsClient() {
         <section className="py-28 px-6">
           <div className="max-w-4xl mx-auto">
             <div className="mb-14">
-              <p className="text-[13px] font-medium text-blue-400/70 uppercase tracking-widest mb-3">
+              <p className="text-p3 font-medium text-blue-400/70 uppercase tracking-widest mb-3">
                 Real estate content library
               </p>
-              <h2 className="text-[36px] sm:text-[40px] font-bold tracking-tight text-white leading-tight">
+              <h2 className="text-h2 sm:text-h1 font-bold tracking-tight text-white leading-tight">
                 6 template categories.
                 <br />
                 <span className="text-white/40">Ready to customize.</span>
@@ -119,7 +119,7 @@ export default function ForRealtorsClient() {
               {contentTypes.map((type, i) => (
                 <div key={i} className="p-5 rounded-xl card-hairline">
                   <div className="w-1.5 h-1.5 rounded-full bg-blue-400 mb-3" />
-                  <h3 className="text-[14px] font-medium text-white/70">{type}</h3>
+                  <h3 className="text-p2 font-medium text-white/70">{type}</h3>
                 </div>
               ))}
             </div>
@@ -131,12 +131,12 @@ export default function ForRealtorsClient() {
         <section className="py-20 px-6 border-t border-white/[0.04]">
           <div className="max-w-2xl mx-auto text-center">
             <Quote className="w-8 h-8 text-blue-400/20 mx-auto mb-6" />
-            <p className="text-[17px] text-white/50 leading-relaxed mb-8">
+            <p className="text-title text-white/50 leading-relaxed mb-8">
               &ldquo;{testimonial.quote}&rdquo;
             </p>
             <div>
-              <div className="text-[14px] font-medium text-white/70">{testimonial.name}</div>
-              <div className="text-[12px] text-white/30">{testimonial.title}</div>
+              <div className="text-p2 font-medium text-white/70">{testimonial.name}</div>
+              <div className="text-p3 text-white/30">{testimonial.title}</div>
             </div>
           </div>
         </section>

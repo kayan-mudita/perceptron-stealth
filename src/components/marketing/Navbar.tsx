@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
+import Logo from "@/components/brand/Logo";
 import {
   Menu,
   X,
@@ -114,10 +115,10 @@ export default function Navbar() {
         <link.icon className="w-4 h-4 text-white/40 group-hover:text-blue-400/70 transition-colors" />
       </div>
       <div>
-        <div className="text-[13px] font-medium text-white/70 group-hover:text-white/90 transition-colors">
+        <div className="text-p2 font-medium text-white/70 group-hover:text-white/90 transition-colors">
           {link.label}
         </div>
-        <div className="text-[11px] text-white/25 mt-0.5">
+        <div className="text-p3 text-white/25 mt-0.5">
           {link.desc}
         </div>
       </div>
@@ -143,8 +144,8 @@ export default function Navbar() {
         </div>
 
         <div className="max-w-6xl mx-auto px-6 flex items-center justify-between h-14">
-          <Link href="/" className="text-[15px] font-semibold tracking-tight z-10">
-            Official <span className="text-blue-400">AI</span>
+          <Link href="/" className="z-10">
+            <Logo size="sm" />
           </Link>
 
           {/* Desktop nav */}
@@ -153,7 +154,7 @@ export default function Navbar() {
             <div className="relative">
               <button
                 onClick={() => toggleDropdown("products")}
-                className={`flex items-center gap-1 px-4 py-2 text-[13px] transition-colors rounded-lg hover:bg-white/[0.03] ${
+                className={`flex items-center gap-1 px-4 py-2 text-p2 transition-colors rounded-lg hover:bg-white/[0.03] ${
                   activeDropdown === "products" || pathname === "/how-it-works" || pathname === "/features" || pathname === "/demo" || pathname === "/compare"
                     ? "text-white/70"
                     : "text-white/40 hover:text-white/70"
@@ -179,7 +180,7 @@ export default function Navbar() {
             <div className="relative">
               <button
                 onClick={() => toggleDropdown("solutions")}
-                className={`flex items-center gap-1 px-4 py-2 text-[13px] transition-colors rounded-lg hover:bg-white/[0.03] ${
+                className={`flex items-center gap-1 px-4 py-2 text-p2 transition-colors rounded-lg hover:bg-white/[0.03] ${
                   activeDropdown === "solutions" || pathname.startsWith("/for/")
                     ? "text-white/70"
                     : "text-white/40 hover:text-white/70"
@@ -202,7 +203,7 @@ export default function Navbar() {
                       href="/use-cases"
                       className="flex items-center justify-between p-3 rounded-lg hover:bg-white/[0.04] transition-colors group"
                     >
-                      <span className="text-[12px] text-white/30 group-hover:text-white/50 transition-colors">
+                      <span className="text-p3 text-white/30 group-hover:text-white/50 transition-colors">
                         View all use cases
                       </span>
                       <ArrowRight className="w-3 h-3 text-white/20 group-hover:text-white/40 transition-colors" />
@@ -216,7 +217,7 @@ export default function Navbar() {
             <div className="relative">
               <button
                 onClick={() => toggleDropdown("resources")}
-                className={`flex items-center gap-1 px-4 py-2 text-[13px] transition-colors rounded-lg hover:bg-white/[0.03] ${
+                className={`flex items-center gap-1 px-4 py-2 text-p2 transition-colors rounded-lg hover:bg-white/[0.03] ${
                   activeDropdown === "resources" || pathname.startsWith("/learn") || pathname.startsWith("/blog") || pathname === "/use-cases"
                     ? "text-white/70"
                     : "text-white/40 hover:text-white/70"
@@ -234,7 +235,7 @@ export default function Navbar() {
                   <div className="grid grid-cols-2 divide-x divide-white/[0.06]">
                     {/* Left column: Learn */}
                     <div className="p-4">
-                      <h3 className="text-[11px] font-medium text-white/25 uppercase tracking-wider px-3 mb-2">
+                      <h3 className="text-p3 font-medium text-white/25 uppercase tracking-wider px-3 mb-2">
                         Learn
                       </h3>
                       {resourceLearnLinks.map((link) => (
@@ -244,7 +245,7 @@ export default function Navbar() {
 
                     {/* Right column: Topic Guides */}
                     <div className="p-4">
-                      <h3 className="text-[11px] font-medium text-white/25 uppercase tracking-wider px-3 mb-2">
+                      <h3 className="text-p3 font-medium text-white/25 uppercase tracking-wider px-3 mb-2">
                         Topic Guides
                       </h3>
                       <div className="space-y-0.5">
@@ -255,7 +256,7 @@ export default function Navbar() {
                             className="flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-white/[0.04] transition-colors group"
                           >
                             <link.icon className={`w-3.5 h-3.5 text-white/40 ${link.hoverColor} transition-colors`} />
-                            <span className="text-[13px] text-white/50 group-hover:text-white/80 transition-colors">
+                            <span className="text-p2 text-white/50 group-hover:text-white/80 transition-colors">
                               {link.label}
                             </span>
                           </Link>
@@ -266,7 +267,7 @@ export default function Navbar() {
                           href="/learn"
                           className="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-white/[0.04] transition-colors group"
                         >
-                          <span className="text-[12px] text-white/30 group-hover:text-white/50 transition-colors">
+                          <span className="text-p3 text-white/30 group-hover:text-white/50 transition-colors">
                             View all guides
                           </span>
                           <ArrowRight className="w-3 h-3 text-white/20 group-hover:text-white/40 transition-colors" />
@@ -281,7 +282,7 @@ export default function Navbar() {
             {/* Pricing — standalone */}
             <Link
               href="/pricing"
-              className={`px-4 py-2 text-[13px] transition-colors rounded-lg hover:bg-white/[0.03] ${
+              className={`px-4 py-2 text-p2 transition-colors rounded-lg hover:bg-white/[0.03] ${
                 pathname === "/pricing"
                   ? "text-white/70"
                   : "text-white/40 hover:text-white/70"
@@ -295,13 +296,13 @@ export default function Navbar() {
           <div className="hidden md:flex items-center gap-3 z-10">
             <Link
               href="/auth/login"
-              className="text-[13px] text-white/40 hover:text-white/70 transition-colors px-3 py-2"
+              className="text-p2 text-white/40 hover:text-white/70 transition-colors px-3 py-2"
             >
               Log in
             </Link>
             <Link
               href="/auth/signup"
-              className="text-[13px] px-4 py-2 rounded-lg bg-white text-[#050508] font-medium hover:bg-white/90 transition-colors"
+              className="text-p2 px-4 py-2 rounded-lg bg-white text-[#050508] font-medium hover:bg-white/90 transition-colors"
             >
               Start free trial
             </Link>
@@ -344,7 +345,7 @@ export default function Navbar() {
             <div>
               <button
                 onClick={() => setMobileAccordion(mobileAccordion === "products" ? null : "products")}
-                className="w-full flex items-center justify-between text-[16px] py-3 px-4 rounded-lg text-white/50 active:text-white/90 transition-colors"
+                className="w-full flex items-center justify-between text-p1 py-3 px-4 rounded-lg text-white/50 active:text-white/90 transition-colors"
               >
                 Product
                 <ChevronDown
@@ -359,7 +360,7 @@ export default function Navbar() {
                     <Link
                       key={link.href}
                       href={link.href}
-                      className={`flex items-center gap-3 text-[15px] py-2.5 px-4 rounded-lg transition-colors ${
+                      className={`flex items-center gap-3 text-p2 py-2.5 px-4 rounded-lg transition-colors ${
                         pathname === link.href
                           ? "text-white/90 bg-white/[0.04]"
                           : "text-white/40 active:text-white/70"
@@ -377,7 +378,7 @@ export default function Navbar() {
             <div>
               <button
                 onClick={() => setMobileAccordion(mobileAccordion === "solutions" ? null : "solutions")}
-                className="w-full flex items-center justify-between text-[16px] py-3 px-4 rounded-lg text-white/50 active:text-white/90 transition-colors"
+                className="w-full flex items-center justify-between text-p1 py-3 px-4 rounded-lg text-white/50 active:text-white/90 transition-colors"
               >
                 Solutions
                 <ChevronDown
@@ -392,7 +393,7 @@ export default function Navbar() {
                     <Link
                       key={link.href}
                       href={link.href}
-                      className={`flex items-center gap-3 text-[15px] py-2.5 px-4 rounded-lg transition-colors ${
+                      className={`flex items-center gap-3 text-p2 py-2.5 px-4 rounded-lg transition-colors ${
                         pathname === link.href
                           ? "text-white/90 bg-white/[0.04]"
                           : "text-white/40 active:text-white/70"
@@ -410,7 +411,7 @@ export default function Navbar() {
             <div>
               <button
                 onClick={() => setMobileAccordion(mobileAccordion === "resources" ? null : "resources")}
-                className="w-full flex items-center justify-between text-[16px] py-3 px-4 rounded-lg text-white/50 active:text-white/90 transition-colors"
+                className="w-full flex items-center justify-between text-p1 py-3 px-4 rounded-lg text-white/50 active:text-white/90 transition-colors"
               >
                 Resources
                 <ChevronDown
@@ -422,13 +423,13 @@ export default function Navbar() {
               {mobileAccordion === "resources" && (
                 <div className="pl-4 space-y-1 mt-1">
                   <div className="px-4 py-2">
-                    <span className="text-[11px] font-medium text-white/25 uppercase tracking-wider">Learn</span>
+                    <span className="text-p3 font-medium text-white/25 uppercase tracking-wider">Learn</span>
                   </div>
                   {resourceLearnLinks.map((link) => (
                     <Link
                       key={link.href}
                       href={link.href}
-                      className={`flex items-center gap-3 text-[15px] py-2.5 px-4 rounded-lg transition-colors ${
+                      className={`flex items-center gap-3 text-p2 py-2.5 px-4 rounded-lg transition-colors ${
                         pathname === link.href
                           ? "text-white/90 bg-white/[0.04]"
                           : "text-white/40 active:text-white/70"
@@ -439,13 +440,13 @@ export default function Navbar() {
                     </Link>
                   ))}
                   <div className="px-4 py-2 mt-2">
-                    <span className="text-[11px] font-medium text-white/25 uppercase tracking-wider">Topic Guides</span>
+                    <span className="text-p3 font-medium text-white/25 uppercase tracking-wider">Topic Guides</span>
                   </div>
                   {topicGuideLinks.map((link) => (
                     <Link
                       key={link.href}
                       href={link.href}
-                      className={`flex items-center gap-3 text-[15px] py-2.5 px-4 rounded-lg transition-colors ${
+                      className={`flex items-center gap-3 text-p2 py-2.5 px-4 rounded-lg transition-colors ${
                         pathname === link.href
                           ? "text-white/90 bg-white/[0.04]"
                           : "text-white/40 active:text-white/70"
@@ -462,7 +463,7 @@ export default function Navbar() {
             {/* Pricing — standalone */}
             <Link
               href="/pricing"
-              className={`block text-[16px] py-3 px-4 rounded-lg transition-colors ${
+              className={`block text-p1 py-3 px-4 rounded-lg transition-colors ${
                 pathname === "/pricing"
                   ? "text-white/90 bg-white/[0.04]"
                   : "text-white/50 active:text-white/90 active:bg-white/[0.04]"
@@ -474,7 +475,7 @@ export default function Navbar() {
             {/* About — standalone */}
             <Link
               href="/about"
-              className={`block text-[16px] py-3 px-4 rounded-lg transition-colors ${
+              className={`block text-p1 py-3 px-4 rounded-lg transition-colors ${
                 pathname === "/about"
                   ? "text-white/90 bg-white/[0.04]"
                   : "text-white/50 active:text-white/90 active:bg-white/[0.04]"
@@ -487,7 +488,7 @@ export default function Navbar() {
             <div className="pt-4 mt-4 border-t border-white/[0.06] space-y-2">
               <Link
                 href="/demo"
-                className="flex items-center justify-center gap-2 text-[15px] px-6 py-3.5 rounded-xl bg-white text-[#050508] font-semibold active:bg-white/80 transition-colors"
+                className="flex items-center justify-center gap-2 text-p2 px-6 py-3.5 rounded-xl bg-white text-[#050508] font-semibold active:bg-white/80 transition-colors"
               >
                 <Play className="w-4 h-4" />
                 Try the demo — no signup
@@ -495,13 +496,13 @@ export default function Navbar() {
               <div className="flex items-center gap-3">
                 <Link
                   href="/auth/login"
-                  className="flex-1 text-center text-[14px] text-white/40 active:text-white/70 transition-colors py-3 px-4 rounded-lg border border-white/[0.06]"
+                  className="flex-1 text-center text-p2 text-white/40 active:text-white/70 transition-colors py-3 px-4 rounded-lg border border-white/[0.06]"
                 >
                   Log in
                 </Link>
                 <Link
                   href="/auth/signup"
-                  className="flex-1 text-center text-[14px] text-white/60 active:text-white/90 transition-colors py-3 px-4 rounded-lg border border-white/[0.08] bg-white/[0.04]"
+                  className="flex-1 text-center text-p2 text-white/60 active:text-white/90 transition-colors py-3 px-4 rounded-lg border border-white/[0.08] bg-white/[0.04]"
                 >
                   Sign up
                 </Link>

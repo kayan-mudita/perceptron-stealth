@@ -50,14 +50,14 @@ export default function HomeClient() {
             {/* Badge */}
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.06] mb-8">
               <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              <span className="text-[12px] text-white/40 font-medium">
+              <span className="text-p3 text-white/40 font-medium">
                 Now in beta
               </span>
             </div>
           </FadeIn>
 
           <FadeIn delay={0.1} duration={0.7}>
-            <h1 className="text-[46px] sm:text-[64px] font-bold tracking-[-0.03em] leading-[1.05] text-white mb-6">
+            <h1 className="text-h1 sm:text-h0 font-bold tracking-[-0.03em] leading-[1.05] text-white mb-6">
               Your AI twin.
               <br />
               <span className="bg-gradient-to-r from-blue-400 via-violet-400 to-blue-400 bg-clip-text text-transparent">
@@ -67,7 +67,7 @@ export default function HomeClient() {
           </FadeIn>
 
           <FadeIn delay={0.2} duration={0.7}>
-            <p className="text-[17px] sm:text-[19px] text-white/35 max-w-xl mx-auto mb-10 leading-relaxed font-light">
+            <p className="text-title text-white/35 max-w-xl mx-auto mb-10 leading-relaxed font-light">
               Upload a few photos. Get a full content team that creates,
               schedules, and posts — using your face and voice.
             </p>
@@ -77,20 +77,20 @@ export default function HomeClient() {
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-6">
               <Link
                 href="/demo"
-                className="btn-cta-glow group inline-flex items-center justify-center gap-2.5 px-7 py-3.5 min-h-[48px] w-full sm:w-auto rounded-xl bg-white text-[#050508] text-[15px] font-semibold hover:bg-white/90 active:bg-white/80 transition-all"
+                className="btn-cta-glow group inline-flex items-center justify-center gap-2.5 px-7 py-3.5 min-h-[48px] w-full sm:w-auto rounded-xl bg-white text-[#050508] text-p2 font-semibold hover:bg-white/90 active:bg-white/80 transition-all"
               >
                 Try it free — no signup
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
               </Link>
               <Link
                 href="/how-it-works"
-                className="inline-flex items-center justify-center gap-2 px-7 py-3.5 min-h-[48px] w-full sm:w-auto rounded-xl text-[15px] text-white/40 hover:text-white/60 active:text-white/70 transition-all"
+                className="inline-flex items-center justify-center gap-2 px-7 py-3.5 min-h-[48px] w-full sm:w-auto rounded-xl text-p2 text-white/40 hover:text-white/60 active:text-white/70 transition-all"
               >
                 See how it works
               </Link>
             </div>
 
-            <p className="text-[13px] text-white/15">
+            <p className="text-p3 text-white/15">
               No credit card required
             </p>
           </FadeIn>
@@ -150,7 +150,7 @@ export default function HomeClient() {
                     </button>
                   </div>
 
-                  <p className="text-[14px] sm:text-[15px] text-white/60 font-medium text-center px-8 leading-snug">
+                  <p className="text-p2 sm:text-p2 text-white/60 font-medium text-center px-8 leading-snug">
                     Watch AI create a video
                     <br />
                     in 30 seconds
@@ -170,7 +170,7 @@ export default function HomeClient() {
             </div>
 
             {/* Caption below video */}
-            <p className="text-center mt-6 text-[14px] text-white/30 leading-relaxed font-light">
+            <p className="text-center mt-6 text-p2 text-white/30 leading-relaxed font-light">
               This was made by AI. No camera. No crew. No editing.
             </p>
           </div>
@@ -192,18 +192,18 @@ export default function HomeClient() {
                     />
                   ))}
                 </div>
-                <span className="text-[13px] text-white/50 font-medium">
+                <span className="text-p3 text-white/50 font-medium">
                   4.9 average rating
                 </span>
               </div>
-              <h2 className="text-[28px] sm:text-[34px] font-bold tracking-tight text-white mb-2">
+              <h2 className="text-h3 sm:text-h2 font-bold tracking-tight text-white mb-2">
                 Trusted by{" "}
                 <span className="bg-gradient-to-r from-blue-400 to-violet-400 bg-clip-text text-transparent">
                   200+
                 </span>{" "}
                 professionals
               </h2>
-              <p className="text-[15px] text-white/25">
+              <p className="text-p2 text-white/25">
                 Attorneys, doctors, real estate agents, and advisors use Official
                 AI every day.
               </p>
@@ -221,7 +221,7 @@ export default function HomeClient() {
                     <Quote className="w-5 h-5 text-blue-400/20 mb-4 flex-shrink-0" />
 
                     {/* Quote text */}
-                    <p className="text-[13px] text-white/40 leading-relaxed mb-6 flex-1">
+                    <p className="text-p3 text-white/40 leading-relaxed mb-6 flex-1">
                       &ldquo;{t.quote}&rdquo;
                     </p>
 
@@ -229,7 +229,7 @@ export default function HomeClient() {
                     <div className="flex items-center gap-3 pt-4 border-t border-white/[0.04]">
                       {/* Avatar placeholder */}
                       <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500/20 to-violet-500/20 border border-white/[0.06] flex items-center justify-center flex-shrink-0">
-                        <span className="text-[11px] font-semibold text-white/50">
+                        <span className="text-p3 font-semibold text-white/50">
                           {t.name
                             .split(" ")
                             .map((n) => n[0])
@@ -237,10 +237,10 @@ export default function HomeClient() {
                         </span>
                       </div>
                       <div>
-                        <div className="text-[13px] font-medium text-white/70">
+                        <div className="text-p3 font-medium text-white/70">
                           {t.name}
                         </div>
-                        <div className="text-[11px] text-white/25">
+                        <div className="text-p3 text-white/25">
                           {t.title} &middot; {t.industry}
                         </div>
                       </div>
@@ -264,10 +264,10 @@ export default function HomeClient() {
               { value: "$79", label: "Per month to start" },
             ].map((stat, i) => (
               <div key={i} className="space-y-1">
-                <div className="text-[32px] font-bold tracking-tight text-white">
+                <div className="text-h2 font-bold tracking-tight text-white">
                   {stat.value}
                 </div>
-                <div className="text-[13px] text-white/25">{stat.label}</div>
+                <div className="text-p3 text-white/25">{stat.label}</div>
               </div>
             ))}
           </div>
@@ -279,10 +279,10 @@ export default function HomeClient() {
         <section id="how" className="py-28 px-6 scroll-mt-20">
           <div className="max-w-4xl mx-auto">
             <div className="mb-14">
-              <p className="text-[13px] font-medium text-blue-400/70 uppercase tracking-widest mb-3">
+              <p className="text-p3 font-medium text-blue-400/70 uppercase tracking-widest mb-3">
                 How it works
               </p>
-              <h2 className="text-[36px] sm:text-[40px] font-bold tracking-tight text-white leading-tight">
+              <h2 className="text-h2 sm:text-h1 font-bold tracking-tight text-white leading-tight">
                 Three steps. Five minutes.
                 <br />
                 <span className="text-white/40">Content on autopilot.</span>
@@ -323,13 +323,13 @@ export default function HomeClient() {
                   <div className="w-10 h-10 rounded-xl bg-white/[0.04] border border-white/[0.06] flex items-center justify-center mb-5 group-hover:border-white/[0.1] transition-colors">
                     <step.icon className="w-4.5 h-4.5 text-white/40" />
                   </div>
-                  <div className="text-[11px] text-white/15 font-mono mb-2">
+                  <div className="text-p3 text-white/15 font-mono mb-2">
                     {step.num}
                   </div>
-                  <h3 className="text-[16px] font-semibold text-white/90 mb-2.5">
+                  <h3 className="text-p1 font-semibold text-white/90 mb-2.5">
                     {step.title}
                   </h3>
-                  <p className="text-[13px] text-white/30 leading-relaxed">
+                  <p className="text-p3 text-white/30 leading-relaxed">
                     {step.desc}
                   </p>
                 </div>
@@ -339,7 +339,7 @@ export default function HomeClient() {
             <div className="mt-8 text-center">
               <Link
                 href="/how-it-works"
-                className="text-[13px] text-blue-400/70 hover:text-blue-400 transition-colors"
+                className="text-p3 text-blue-400/70 hover:text-blue-400 transition-colors"
               >
                 Learn more about our process &rarr;
               </Link>
@@ -353,10 +353,10 @@ export default function HomeClient() {
         <section id="features" className="py-28 px-6 border-t border-white/[0.04] scroll-mt-20">
           <div className="max-w-4xl mx-auto">
             <div className="mb-14">
-              <p className="text-[13px] font-medium text-blue-400/70 uppercase tracking-widest mb-3">
+              <p className="text-p3 font-medium text-blue-400/70 uppercase tracking-widest mb-3">
                 What you get
               </p>
-              <h2 className="text-[36px] sm:text-[40px] font-bold tracking-tight text-white leading-tight">
+              <h2 className="text-h2 sm:text-h1 font-bold tracking-tight text-white leading-tight">
                 A content team
                 <br />
                 <span className="text-white/40">that never sleeps.</span>
@@ -394,10 +394,10 @@ export default function HomeClient() {
                   key={i}
                   className="p-5 rounded-xl card-hairline"
                 >
-                  <h3 className="text-[15px] font-medium text-white/80 mb-1.5">
+                  <h3 className="text-p2 font-medium text-white/80 mb-1.5">
                     {feature.title}
                   </h3>
-                  <p className="text-[13px] text-white/25 leading-relaxed">
+                  <p className="text-p3 text-white/25 leading-relaxed">
                     {feature.desc}
                   </p>
                 </div>
@@ -407,7 +407,7 @@ export default function HomeClient() {
             <div className="mt-8 text-center">
               <Link
                 href="/features"
-                className="text-[13px] text-blue-400/70 hover:text-blue-400 transition-colors"
+                className="text-p3 text-blue-400/70 hover:text-blue-400 transition-colors"
               >
                 See all features &rarr;
               </Link>
@@ -421,10 +421,10 @@ export default function HomeClient() {
         <section className="py-28 px-6 border-t border-white/[0.04]">
           <div className="max-w-4xl mx-auto">
             <div className="mb-14">
-              <p className="text-[13px] font-medium text-blue-400/70 uppercase tracking-widest mb-3">
+              <p className="text-p3 font-medium text-blue-400/70 uppercase tracking-widest mb-3">
                 Built for
               </p>
-              <h2 className="text-[36px] sm:text-[40px] font-bold tracking-tight text-white leading-tight">
+              <h2 className="text-h2 sm:text-h1 font-bold tracking-tight text-white leading-tight">
                 Professionals who need
                 <br />
                 <span className="text-white/40">to be everywhere.</span>
@@ -454,10 +454,10 @@ export default function HomeClient() {
                   key={i}
                   className="p-5 rounded-xl card-hairline"
                 >
-                  <h3 className="text-[15px] font-medium text-white/80 mb-1.5">
+                  <h3 className="text-p2 font-medium text-white/80 mb-1.5">
                     {ind.title}
                   </h3>
-                  <p className="text-[12px] text-white/20 leading-relaxed">
+                  <p className="text-p3 text-white/20 leading-relaxed">
                     {ind.desc}
                   </p>
                 </div>
@@ -467,7 +467,7 @@ export default function HomeClient() {
             <div className="mt-8 text-center">
               <Link
                 href="/use-cases"
-                className="text-[13px] text-blue-400/70 hover:text-blue-400 transition-colors"
+                className="text-p3 text-blue-400/70 hover:text-blue-400 transition-colors"
               >
                 Explore all use cases &rarr;
               </Link>
@@ -481,13 +481,13 @@ export default function HomeClient() {
         <section id="pricing" className="py-28 px-6 border-t border-white/[0.04] scroll-mt-20">
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-14">
-              <p className="text-[13px] font-medium text-blue-400/70 uppercase tracking-widest mb-3">
+              <p className="text-p3 font-medium text-blue-400/70 uppercase tracking-widest mb-3">
                 Pricing
               </p>
-              <h2 className="text-[36px] sm:text-[40px] font-bold tracking-tight text-white mb-3">
+              <h2 className="text-h2 sm:text-h1 font-bold tracking-tight text-white mb-3">
                 One plan. Everything included.
               </h2>
-              <p className="text-[15px] text-white/25">
+              <p className="text-p2 text-white/25">
                 Start free. Upgrade when you are ready.
               </p>
             </div>
@@ -496,16 +496,16 @@ export default function HomeClient() {
               {/* Main plan */}
               <div className="relative p-7 rounded-2xl !border-white/[0.1] !bg-white/[0.025] card-hairline">
                 <div className="absolute -top-3 left-6">
-                  <span className="text-[11px] font-semibold text-blue-400 bg-blue-500/10 border border-blue-500/20 px-3 py-1 rounded-full">
+                  <span className="text-p3 font-semibold text-blue-400 bg-blue-500/10 border border-blue-500/20 px-3 py-1 rounded-full">
                     Everything included
                   </span>
                 </div>
-                <h3 className="text-[15px] font-semibold text-white/90 mt-1">
+                <h3 className="text-p2 font-semibold text-white/90 mt-1">
                   Official AI
                 </h3>
                 <div className="flex items-baseline gap-1 mt-3 mb-6">
-                  <span className="text-[36px] font-bold text-white">$79</span>
-                  <span className="text-[13px] text-white/20">/mo</span>
+                  <span className="text-h2 font-bold text-white">$79</span>
+                  <span className="text-p3 text-white/20">/mo</span>
                 </div>
                 <ul className="space-y-3 mb-6">
                   {[
@@ -517,7 +517,7 @@ export default function HomeClient() {
                   ].map((f, j) => (
                     <li
                       key={j}
-                      className="flex items-center gap-2.5 text-[13px] text-white/40"
+                      className="flex items-center gap-2.5 text-p3 text-white/40"
                     >
                       <Check className="w-3.5 h-3.5 text-emerald-400/40 flex-shrink-0" />
                       {f}
@@ -526,7 +526,7 @@ export default function HomeClient() {
                 </ul>
                 <Link
                   href="/auth/signup"
-                  className="block text-center text-[13px] font-medium py-3 min-h-[44px] flex items-center justify-center rounded-lg transition-all btn-cta-glow bg-white text-[#050508] hover:bg-white/90 active:bg-white/80"
+                  className="block text-center text-p3 font-medium py-3 min-h-[44px] flex items-center justify-center rounded-lg transition-all btn-cta-glow bg-white text-[#050508] hover:bg-white/90 active:bg-white/80"
                 >
                   Start your free week — $79/mo after
                 </Link>
@@ -534,11 +534,11 @@ export default function HomeClient() {
 
               {/* Enterprise */}
               <div className="relative p-7 rounded-2xl card-hairline">
-                <h3 className="text-[15px] font-semibold text-white/90 mt-1">
+                <h3 className="text-p2 font-semibold text-white/90 mt-1">
                   Enterprise
                 </h3>
                 <div className="flex items-baseline gap-1 mt-3 mb-6">
-                  <span className="text-[36px] font-bold text-white">Custom</span>
+                  <span className="text-h2 font-bold text-white">Custom</span>
                 </div>
                 <ul className="space-y-3 mb-6">
                   {[
@@ -550,7 +550,7 @@ export default function HomeClient() {
                   ].map((f, j) => (
                     <li
                       key={j}
-                      className="flex items-center gap-2.5 text-[13px] text-white/40"
+                      className="flex items-center gap-2.5 text-p3 text-white/40"
                     >
                       <Check className="w-3.5 h-3.5 text-white/20 flex-shrink-0" />
                       {f}
@@ -559,7 +559,7 @@ export default function HomeClient() {
                 </ul>
                 <Link
                   href="mailto:hello@officialai.com?subject=Enterprise%20Inquiry"
-                  className="block text-center text-[13px] font-medium py-3 min-h-[44px] flex items-center justify-center rounded-lg transition-all border border-white/[0.08] text-white/50 hover:text-white/70 hover:border-white/[0.12] active:bg-white/[0.04]"
+                  className="block text-center text-p3 font-medium py-3 min-h-[44px] flex items-center justify-center rounded-lg transition-all border border-white/[0.08] text-white/50 hover:text-white/70 hover:border-white/[0.12] active:bg-white/[0.04]"
                 >
                   Contact sales
                 </Link>
@@ -569,7 +569,7 @@ export default function HomeClient() {
             <div className="mt-8 text-center">
               <Link
                 href="/pricing"
-                className="text-[13px] text-blue-400/70 hover:text-blue-400 transition-colors"
+                className="text-p3 text-blue-400/70 hover:text-blue-400 transition-colors"
               >
                 See full pricing details &rarr;
               </Link>
@@ -589,21 +589,21 @@ export default function HomeClient() {
             <div className="relative">
               <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.06] mb-8">
                 <Zap className="w-3 h-3 text-yellow-400/70" />
-                <span className="text-[12px] text-white/40 font-medium">
+                <span className="text-p3 text-white/40 font-medium">
                   Get your first video in 5 minutes
                 </span>
               </div>
 
-              <h2 className="text-[36px] sm:text-[42px] font-bold tracking-tight text-white mb-4">
+              <h2 className="text-h2 sm:text-h1 font-bold tracking-tight text-white mb-4">
                 Ready to stop filming?
               </h2>
-              <p className="text-[16px] text-white/30 mb-8 max-w-md mx-auto">
+              <p className="text-p1 text-white/30 mb-8 max-w-md mx-auto">
                 Upload your photos and let AI handle the rest. Your social
                 presence, automated.
               </p>
               <Link
                 href="/demo"
-                className="btn-cta-glow group inline-flex items-center justify-center gap-2.5 px-8 py-4 min-h-[48px] w-full sm:w-auto rounded-xl bg-white text-[#050508] text-[15px] font-semibold hover:bg-white/90 active:bg-white/80 transition-all"
+                className="btn-cta-glow group inline-flex items-center justify-center gap-2.5 px-8 py-4 min-h-[48px] w-full sm:w-auto rounded-xl bg-white text-[#050508] text-p2 font-semibold hover:bg-white/90 active:bg-white/80 transition-all"
               >
                 Try it free — no signup
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />

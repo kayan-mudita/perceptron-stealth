@@ -9,12 +9,12 @@ export default function ReferencesSection({ references }: ReferencesSectionProps
 
   return (
     <section className="mt-12 pt-8 border-t border-white/[0.06]">
-      <h3 className="text-[14px] font-semibold text-white/50 uppercase tracking-wider mb-4">
+      <h3 className="text-p2 font-semibold text-white/50 uppercase tracking-wider mb-4">
         References
       </h3>
       <ol className="space-y-2">
         {references.map((ref, i) => (
-          <li key={i} className="text-[13px] text-white/30 leading-relaxed">
+          <li key={i} className="text-p3 text-white/30 leading-relaxed">
             <span className="text-white/20 mr-2">[{i + 1}]</span>
             <a
               href={ref.url}

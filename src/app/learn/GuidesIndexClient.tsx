@@ -41,17 +41,17 @@ export default function GuidesIndexClient() {
             />
 
             <div className="mb-14">
-              <p className="text-[13px] font-medium text-blue-400/70 uppercase tracking-widest mb-3">
+              <p className="text-p3 font-medium text-blue-400/70 uppercase tracking-widest mb-3">
                 Learn
               </p>
-              <h1 className="text-[36px] sm:text-[46px] font-bold tracking-[-0.03em] leading-[1.08] text-white mb-6">
+              <h1 className="text-h2 sm:text-h1 font-bold tracking-[-0.03em] leading-[1.08] text-white mb-6">
                 In-depth guides on
                 <br />
                 <span className="bg-gradient-to-r from-blue-400 via-violet-400 to-blue-400 bg-clip-text text-transparent">
                   AI video marketing.
                 </span>
               </h1>
-              <p className="text-[17px] text-white/35 max-w-xl leading-relaxed">
+              <p className="text-title text-white/35 max-w-xl leading-relaxed">
                 Everything you need to know about creating, distributing, and scaling professional
                 video content with AI.
               </p>
@@ -74,19 +74,19 @@ export default function GuidesIndexClient() {
                       <pillar.icon className={`w-5 h-5 ${textColor} opacity-60 group-hover:opacity-100 transition-opacity`} />
                     </div>
 
-                    <h2 className="text-[17px] font-semibold text-white/80 group-hover:text-white/95 transition-colors mb-2">
+                    <h2 className="text-title font-semibold text-white/80 group-hover:text-white/95 transition-colors mb-2">
                       {pillar.title}
                     </h2>
 
-                    <p className="text-[13px] text-white/25 leading-relaxed mb-4 flex-1">
+                    <p className="text-p3 text-white/25 leading-relaxed mb-4 flex-1">
                       {pillar.navDescription}
                     </p>
 
                     <div className="flex items-center justify-between">
-                      <span className="text-[12px] text-white/15">
+                      <span className="text-p3 text-white/15">
                         {pillar.subTopics.length} topics
                       </span>
-                      <span className={`inline-flex items-center gap-1 text-[12px] ${textColor} opacity-60 group-hover:opacity-100 transition-opacity`}>
+                      <span className={`inline-flex items-center gap-1 text-p3 ${textColor} opacity-60 group-hover:opacity-100 transition-opacity`}>
                         Explore <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
                       </span>
                     </div>

@@ -51,13 +51,13 @@ export default function IndustryPage({
 
         <div className="relative max-w-3xl mx-auto text-center">
           <FadeIn delay={0} duration={0.6}>
-            <p className="text-[13px] font-medium text-blue-400/70 uppercase tracking-widest mb-4">
+            <p className="text-p3 font-medium text-blue-400/70 uppercase tracking-widest mb-4">
               Official AI for {industry}
             </p>
           </FadeIn>
 
           <FadeIn delay={0.1} duration={0.7}>
-            <h1 className="text-[42px] sm:text-[56px] font-bold tracking-[-0.03em] leading-[1.08] text-white mb-6">
+            <h1 className="text-h1 sm:text-h0 font-bold tracking-[-0.03em] leading-[1.08] text-white mb-6">
               {headline}
               <br />
               <span className="bg-gradient-to-r from-blue-400 via-violet-400 to-blue-400 bg-clip-text text-transparent">
@@ -67,7 +67,7 @@ export default function IndustryPage({
           </FadeIn>
 
           <FadeIn delay={0.2} duration={0.7}>
-            <p className="text-[17px] text-white/35 max-w-xl mx-auto leading-relaxed font-light mb-10">
+            <p className="text-title text-white/35 max-w-xl mx-auto leading-relaxed font-light mb-10">
               {subtext}
             </p>
           </FadeIn>
@@ -76,14 +76,14 @@ export default function IndustryPage({
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
               <Link
                 href="/auth/signup"
-                className="btn-cta-glow group inline-flex items-center justify-center gap-2.5 px-7 py-3.5 min-h-[48px] w-full sm:w-auto rounded-xl bg-white text-[#050508] text-[15px] font-semibold hover:bg-white/90 active:bg-white/80 transition-all"
+                className="btn-cta-glow group inline-flex items-center justify-center gap-2.5 px-7 py-3.5 min-h-[48px] w-full sm:w-auto rounded-xl bg-white text-[#050508] text-p2 font-semibold hover:bg-white/90 active:bg-white/80 transition-all"
               >
                 Start free trial
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
               </Link>
               <Link
                 href="/pricing"
-                className="inline-flex items-center justify-center gap-2 px-7 py-3.5 min-h-[48px] w-full sm:w-auto rounded-xl text-[15px] text-white/40 hover:text-white/60 active:text-white/70 transition-all"
+                className="inline-flex items-center justify-center gap-2 px-7 py-3.5 min-h-[48px] w-full sm:w-auto rounded-xl text-p2 text-white/40 hover:text-white/60 active:text-white/70 transition-all"
               >
                 View pricing
               </Link>
@@ -97,10 +97,10 @@ export default function IndustryPage({
         <section className="py-24 px-6 border-t border-white/[0.04]">
           <div className="max-w-4xl mx-auto">
             <div className="mb-12">
-              <p className="text-[13px] font-medium text-blue-400/70 uppercase tracking-widest mb-3">
+              <p className="text-p3 font-medium text-blue-400/70 uppercase tracking-widest mb-3">
                 The problem
               </p>
-              <h2 className="text-[32px] sm:text-[38px] font-bold tracking-tight text-white leading-tight">
+              <h2 className="text-h2 sm:text-h1 font-bold tracking-tight text-white leading-tight">
                 Sound familiar?
               </h2>
             </div>
@@ -113,10 +113,10 @@ export default function IndustryPage({
                     <div className="w-9 h-9 rounded-xl bg-rose-500/[0.06] border border-rose-500/15 flex items-center justify-center mb-4">
                       <AlertCircle className="w-4 h-4 text-rose-400/60" />
                     </div>
-                    <h3 className="text-[15px] font-semibold text-white/80 mb-2">
+                    <h3 className="text-p2 font-semibold text-white/80 mb-2">
                       {point.title}
                     </h3>
-                    <p className="text-[13px] text-white/30 leading-relaxed">
+                    <p className="text-p3 text-white/30 leading-relaxed">
                       {point.description}
                     </p>
                   </div>
@@ -132,10 +132,10 @@ export default function IndustryPage({
         <section className="py-24 px-6 border-t border-white/[0.04]">
           <div className="max-w-4xl mx-auto">
             <div className="mb-12">
-              <p className="text-[13px] font-medium text-blue-400/70 uppercase tracking-widest mb-3">
+              <p className="text-p3 font-medium text-blue-400/70 uppercase tracking-widest mb-3">
                 The solution
               </p>
-              <h2 className="text-[32px] sm:text-[38px] font-bold tracking-tight text-white leading-tight">
+              <h2 className="text-h2 sm:text-h1 font-bold tracking-tight text-white leading-tight">
                 Official AI handles it all.
               </h2>
             </div>
@@ -148,10 +148,10 @@ export default function IndustryPage({
                     <div className="w-9 h-9 rounded-xl bg-emerald-500/[0.06] border border-emerald-500/15 flex items-center justify-center mb-4">
                       <Check className="w-4 h-4 text-emerald-400/60" />
                     </div>
-                    <h3 className="text-[15px] font-semibold text-white/80 mb-2">
+                    <h3 className="text-p2 font-semibold text-white/80 mb-2">
                       {sol.title}
                     </h3>
-                    <p className="text-[13px] text-white/30 leading-relaxed">
+                    <p className="text-p3 text-white/30 leading-relaxed">
                       {sol.description}
                     </p>
                   </div>
@@ -167,26 +167,26 @@ export default function IndustryPage({
         <section className="py-20 px-6 border-t border-white/[0.04]">
           <div className="max-w-lg mx-auto text-center">
             <div className="p-8 rounded-2xl border border-white/[0.06] bg-white/[0.015]">
-              <p className="text-[13px] text-blue-400/70 uppercase tracking-widest font-medium mb-3">
+              <p className="text-p3 text-blue-400/70 uppercase tracking-widest font-medium mb-3">
                 Pricing
               </p>
               <div className="flex items-baseline justify-center gap-1.5 mb-2">
-                <span className="text-[48px] font-bold text-white tracking-tight">
+                <span className="text-h0 font-bold text-white tracking-tight">
                   $79
                 </span>
-                <span className="text-[15px] text-white/25">/mo</span>
+                <span className="text-p2 text-white/25">/mo</span>
               </div>
-              <p className="text-[14px] text-white/30 mb-6">
+              <p className="text-p2 text-white/30 mb-6">
                 10 videos per month. Upgrade to 30 for $149/mo.
               </p>
               <Link
                 href="/auth/signup"
-                className="btn-cta-glow group inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl bg-white text-[#050508] text-[15px] font-semibold hover:bg-white/90 active:bg-white/80 transition-all"
+                className="btn-cta-glow group inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl bg-white text-[#050508] text-p2 font-semibold hover:bg-white/90 active:bg-white/80 transition-all"
               >
                 Start free trial
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
               </Link>
-              <p className="text-[12px] text-white/15 mt-4">
+              <p className="text-p3 text-white/15 mt-4">
                 No credit card required
               </p>
             </div>

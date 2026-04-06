@@ -90,16 +90,16 @@ export default function PillarPageTemplate({ slug, toc, children }: PillarPageTe
               ]}
             />
 
-            <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full border text-[12px] font-medium mb-6 ${badge}`}>
+            <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full border text-p3 font-medium mb-6 ${badge}`}>
               <pillar.icon className="w-3.5 h-3.5" />
               Complete Guide
             </div>
 
-            <h1 className="text-[36px] sm:text-[46px] font-bold tracking-[-0.03em] leading-[1.08] text-white mb-6">
+            <h1 className="text-h2 sm:text-h1 font-bold tracking-[-0.03em] leading-[1.08] text-white mb-6">
               {pillar.headline}
             </h1>
 
-            <p className="text-[17px] text-white/35 max-w-2xl leading-relaxed mb-8">
+            <p className="text-title text-white/35 max-w-2xl leading-relaxed mb-8">
               {pillar.heroSubtitle}
             </p>
 
@@ -138,7 +138,7 @@ export default function PillarPageTemplate({ slug, toc, children }: PillarPageTe
             {/* Table of Contents */}
             <FadeIn duration={0.5}>
               <div className="p-6 rounded-xl card-hairline mb-10">
-                <h2 className="text-[14px] font-semibold text-white/50 uppercase tracking-wider mb-4">
+                <h2 className="text-p2 font-semibold text-white/50 uppercase tracking-wider mb-4">
                   In this guide
                 </h2>
                 <ol className="space-y-2">
@@ -146,9 +146,9 @@ export default function PillarPageTemplate({ slug, toc, children }: PillarPageTe
                     <li key={item.id}>
                       <a
                         href={`#${item.id}`}
-                        className="flex items-start gap-3 text-[14px] text-white/40 hover:text-white/70 transition-colors"
+                        className="flex items-start gap-3 text-p2 text-white/40 hover:text-white/70 transition-colors"
                       >
-                        <span className="text-white/15 font-mono text-[12px] mt-0.5 w-5 flex-shrink-0">
+                        <span className="text-white/15 font-mono text-p3 mt-0.5 w-5 flex-shrink-0">
                           {i + 1}.
                         </span>
                         {item.label}
@@ -161,7 +161,7 @@ export default function PillarPageTemplate({ slug, toc, children }: PillarPageTe
 
             {/* Prose content */}
             <FadeIn delay={0.1} duration={0.6}>
-              <div className="prose prose-invert prose-lg max-w-none prose-headings:text-white prose-headings:tracking-tight prose-p:text-white/50 prose-p:leading-relaxed prose-a:text-blue-400 prose-a:no-underline hover:prose-a:underline prose-strong:text-white/70 prose-li:text-white/50 prose-blockquote:border-blue-500/30 prose-blockquote:text-white/40 prose-h2:text-[24px] prose-h2:mt-12 prose-h2:mb-4 prose-h3:text-[18px] prose-h3:mt-8 prose-h3:mb-3">
+              <div className="prose prose-invert prose-lg max-w-none prose-headings:text-white prose-headings:tracking-tight prose-p:text-white/50 prose-p:leading-relaxed prose-a:text-blue-400 prose-a:no-underline hover:prose-a:underline prose-strong:text-white/70 prose-li:text-white/50 prose-blockquote:border-blue-500/30 prose-blockquote:text-white/40 prose-h2:text-h3 prose-h2:mt-12 prose-h2:mb-4 prose-h3:text-title prose-h3:mt-8 prose-h3:mb-3">
                 {children}
               </div>
             </FadeIn>
@@ -172,7 +172,7 @@ export default function PillarPageTemplate({ slug, toc, children }: PillarPageTe
             {/* Deep Dives — subtopic cards */}
             <FadeIn delay={0.2} duration={0.6}>
               <section className="mt-16">
-                <h2 className="text-[20px] font-bold text-white mb-6">
+                <h2 className="text-h4 font-bold text-white mb-6">
                   Deep dives
                 </h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -182,13 +182,13 @@ export default function PillarPageTemplate({ slug, toc, children }: PillarPageTe
                       href={`/learn/${slug}/${st.slug}`}
                       className="group p-5 rounded-xl card-hairline hover:border-white/[0.12] transition-all"
                     >
-                      <h3 className="text-[15px] font-medium text-white/70 group-hover:text-white/90 transition-colors mb-1.5">
+                      <h3 className="text-p2 font-medium text-white/70 group-hover:text-white/90 transition-colors mb-1.5">
                         {st.title}
                       </h3>
-                      <p className="text-[13px] text-white/25 leading-relaxed line-clamp-2">
+                      <p className="text-p3 text-white/25 leading-relaxed line-clamp-2">
                         {st.description}
                       </p>
-                      <span className="inline-flex items-center gap-1 text-[12px] text-blue-400/60 group-hover:text-blue-400 mt-3 transition-colors">
+                      <span className="inline-flex items-center gap-1 text-p3 text-blue-400/60 group-hover:text-blue-400 mt-3 transition-colors">
                         Read more <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
                       </span>
                     </Link>
@@ -200,15 +200,15 @@ export default function PillarPageTemplate({ slug, toc, children }: PillarPageTe
             {/* Lead magnet CTA */}
             <FadeIn delay={0.3} duration={0.6}>
               <div className="mt-16 p-8 rounded-2xl card-hairline text-center">
-                <h3 className="text-[20px] font-bold text-white mb-2">
+                <h3 className="text-h4 font-bold text-white mb-2">
                   {pillar.leadMagnet.title}
                 </h3>
-                <p className="text-[14px] text-white/30 mb-6 max-w-md mx-auto">
+                <p className="text-p2 text-white/30 mb-6 max-w-md mx-auto">
                   {pillar.leadMagnet.description}
                 </p>
                 <Link
                   href="/demo"
-                  className="btn-cta-glow inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-white text-[#050508] text-[14px] font-semibold hover:bg-white/90 transition-all"
+                  className="btn-cta-glow inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-white text-[#050508] text-p2 font-semibold hover:bg-white/90 transition-all"
                 >
                   {pillar.leadMagnet.ctaText}
                 </Link>

@@ -31,7 +31,7 @@ export default function GoClient() {
             {/* Badge */}
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-blue-500/10 to-violet-500/10 border border-white/[0.08] mb-10">
               <Zap className="w-4 h-4 text-yellow-400" />
-              <span className="text-[13px] text-white/60 font-medium">
+              <span className="text-p3 text-white/60 font-medium">
                 Limited time offer
               </span>
             </div>
@@ -48,7 +48,7 @@ export default function GoClient() {
             </h1>
 
             {/* Subtext */}
-            <p className="text-[18px] sm:text-[20px] text-white/40 max-w-lg mx-auto mb-12 leading-relaxed">
+            <p className="text-title sm:text-h4 text-white/40 max-w-lg mx-auto mb-12 leading-relaxed">
               Your face. Your voice. AI does the rest. Stop paying thousands for
               video production. Start posting daily in 5 minutes.
             </p>
@@ -61,7 +61,7 @@ export default function GoClient() {
                   className="flex items-center gap-2.5"
                 >
                   <Check className="w-4 h-4 text-emerald-400 flex-shrink-0" />
-                  <span className="text-[14px] text-white/50">{feature}</span>
+                  <span className="text-p2 text-white/50">{feature}</span>
                 </div>
               ))}
             </div>
@@ -69,13 +69,13 @@ export default function GoClient() {
             {/* CTA */}
             <Link
               href="/auth/signup?ref=go"
-              className="group inline-flex items-center justify-center gap-3 px-10 py-5 rounded-2xl bg-white text-[#050508] text-[17px] font-bold hover:bg-white/90 active:bg-white/80 transition-all shadow-[0_0_60px_rgba(255,255,255,0.1)]"
+              className="group inline-flex items-center justify-center gap-3 px-10 py-5 rounded-2xl bg-white text-[#050508] text-title font-bold hover:bg-white/90 active:bg-white/80 transition-all shadow-[0_0_60px_rgba(255,255,255,0.1)]"
             >
               Get Started
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Link>
 
-            <p className="text-[13px] text-white/20 mt-6">
+            <p className="text-p3 text-white/20 mt-6">
               7-day free trial. Cancel anytime. No commitment.
             </p>
           </div>
