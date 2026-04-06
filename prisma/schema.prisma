@@ -179,8 +179,9 @@ model CharacterSheet {
   user         User     @relation(fields: [userId], references: [id])
   type         String   // "poses" | "3d_360"
   compositeUrl String?
-  status       String   @default("generating") // generating | complete | failed
-  createdAt    DateTime @default(now())
+  status        String   @default("generating") // generating | complete | failed
+  selectedPose  Int?     // 0-8 index of user's preferred pose from 3x3 grid
+  createdAt     DateTime @default(now())
 
   images CharacterSheetImage[]
 }

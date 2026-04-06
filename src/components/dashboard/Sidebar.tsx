@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
 import {
+  Home,
   Sparkles,
   Film,
   CalendarDays,
@@ -17,6 +18,7 @@ import {
 import { useState } from "react";
 
 const navItems = [
+  { href: "/dashboard", label: "Home", icon: Home, exact: true },
   { href: "/dashboard/generate", label: "Create Video", icon: Sparkles },
   { href: "/dashboard/content", label: "Content", icon: Film },
   { href: "/dashboard/calendar", label: "Calendar", icon: CalendarDays },
@@ -27,10 +29,10 @@ const navItems = [
 
 // Mobile bottom nav shows a subset of key items
 const mobileNavItems = [
+  { href: "/dashboard", label: "Home", icon: Home, exact: true },
   { href: "/dashboard/generate", label: "Create", icon: Sparkles },
   { href: "/dashboard/content", label: "Content", icon: Film },
   { href: "/dashboard/calendar", label: "Calendar", icon: CalendarDays },
-  { href: "/dashboard/analytics", label: "Analytics", icon: BarChart3 },
   { href: "/dashboard/settings", label: "More", icon: Settings },
 ];
 
@@ -48,7 +50,7 @@ export default function Sidebar() {
       >
         {/* Logo */}
         <div className="flex items-center gap-2 px-5 h-16 border-b border-white/5">
-          <Link href="/dashboard/generate" className="flex items-center gap-2">
+          <Link href="/dashboard" className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center flex-shrink-0">
               <Sparkles className="w-4 h-4 text-white" />
             </div>
@@ -63,7 +65,9 @@ export default function Sidebar() {
         {/* Navigation */}
         <nav className="flex-1 py-4 px-3 space-y-1 overflow-y-auto">
           {navItems.map((item) => {
-            const isActive = pathname === item.href || pathname?.startsWith(item.href + "/");
+            const isActive = (item as any).exact
+              ? pathname === item.href
+              : pathname === item.href || pathname?.startsWith(item.href + "/");
             return (
               <Link
                 key={item.href}
@@ -111,7 +115,9 @@ export default function Sidebar() {
       <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#0a0e17]/95 backdrop-blur-xl border-t border-white/5 safe-area-bottom">
         <div className="flex items-center justify-around px-2 py-1">
           {mobileNavItems.map((item) => {
-            const isActive = pathname === item.href || pathname?.startsWith(item.href + "/");
+            const isActive = (item as any).exact
+              ? pathname === item.href
+              : pathname === item.href || pathname?.startsWith(item.href + "/");
             return (
               <Link
                 key={item.href}

@@ -174,7 +174,7 @@ function OnboardingFlow() {
     }
   }, []);
 
-  const handleSheetSelect = useCallback((poseUrl: string) => {
+  const handleSheetSelect = useCallback((poseUrl: string, _sheetId: string, _selectedPose?: number) => {
     trackEvent("onboarding_character_selected");
     setCharacterSheetUrl(poseUrl);
     setStep("voice");

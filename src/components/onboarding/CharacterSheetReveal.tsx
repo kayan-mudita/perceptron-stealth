@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 interface CharacterSheetRevealProps {
   photoUrl: string;
   industry: string;
-  onSelect: (poseUrl: string, sheetId: string) => void;
+  onSelect: (poseUrl: string, sheetId: string, selectedPose?: number) => void;
   /** Pre-fetched composite URL from background generation */
   preloadedCompositeUrl?: string | null;
   /** Pre-fetched sheet ID from background generation */
@@ -108,7 +108,7 @@ export default function CharacterSheetReveal({
   const [stageIndex, setStageIndex] = useState(0);
   const [compositeUrl, setCompositeUrl] = useState<string | null>(null);
   const [sheetId, setSheetId] = useState<string | null>(null);
-  const [selected, setSelected] = useState(false);
+  const [selectedPose, setSelectedPose] = useState<number | null>(null);
   const [confetti, setConfetti] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -186,22 +186,36 @@ export default function CharacterSheetReveal({
 
   const handleImageLoad = () => {
     setImageLoaded(true);
-    // Fire confetti after image appears
     setTimeout(() => setConfetti(true), 400);
   };
 
-  const handleSelect = () => {
-    setSelected(true);
+  const handlePoseSelect = (index: number) => {
+    setSelectedPose(index);
   };
 
-  const handleConfirm = () => {
-    if (compositeUrl) onSelect(compositeUrl, sheetId || "");
+  const handleConfirm = async () => {
+    if (!compositeUrl || selectedPose === null) return;
+
+    // Save pose selection to backend
+    if (sheetId) {
+      try {
+        await fetch("/api/character-sheet", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ sheetId, selectedPose }),
+        });
+      } catch {
+        // Non-blocking — don't prevent onboarding progress
+      }
+    }
+
+    onSelect(compositeUrl, sheetId || "", selectedPose);
   };
 
   const handleRetry = () => {
     setRetrying(true);
     hasFetched.current = false;
-    setSelected(false);
+    setSelectedPose(null);
     setCompositeUrl(null);
     setConfetti(false);
     generate();
@@ -225,7 +239,6 @@ export default function CharacterSheetReveal({
           >
             {/* Central orb */}
             <div className="relative w-24 h-24">
-              {/* Outer rings */}
               <motion.div
                 className="absolute inset-0 rounded-full border border-indigo-500/20"
                 animate={{ scale: [1, 1.6, 1], opacity: [0.5, 0, 0.5] }}
@@ -236,7 +249,6 @@ export default function CharacterSheetReveal({
                 animate={{ scale: [1, 2.0, 1], opacity: [0.3, 0, 0.3] }}
                 transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 0.4 }}
               />
-              {/* Core glow */}
               <motion.div
                 className="absolute inset-4 rounded-full"
                 style={{
@@ -247,13 +259,12 @@ export default function CharacterSheetReveal({
                   scale: [1, 1.1, 1],
                   boxShadow: [
                     "0 0 40px rgba(99,102,241,0.5), 0 0 80px rgba(139,92,246,0.3)",
-                    "0 0 60px rgba(99,102,241,0.7), 0 0_100px rgba(139,92,246,0.4)",
+                    "0 0 60px rgba(99,102,241,0.7), 0 0 100px rgba(139,92,246,0.4)",
                     "0 0 40px rgba(99,102,241,0.5), 0 0 80px rgba(139,92,246,0.3)",
                   ],
                 }}
                 transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
               />
-              {/* Photo preview inside orb */}
               {photoUrl && (
                 <div className="absolute inset-4 rounded-full overflow-hidden opacity-40">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -321,7 +332,7 @@ export default function CharacterSheetReveal({
           </motion.div>
         )}
 
-        {/* ── Reveal ── */}
+        {/* ── Reveal with pose selection grid ── */}
         {state === "reveal" && compositeUrl && (
           <motion.div
             key="reveal"
@@ -343,7 +354,7 @@ export default function CharacterSheetReveal({
                 transition={{ delay: 0.1, type: "spring", stiffness: 200 }}
                 className="text-[26px] font-extrabold text-white tracking-tight"
               >
-                Wait... is that you?? 🤯
+                Pick your best look
               </motion.p>
               <motion.p
                 initial={{ opacity: 0 }}
@@ -351,11 +362,11 @@ export default function CharacterSheetReveal({
                 transition={{ delay: 0.3 }}
                 className="text-[13px] text-white/40 mt-1.5 font-medium"
               >
-                9 poses. 1 photo. Built just for you.
+                9 poses. Tap the one that looks most like you.
               </motion.p>
             </motion.div>
 
-            {/* Character sheet — with confetti */}
+            {/* Character sheet with 3x3 selection grid overlay */}
             <motion.div
               initial={{ opacity: 0, scale: 0.88, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -367,14 +378,7 @@ export default function CharacterSheetReveal({
                 style={{ background: "radial-gradient(ellipse, rgba(99,102,241,0.2) 0%, transparent 70%)" }}
               />
 
-              <div
-                className={`relative rounded-2xl overflow-hidden border-2 transition-all duration-300 cursor-pointer ${
-                  selected
-                    ? "border-indigo-400 shadow-[0_0_30px_rgba(99,102,241,0.4)]"
-                    : "border-white/[0.08] hover:border-indigo-500/40 hover:shadow-[0_0_20px_rgba(99,102,241,0.2)]"
-                }`}
-                onClick={handleSelect}
-              >
+              <div className="relative rounded-2xl overflow-hidden border-2 border-white/[0.08]">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={compositeUrl}
@@ -396,43 +400,39 @@ export default function CharacterSheetReveal({
                 {/* Confetti burst */}
                 <ConfettiBurst active={confetti} />
 
-                {/* Selection overlay */}
-                <AnimatePresence>
-                  {selected && (
-                    <motion.div
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      className="absolute inset-0 bg-indigo-500/5 pointer-events-none"
-                    >
-                      <motion.div
-                        initial={{ scale: 0, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                        className="absolute top-3 right-3 w-9 h-9 rounded-full bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center shadow-[0_0_15px_rgba(99,102,241,0.6)]"
-                      >
-                        <Check className="w-5 h-5 text-white" />
-                      </motion.div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-
-                {/* Tap hint */}
-                {!selected && imageLoaded && (
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.6 }}
-                    className="absolute bottom-0 inset-x-0 p-3 flex justify-center"
-                    style={{ background: "linear-gradient(to top, rgba(6,6,16,0.85), transparent)" }}
-                  >
-                    <motion.span
-                      animate={{ y: [0, -2, 0] }}
-                      transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-                      className="text-[12px] font-semibold text-white/60 bg-white/[0.08] backdrop-blur-md px-3 py-1.5 rounded-full border border-white/[0.10]"
-                    >
-                      👆 Tap to select this look
-                    </motion.span>
-                  </motion.div>
+                {/* 3x3 clickable pose selection grid */}
+                {imageLoaded && (
+                  <div className="absolute inset-0 grid grid-cols-3 grid-rows-3">
+                    {Array.from({ length: 9 }).map((_, i) => {
+                      const isSelected = selectedPose === i;
+                      return (
+                        <button
+                          key={i}
+                          onClick={() => handlePoseSelect(i)}
+                          className={`relative transition-all duration-200 ${
+                            isSelected
+                              ? "ring-2 ring-inset ring-indigo-400 bg-indigo-500/10"
+                              : "hover:bg-white/[0.06]"
+                          }`}
+                        >
+                          {/* Selection checkmark */}
+                          <AnimatePresence>
+                            {isSelected && (
+                              <motion.div
+                                initial={{ scale: 0, opacity: 0 }}
+                                animate={{ scale: 1, opacity: 1 }}
+                                exit={{ scale: 0, opacity: 0 }}
+                                transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                                className="absolute top-1.5 right-1.5 w-7 h-7 rounded-full bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center shadow-[0_0_12px_rgba(99,102,241,0.6)] z-10"
+                              >
+                                <Check className="w-4 h-4 text-white" />
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
+                        </button>
+                      );
+                    })}
+                  </div>
                 )}
               </div>
             </motion.div>
@@ -446,11 +446,11 @@ export default function CharacterSheetReveal({
             >
               <motion.button
                 onClick={handleConfirm}
-                disabled={!selected}
-                whileHover={selected ? { scale: 1.02 } : {}}
-                whileTap={selected ? { scale: 0.97 } : {}}
+                disabled={selectedPose === null}
+                whileHover={selectedPose !== null ? { scale: 1.02 } : {}}
+                whileTap={selectedPose !== null ? { scale: 0.97 } : {}}
                 className="relative w-full py-4 rounded-2xl text-[15px] font-bold overflow-hidden disabled:opacity-35 disabled:cursor-not-allowed transition-opacity"
-                style={selected ? {
+                style={selectedPose !== null ? {
                   background: "linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #06b6d4 100%)",
                   boxShadow: "0 0 30px rgba(99,102,241,0.4)",
                 } : {
@@ -459,7 +459,7 @@ export default function CharacterSheetReveal({
                 }}
               >
                 {/* Shimmer on active */}
-                {selected && (
+                {selectedPose !== null && (
                   <motion.div
                     className="absolute inset-0 bg-gradient-to-r from-transparent via-white/15 to-transparent -skew-x-12"
                     animate={{ x: ["-100%", "200%"] }}
@@ -467,7 +467,7 @@ export default function CharacterSheetReveal({
                   />
                 )}
                 <span className="relative text-white">
-                  {selected ? "Let's go 🚀" : "Tap your sheet to select it"}
+                  {selectedPose !== null ? "Let's go 🚀" : "Tap a pose to select it"}
                 </span>
               </motion.button>
 
