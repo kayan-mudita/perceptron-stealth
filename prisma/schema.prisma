@@ -224,6 +224,29 @@ model LifecycleEvent {
   @@index([event, createdAt])
 }
 
+// ─── Research Sessions (post-payment strategy generation) ───────
+
+model ResearchSession {
+  id               String    @id @default(uuid())
+  userId           String
+  industry         String
+  companyName      String?
+  websiteUrl       String?
+  businessStatus   String    @default("queued")   // queued | processing | complete | failed
+  businessResult   String?   // JSON: services, positioning, tone, audience, geography
+  trendsStatus     String    @default("queued")
+  trendsResult     String?   // JSON: trending topics, evergreen, seasonal, platform angles
+  competitorStatus String    @default("queued")
+  competitorResult String?   // JSON: competitors, gaps, opportunities
+  calendarStatus   String    @default("queued")
+  calendarResult   String?   // JSON: 30-day calendar with topics, hooks, scripts
+  status           String    @default("processing") // processing | complete | failed
+  createdAt        DateTime  @default(now())
+  completedAt      DateTime?
+
+  @@index([userId, createdAt])
+}
+
 // ─── System Configuration ───────────────────────────────────────
 
 model SystemConfig {
