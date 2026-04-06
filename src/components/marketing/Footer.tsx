@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowRight, Play } from "lucide-react";
+import Logo from "@/components/brand/Logo";
 
 const footerLinks = {
   Product: [
@@ -41,7 +42,7 @@ export default function Footer() {
     <footer className="border-t border-white/[0.04]">
       {/* Footer CTA banner */}
       <div className="max-w-6xl mx-auto px-6 pt-16 pb-10">
-        <div className="relative p-8 sm:p-10 rounded-2xl card-hairline overflow-hidden">
+        <div className="relative p-8 sm:p-10 rounded-display card-hairline overflow-hidden">
           {/* Background glow */}
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[300px] pointer-events-none">
             <div className="absolute inset-0 bg-blue-500/[0.04] rounded-full blur-[80px]" />
@@ -49,24 +50,24 @@ export default function Footer() {
 
           <div className="relative flex flex-col sm:flex-row items-center justify-between gap-6">
             <div>
-              <h3 className="text-[20px] sm:text-[24px] font-bold text-white mb-2">
+              <h3 className="text-h4 sm:text-h3 font-bold text-white mb-2">
                 See your AI twin in 30 seconds
               </h3>
-              <p className="text-[14px] text-white/30 max-w-md">
+              <p className="text-p2 text-white/30 max-w-md">
                 Upload one photo, no signup required. See what AI video looks like with your face.
               </p>
             </div>
             <div className="flex items-center gap-3 flex-shrink-0">
               <Link
                 href="/demo"
-                className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-white text-[#050508] text-[14px] font-semibold hover:bg-white/90 transition-all"
+                className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-white text-[#050508] text-p2 font-semibold hover:bg-white/90 transition-all"
               >
                 <Play className="w-4 h-4" />
                 Try the demo
               </Link>
               <Link
                 href="/auth/signup"
-                className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl border border-white/[0.1] text-white/50 text-[14px] font-medium hover:text-white/70 hover:border-white/[0.15] transition-all"
+                className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl border border-white/[0.1] text-white/50 text-p2 font-medium hover:text-white/70 hover:border-white/[0.15] transition-all"
               >
                 Sign up
                 <ArrowRight className="w-3.5 h-3.5" />
@@ -81,16 +82,16 @@ export default function Footer() {
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-8 lg:gap-6">
           {/* Brand column */}
           <div className="col-span-2 sm:col-span-3 lg:col-span-1">
-            <Link href="/" className="text-[15px] font-semibold tracking-tight">
-              Official <span className="text-blue-400">AI</span>
+            <Link href="/">
+              <Logo size="sm" />
             </Link>
-            <p className="text-[13px] text-white/20 mt-3 leading-relaxed max-w-[220px]">
+            <p className="text-p3 text-white/20 mt-3 leading-relaxed max-w-[220px]">
               Your AI twin, posting for you. Studio-quality video content without filming.
             </p>
 
             <a
               href="mailto:hello@officialai.com"
-              className="block text-[13px] text-white/25 hover:text-white/50 transition-colors mt-4"
+              className="block text-p3 text-white/25 hover:text-white/50 transition-colors mt-4"
             >
               hello@officialai.com
             </a>
@@ -125,7 +126,7 @@ export default function Footer() {
           {/* Link columns */}
           {Object.entries(footerLinks).map(([category, links]) => (
             <div key={category}>
-              <h4 className="text-[12px] font-medium text-white/30 uppercase tracking-wider mb-4">
+              <h4 className="text-p3 font-medium text-white/30 uppercase tracking-wider mb-4">
                 {category}
               </h4>
               <ul className="space-y-2.5">
@@ -133,7 +134,7 @@ export default function Footer() {
                   <li key={link.href}>
                     <Link
                       href={link.href}
-                      className="text-[13px] text-white/20 hover:text-white/50 transition-colors"
+                      className="text-p3 text-white/20 hover:text-white/50 transition-colors"
                     >
                       {link.label}
                     </Link>
@@ -146,19 +147,19 @@ export default function Footer() {
 
         {/* Bottom bar */}
         <div className="border-t border-white/[0.04] mt-12 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <span className="text-[12px] text-white/15">
+          <span className="text-p3 text-white/15">
             &copy; {new Date().getFullYear()} Official AI. All rights reserved.
           </span>
           <div className="flex items-center gap-6">
             <Link
               href="/privacy"
-              className="text-[12px] text-white/15 hover:text-white/40 transition-colors"
+              className="text-p3 text-white/15 hover:text-white/40 transition-colors"
             >
               Privacy Policy
             </Link>
             <Link
               href="/terms"
-              className="text-[12px] text-white/15 hover:text-white/40 transition-colors"
+              className="text-p3 text-white/15 hover:text-white/40 transition-colors"
             >
               Terms of Service
             </Link>

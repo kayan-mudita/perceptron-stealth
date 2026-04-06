@@ -1,3 +1,10 @@
+const {
+  fontSize: dsFont,
+  colors: dsColors,
+  borderRadius: dsRadius,
+  boxShadow: dsShadow,
+} = require("./src/design-tokens");
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
@@ -8,6 +15,13 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        // Design system scales
+        special: dsColors.special,
+        utility: dsColors.utility,
+        positive: dsColors.positive,
+        negative: dsColors.negative,
+        gray: dsColors.gray,
+        // Legacy aliases (backward compat)
         primary: {
           50: "#f0f4ff",
           100: "#dbe4ff",
@@ -34,6 +48,9 @@ module.exports = {
           950: "#060911",
         },
       },
+      fontSize: dsFont,
+      borderRadius: dsRadius,
+      boxShadow: dsShadow,
       fontFamily: {
         sans: ["Inter", "system-ui", "-apple-system", "sans-serif"],
       },

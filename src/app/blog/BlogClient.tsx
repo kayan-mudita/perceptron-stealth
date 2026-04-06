@@ -158,17 +158,17 @@ export default function BlogClient() {
         </div>
 
         <div className="relative max-w-3xl mx-auto text-center">
-          <p className="text-[13px] font-medium text-blue-400/70 uppercase tracking-widest mb-4">
+          <p className="text-p3 font-medium text-blue-400/70 uppercase tracking-widest mb-4">
             Blog
           </p>
-          <h1 className="text-[42px] sm:text-[56px] font-bold tracking-[-0.03em] leading-[1.08] text-white mb-6">
+          <h1 className="text-h2 sm:text-h1 font-bold tracking-[-0.03em] leading-[1.08] text-white mb-6">
             Insights on AI content
             <br />
             <span className="bg-gradient-to-r from-blue-400 via-violet-400 to-blue-400 bg-clip-text text-transparent">
               and professional growth.
             </span>
           </h1>
-          <p className="text-[17px] text-white/35 max-w-xl mx-auto leading-relaxed font-light">
+          <p className="text-title text-white/35 max-w-xl mx-auto leading-relaxed font-light">
             How AI is changing content creation for professionals. Strategy,
             technology, and real results.
           </p>
@@ -185,28 +185,28 @@ export default function BlogClient() {
             >
               <div className="flex items-center gap-3 mb-4">
                 <span
-                  className={`text-[11px] font-medium px-2.5 py-1 rounded-full border ${
+                  className={`text-p3 font-medium px-2.5 py-1 rounded-full border ${
                     categoryColors[featured.category] || "text-white/40 bg-white/[0.04] border-white/[0.06]"
                   }`}
                 >
                   {featured.category}
                 </span>
-                <span className="text-[12px] text-white/20">{featured.date}</span>
+                <span className="text-p3 text-white/20">{featured.date}</span>
               </div>
 
-              <h2 className="text-[24px] sm:text-[28px] font-bold tracking-tight text-white/90 mb-3 group-hover:text-white transition-colors">
+              <h2 className="text-h3 sm:text-h2 font-bold tracking-tight text-white/90 mb-3 group-hover:text-white transition-colors">
                 {featured.title}
               </h2>
-              <p className="text-[15px] text-white/30 leading-relaxed mb-6 max-w-2xl">
+              <p className="text-p2 text-white/30 leading-relaxed mb-6 max-w-2xl">
                 {featured.excerpt}
               </p>
 
               <div className="flex items-center gap-4">
-                <span className="inline-flex items-center gap-1.5 text-[12px] text-white/20">
+                <span className="inline-flex items-center gap-1.5 text-p3 text-white/20">
                   <Clock className="w-3 h-3" />
                   {featured.readTime}
                 </span>
-                <span className="inline-flex items-center gap-1.5 text-[13px] text-blue-400/70 group-hover:text-blue-400 transition-colors">
+                <span className="inline-flex items-center gap-1.5 text-p3 text-blue-400/70 group-hover:text-blue-400 transition-colors">
                   Read article
                   <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
                 </span>
@@ -228,7 +228,7 @@ export default function BlogClient() {
               >
                 <div className="flex items-center gap-2 mb-4">
                   <span
-                    className={`text-[10px] font-medium px-2 py-0.5 rounded-full border ${
+                    className={`text-p3 font-medium px-2 py-0.5 rounded-full border ${
                       categoryColors[post.category] || "text-white/40 bg-white/[0.04] border-white/[0.06]"
                     }`}
                   >
@@ -236,16 +236,16 @@ export default function BlogClient() {
                   </span>
                 </div>
 
-                <h3 className="text-[15px] font-semibold text-white/80 mb-2 leading-snug group-hover:text-white transition-colors">
+                <h3 className="text-p2 font-semibold text-white/80 mb-2 leading-snug group-hover:text-white transition-colors">
                   {post.title}
                 </h3>
-                <p className="text-[12px] text-white/25 leading-relaxed mb-4">
+                <p className="text-p3 text-white/25 leading-relaxed mb-4">
                   {post.excerpt}
                 </p>
 
                 <div className="flex items-center justify-between">
-                  <span className="text-[11px] text-white/15">{post.date}</span>
-                  <span className="inline-flex items-center gap-1 text-[11px] text-white/15">
+                  <span className="text-p3 text-white/15">{post.date}</span>
+                  <span className="inline-flex items-center gap-1 text-p3 text-white/15">
                     <Clock className="w-2.5 h-2.5" />
                     {post.readTime}
                   </span>

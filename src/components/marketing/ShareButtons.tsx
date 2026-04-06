@@ -13,7 +13,7 @@ export default function ShareButtons({ url, title }: ShareButtonsProps) {
 
   return (
     <div className="flex items-center gap-3">
-      <span className="text-[12px] text-white/30 uppercase tracking-wider">Share</span>
+      <span className="text-p3 text-white/30 uppercase tracking-wider">Share</span>
       <a
         href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`}
         target="_blank"

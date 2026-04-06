@@ -27,13 +27,13 @@
     background: rgba(255, 255, 255, 0.03);
     backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.06);
-    border-radius: 16px;
+    border-radius: 12px;
   }
   .glass-card-hover {
     background: rgba(255, 255, 255, 0.03);
     backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.06);
-    border-radius: 16px;
+    border-radius: 12px;
     transition: all 0.2s;
   }
   .glass-card-hover:hover {
@@ -130,7 +130,7 @@ body::before {
   background: rgba(255, 255, 255, 0.015);
   backdrop-filter: blur(12px);
   border: 0.5px solid rgba(255, 255, 255, 0.08);
-  border-radius: 16px;
+  border-radius: 12px;
   transition: border-color 0.3s cubic-bezier(0.25, 0.4, 0.25, 1),
               background 0.3s cubic-bezier(0.25, 0.4, 0.25, 1);
 }
@@ -186,4 +186,25 @@ select option {
   .overflow-x-auto::-webkit-scrollbar {
     display: none;
   }
+}
+
+/* ─── Design System Typography Utilities ───────────────────── */
+@layer utilities {
+  .type-h0 { @apply text-h0 font-bold tracking-tight; }
+  .type-h1 { @apply text-h1 font-bold tracking-tight; }
+  .type-h2 { @apply text-h2 font-bold tracking-tight; }
+  .type-h3 { @apply text-h3 font-bold; }
+  .type-h4 { @apply text-h4 font-bold; }
+  .type-h5 { @apply text-h5 font-bold; }
+  .type-h6 { @apply text-h6 font-bold; }
+  .type-title { @apply text-title font-normal; }
+  .type-title-bold { @apply text-title font-semibold; }
+  .type-p1 { @apply text-p1 font-normal; }
+  .type-p1-bold { @apply text-p1 font-semibold; }
+  .type-p2 { @apply text-p2 font-normal; }
+  .type-p2-bold { @apply text-p2 font-semibold; }
+  .type-p3 { @apply text-p3 font-normal; }
+  .type-p3-bold { @apply text-p3 font-semibold; }
+  .type-label-btn { @apply text-label-btn font-bold uppercase tracking-wider; }
+  .type-label-nav { @apply text-label-nav font-bold; }
 }
