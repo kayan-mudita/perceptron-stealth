@@ -42,11 +42,16 @@ export async function POST(req: NextRequest) {
   });
 
   // Fire agents in the background — don't await
-  launchResearch(session.id, { industry, companyName, websiteUrl }).catch((e) => {
+  launchResearch(session.id, { industry, companyName, websiteUrl }).catch(async (e) => {
     console.error("[research/launch] Background agents failed:", e);
-    prisma.researchSession
-      .update({ where: { id: session.id }, data: { status: "failed" } })
-      .catch(() => {});
+    try {
+      await prisma.researchSession.update({
+        where: { id: session.id },
+        data: { status: "failed", completedAt: new Date() },
+      });
+    } catch (dbError) {
+      console.error("[research/launch] CRITICAL: Failed to mark session as failed:", dbError);
+    }
   });
 
   return NextResponse.json({ sessionId: session.id }, { status: 202 });

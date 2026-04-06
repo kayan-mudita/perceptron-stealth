@@ -8,6 +8,16 @@ import prisma from "@/lib/prisma";
  * Returns the current state of all 4 research agents.
  * Frontend polls this every 2s to progressively render results.
  */
+
+function safeParse(json: string | null): unknown {
+  if (!json) return null;
+  try {
+    return JSON.parse(json);
+  } catch {
+    return null;
+  }
+}
+
 export async function GET(req: NextRequest) {
   const { error, user } = await requireAuth();
   if (error) return error;
@@ -30,19 +40,19 @@ export async function GET(req: NextRequest) {
     status: session.status,
     business: {
       status: session.businessStatus,
-      result: session.businessResult ? JSON.parse(session.businessResult) : null,
+      result: safeParse(session.businessResult),
     },
     trends: {
       status: session.trendsStatus,
-      result: session.trendsResult ? JSON.parse(session.trendsResult) : null,
+      result: safeParse(session.trendsResult),
     },
     competitors: {
       status: session.competitorStatus,
-      result: session.competitorResult ? JSON.parse(session.competitorResult) : null,
+      result: safeParse(session.competitorResult),
     },
     calendar: {
       status: session.calendarStatus,
-      result: session.calendarResult ? JSON.parse(session.calendarResult) : null,
+      result: safeParse(session.calendarResult),
     },
   });
 }

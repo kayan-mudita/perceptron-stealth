@@ -21,8 +21,9 @@ import {
   ChevronRight,
   ExternalLink,
   Zap,
-  Eye,
   RefreshCw,
+  ArrowLeft,
+  AlertCircle,
 } from "lucide-react";
 import SessionProvider from "@/components/SessionProvider";
 
@@ -270,9 +271,11 @@ function InputPhase({
 function ResearchPhase({
   research,
   onComplete,
+  onBack,
 }: {
   research: ResearchStatus;
   onComplete: () => void;
+  onBack: () => void;
 }) {
   const agents = [
     {
@@ -310,6 +313,7 @@ function ResearchPhase({
   ];
 
   const allDone = research.status === "complete";
+  const hasFailed = research.status === "failed";
 
   return (
     <div className="min-h-screen bg-[#060610] flex items-center justify-center px-4">
@@ -318,12 +322,23 @@ function ResearchPhase({
         animate={{ opacity: 1, y: 0 }}
         className="w-full max-w-xl space-y-8"
       >
+        {/* Back button */}
+        <button
+          onClick={onBack}
+          className="flex items-center gap-1.5 text-[13px] text-white/30 hover:text-white/50 transition-colors"
+        >
+          <ArrowLeft className="w-3.5 h-3.5" />
+          Back to edit
+        </button>
+
         <div className="text-center space-y-3">
           <h1 className="text-[24px] font-extrabold text-white tracking-tight">
-            Building your content strategy...
+            {hasFailed ? "Something went wrong" : "Building your content strategy..."}
           </h1>
           <p className="text-[14px] text-white/40">
-            Our AI agents are researching your market and building your plan.
+            {hasFailed
+              ? "One of our research agents hit an issue. You can try again."
+              : "Our AI agents are researching your market and building your plan."}
           </p>
         </div>
 
@@ -417,6 +432,33 @@ function ResearchPhase({
             );
           })}
         </div>
+
+        {/* Error state */}
+        <AnimatePresence>
+          {hasFailed && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-center space-y-3"
+            >
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-[13px]">
+                <AlertCircle className="w-4 h-4" />
+                Research failed — some agents could not complete
+              </div>
+              <div>
+                <motion.button
+                  onClick={onBack}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.97 }}
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white/[0.08] text-white text-[14px] font-medium hover:bg-white/[0.12] transition-all"
+                >
+                  <RefreshCw className="w-4 h-4" />
+                  Try again
+                </motion.button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Transition to calendar */}
         <AnimatePresence>
@@ -607,8 +649,8 @@ function CalendarPhase({
         {viewMode === "list" && (
           <div className="space-y-3">
             <AnimatePresence mode="popLayout">
-              {currentWeek.map((day) => {
-                const globalIndex = calendar.indexOf(day);
+              {currentWeek.map((day, localIdx) => {
+                const globalIndex = weekOffset * 7 + localIdx;
                 const isApproved = approvedDays.has(globalIndex);
                 const isExpanded = expandedDay === globalIndex;
                 const plat = platformColors[day.platform] || { bg: "bg-white/[0.06]", text: "text-white/50", label: day.platform };
@@ -887,15 +929,33 @@ function WelcomeFlow() {
   const [research, setResearch] = useState<ResearchStatus | null>(null);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // Cleanup polling on unmount
+  const stopPolling = useCallback(() => {
+    if (pollRef.current) {
+      clearInterval(pollRef.current);
+      pollRef.current = null;
+    }
+  }, []);
+
+  // Cleanup polling on unmount or phase change
   useEffect(() => {
-    return () => {
-      if (pollRef.current) clearInterval(pollRef.current);
-    };
+    return () => stopPolling();
+  }, [phase, stopPolling]);
+
+  // Recover session from localStorage on mount (survives page refresh)
+  useEffect(() => {
+    const savedId = typeof window !== "undefined"
+      ? localStorage.getItem("oai_research_session")
+      : null;
+    if (savedId && phase === "input") {
+      setSessionId(savedId);
+      setPhase("researching");
+      pollStatus(savedId);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const pollStatus = useCallback((id: string) => {
-    if (pollRef.current) clearInterval(pollRef.current);
+    stopPolling();
 
     const poll = async () => {
       try {
@@ -904,7 +964,9 @@ function WelcomeFlow() {
           const data: ResearchStatus = await res.json();
           setResearch(data);
           if (data.status === "complete" || data.status === "failed") {
-            if (pollRef.current) clearInterval(pollRef.current);
+            stopPolling();
+            // Clear localStorage when done
+            localStorage.removeItem("oai_research_session");
           }
         }
       } catch {
@@ -912,10 +974,9 @@ function WelcomeFlow() {
       }
     };
 
-    // First poll immediately
     poll();
     pollRef.current = setInterval(poll, 2000);
-  }, []);
+  }, [stopPolling]);
 
   const handleLaunch = async (data: { industry: string; companyName: string; websiteUrl: string }) => {
     trackEvent("onboarding_research_launched", { industry: data.industry });
@@ -927,11 +988,14 @@ function WelcomeFlow() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
+      if (!res.ok) throw new Error(`Launch failed: ${res.status}`);
       const { sessionId: sid } = await res.json();
       setSessionId(sid);
+      localStorage.setItem("oai_research_session", sid);
       pollStatus(sid);
     } catch (e) {
       console.error("Failed to launch research:", e);
+      setPhase("input"); // Revert to input on failure
     }
   };
 
@@ -940,16 +1004,23 @@ function WelcomeFlow() {
     setPhase("calendar");
   };
 
+  const handleBack = () => {
+    stopPolling();
+    localStorage.removeItem("oai_research_session");
+    setResearch(null);
+    setSessionId(null);
+    setPhase("input");
+  };
+
   if (phase === "input") {
     return <InputPhase onLaunch={handleLaunch} />;
   }
 
   if (phase === "researching" && research) {
-    return <ResearchPhase research={research} onComplete={handleResearchComplete} />;
+    return <ResearchPhase research={research} onComplete={handleResearchComplete} onBack={handleBack} />;
   }
 
   if (phase === "researching" && !research) {
-    // Waiting for first poll
     return (
       <div className="min-h-screen bg-[#060610] flex items-center justify-center">
         <Loader2 className="w-6 h-6 text-white/30 animate-spin" />
@@ -957,7 +1028,7 @@ function WelcomeFlow() {
     );
   }
 
-  if (phase === "calendar" && research?.calendar.result) {
+  if (phase === "calendar" && research?.calendar.result && research.calendar.result.length > 0) {
     return (
       <CalendarPhase
         calendar={research.calendar.result}
@@ -966,9 +1037,19 @@ function WelcomeFlow() {
     );
   }
 
+  // Fallback: empty calendar or unexpected state
   return (
     <div className="min-h-screen bg-[#060610] flex items-center justify-center">
-      <Loader2 className="w-6 h-6 text-white/30 animate-spin" />
+      <div className="text-center space-y-4">
+        <AlertCircle className="w-8 h-8 text-white/20 mx-auto" />
+        <p className="text-[14px] text-white/40">Something went wrong loading your calendar.</p>
+        <button
+          onClick={handleBack}
+          className="text-[13px] text-indigo-400 hover:text-indigo-300 font-medium"
+        >
+          Start over
+        </button>
+      </div>
     </div>
   );
 }
