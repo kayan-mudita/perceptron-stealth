@@ -150,11 +150,23 @@ export async function POST(req: NextRequest) {
 
   // Read file into buffer
   const arrayBuffer = await file.arrayBuffer();
-  const buffer = Buffer.from(arrayBuffer);
+  let buffer: Buffer = Buffer.from(arrayBuffer);
+  let finalContentType = contentType;
+
+  // HEIC/HEIF → JPEG conversion (iPhone photos)
+  if (
+    fileCategory === "photo" &&
+    (contentType === "image/heic" || contentType === "image/heif")
+  ) {
+    const sharp = (await import("sharp")).default;
+    const converted = await sharp(buffer).jpeg({ quality: 90 }).toBuffer();
+    buffer = Buffer.from(converted);
+    finalContentType = "image/jpeg";
+  }
 
   // Build the S3 key
   const fileId = uuidv4();
-  const ext = extensionFromMime(contentType);
+  const ext = extensionFromMime(finalContentType);
   let key: string;
 
   switch (fileCategory) {
@@ -170,7 +182,7 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const url = await uploadFile(buffer, key, contentType);
+    const url = await uploadFile(buffer, key, finalContentType);
     const filename = file.name || `${fileId}.${ext}`;
 
     // Create DB record for photos and voice samples

@@ -60,6 +60,41 @@ export async function POST(req: NextRequest) {
   }
 }
 
+export async function PATCH(req: NextRequest) {
+  try {
+    const { error, user } = await requireAuth();
+    if (error) return error;
+
+    const body = await req.json().catch(() => ({}));
+    const { sheetId, selectedPose } = body as { sheetId?: string; selectedPose?: number };
+
+    if (!sheetId || selectedPose === undefined || selectedPose < 0 || selectedPose > 8) {
+      return NextResponse.json(
+        { error: "sheetId and selectedPose (0-8) are required" },
+        { status: 400 }
+      );
+    }
+
+    const sheet = await prisma.characterSheet.findFirst({
+      where: { id: sheetId, userId: user.id, type: "poses" },
+    });
+
+    if (!sheet) {
+      return NextResponse.json({ error: "Character sheet not found" }, { status: 404 });
+    }
+
+    const updated = await prisma.characterSheet.update({
+      where: { id: sheetId },
+      data: { selectedPose },
+    });
+
+    return NextResponse.json({ id: updated.id, selectedPose: updated.selectedPose });
+  } catch (err: any) {
+    console.error("[PATCH /api/character-sheet]", err);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  }
+}
+
 export async function GET() {
   try {
     const { error, user } = await requireAuth();
