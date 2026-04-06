@@ -68,30 +68,47 @@ async function callGemini(systemPrompt: string, userPrompt: string): Promise<str
   const apiKey = process.env.GOOGLE_AI_STUDIO_KEY;
   if (!apiKey) throw new Error("GOOGLE_AI_STUDIO_KEY not set");
 
-  const res = await fetch(
-    `${GOOGLE_AI_STUDIO_URL}/${MODEL}:generateContent?key=${apiKey}`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        system_instruction: { parts: [{ text: systemPrompt }] },
-        contents: [{ parts: [{ text: userPrompt }] }],
-        generationConfig: {
-          temperature: 0.7,
-          maxOutputTokens: 4096,
-          responseMimeType: "application/json",
-        },
-      }),
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 30_000);
+
+  try {
+    const res = await fetch(
+      `${GOOGLE_AI_STUDIO_URL}/${MODEL}:generateContent?key=${apiKey}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        signal: controller.signal,
+        body: JSON.stringify({
+          system_instruction: { parts: [{ text: systemPrompt }] },
+          contents: [{ parts: [{ text: userPrompt }] }],
+          generationConfig: {
+            temperature: 0.7,
+            maxOutputTokens: 4096,
+            responseMimeType: "application/json",
+          },
+        }),
+      }
+    );
+
+    if (!res.ok) {
+      const err = await res.text();
+      throw new Error(`Gemini ${res.status}: ${err}`);
     }
-  );
 
-  if (!res.ok) {
-    const err = await res.text();
-    throw new Error(`Gemini ${res.status}: ${err}`);
+    const data = await res.json();
+    const raw = data.candidates?.[0]?.content?.parts?.[0]?.text || "{}";
+
+    // Validate JSON is parseable before returning
+    try {
+      JSON.parse(raw);
+      return raw;
+    } catch {
+      console.error("[callGemini] Gemini returned unparseable JSON, using empty fallback");
+      return "{}";
+    }
+  } finally {
+    clearTimeout(timeoutId);
   }
-
-  const data = await res.json();
-  return data.candidates?.[0]?.content?.parts?.[0]?.text || "{}";
 }
 
 // ─── Agent 1: Business Intelligence ───────────────────────────────
@@ -391,12 +408,24 @@ export async function launchResearch(
   sessionId: string,
   input: { industry: string; companyName: string; websiteUrl?: string }
 ) {
-  // Fire agents 1-3 in parallel
-  const [business, trends, competitors] = await Promise.all([
-    runBusinessAgent(sessionId, input),
-    runTrendsAgent(sessionId, { industry: input.industry }),
-    runCompetitorAgent(sessionId, { industry: input.industry, companyName: input.companyName }),
-  ]);
+  let business: BusinessResult;
+  let trends: TrendsResult;
+  let competitors: CompetitorResult;
+
+  try {
+    [business, trends, competitors] = await Promise.all([
+      runBusinessAgent(sessionId, input),
+      runTrendsAgent(sessionId, { industry: input.industry }),
+      runCompetitorAgent(sessionId, { industry: input.industry, companyName: input.companyName }),
+    ]);
+  } catch (e) {
+    console.error("[launchResearch] Agents 1-3 failed:", e);
+    await prisma.researchSession.update({
+      where: { id: sessionId },
+      data: { status: "failed", completedAt: new Date() },
+    }).catch(() => {});
+    throw e;
+  }
 
   // Agent 4 depends on 1-3
   await runCalendarAgent(sessionId, {
