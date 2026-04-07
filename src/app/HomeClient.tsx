@@ -1,9 +1,45 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ArrowRight, Check, Zap, Camera, Sparkles, Send, Play, Star, Quote } from "lucide-react";
 import MarketingLayout from "@/components/marketing/MarketingLayout";
 import FadeIn from "@/components/motion/FadeIn";
+
+const demoVideos = [
+  {
+    id: "attorney",
+    label: "Attorney",
+    title: "Watch AI create a video",
+    subtitle: "in 30 seconds",
+    duration: "0:30",
+    gradient: "from-blue-900/20 via-[#0a0e17] to-violet-900/20",
+  },
+  {
+    id: "doctor",
+    label: "Doctor",
+    title: "Watch AI explain a procedure",
+    subtitle: "in 45 seconds",
+    duration: "0:45",
+    gradient: "from-emerald-900/20 via-[#0a0e17] to-blue-900/20",
+  },
+  {
+    id: "realtor",
+    label: "Realtor",
+    title: "Watch AI tour a listing",
+    subtitle: "in 60 seconds",
+    duration: "1:00",
+    gradient: "from-amber-900/20 via-[#0a0e17] to-rose-900/20",
+  },
+  {
+    id: "advisor",
+    label: "Advisor",
+    title: "Watch AI break down a market move",
+    subtitle: "in 30 seconds",
+    duration: "0:30",
+    gradient: "from-violet-900/20 via-[#0a0e17] to-fuchsia-900/20",
+  },
+];
 
 const testimonials = [
   {
@@ -30,6 +66,19 @@ const testimonials = [
 ];
 
 export default function HomeClient() {
+  const [activeVideo, setActiveVideo] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+
+  useEffect(() => {
+    if (isPaused) return;
+    const interval = setInterval(() => {
+      setActiveVideo((prev) => (prev + 1) % demoVideos.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [isPaused]);
+
+  const current = demoVideos[activeVideo];
+
   return (
     <MarketingLayout>
       {/* Hero */}
@@ -100,7 +149,11 @@ export default function HomeClient() {
       {/* Hero Demo Video — Item 1 */}
       <FadeIn delay={0.15} duration={0.8}>
         <section className="pb-24 px-6">
-          <div className="max-w-sm mx-auto">
+          <div
+            className="max-w-sm mx-auto"
+            onMouseEnter={() => setIsPaused(true)}
+            onMouseLeave={() => setIsPaused(false)}
+          >
             {/* 9:16 video container with glow */}
             <div className="relative group">
               {/* Outer glow */}
@@ -108,8 +161,15 @@ export default function HomeClient() {
 
               {/* Video frame */}
               <div className="relative aspect-[9/16] rounded-2xl overflow-hidden border border-white/[0.08] bg-gradient-to-b from-white/[0.03] to-white/[0.01]">
-                {/* Simulated content / poster background */}
-                <div className="absolute inset-0 bg-gradient-to-b from-blue-900/20 via-[#0a0e17] to-violet-900/20" />
+                {/* Simulated content / poster background — swaps per active video */}
+                {demoVideos.map((video, i) => (
+                  <div
+                    key={video.id}
+                    className={`absolute inset-0 bg-gradient-to-b ${video.gradient} transition-opacity duration-700 ${
+                      i === activeVideo ? "opacity-100" : "opacity-0"
+                    }`}
+                  />
+                ))}
 
                 {/* Subtle mesh grid overlay */}
                 <div
@@ -132,7 +192,7 @@ export default function HomeClient() {
                 <div className="absolute top-6 right-5">
                   <div className="px-2.5 py-1.5 rounded-full bg-white/[0.06] border border-white/[0.08] backdrop-blur-sm">
                     <span className="text-[10px] text-white/40 font-medium">
-                      0:30
+                      {current.duration}
                     </span>
                   </div>
                 </div>
@@ -144,33 +204,75 @@ export default function HomeClient() {
                     <div className="absolute inset-0 bg-white/10 rounded-full blur-xl scale-150 animate-pulse-slow" />
                     <button
                       className="relative w-16 h-16 rounded-full bg-white/[0.1] border border-white/[0.15] flex items-center justify-center backdrop-blur-sm hover:bg-white/[0.15] hover:border-white/[0.25] hover:scale-105 transition-all duration-300 cursor-pointer"
-                      aria-label="Play demo video"
+                      aria-label={`Play ${current.label} demo video`}
                     >
                       <Play className="w-6 h-6 text-white/90 ml-1" />
                     </button>
                   </div>
 
-                  <p className="text-p2 sm:text-p2 text-white/60 font-medium text-center px-8 leading-snug">
-                    Watch AI create a video
+                  <p
+                    key={current.id}
+                    className="text-p2 sm:text-p2 text-white/60 font-medium text-center px-8 leading-snug animate-fade-in"
+                  >
+                    {current.title}
                     <br />
-                    in 30 seconds
+                    {current.subtitle}
                   </p>
                 </div>
 
                 {/* Bottom gradient fade */}
                 <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-[#050508] to-transparent" />
 
-                {/* Bottom simulated timeline bar */}
+                {/* Bottom auto-advance progress bar */}
                 <div className="absolute bottom-4 left-5 right-5">
                   <div className="h-[2px] rounded-full bg-white/[0.06] overflow-hidden">
-                    <div className="h-full w-0 bg-gradient-to-r from-blue-400 to-violet-400 rounded-full" />
+                    <div
+                      key={`${activeVideo}-${isPaused}`}
+                      className={`h-full bg-gradient-to-r from-blue-400 to-violet-400 rounded-full ${
+                        isPaused ? "w-full opacity-30" : "animate-progress-bar"
+                      }`}
+                    />
                   </div>
                 </div>
               </div>
             </div>
 
+            {/* Thumbnail/dot picker */}
+            <div className="flex items-center justify-center gap-2 mt-6">
+              {demoVideos.map((video, i) => (
+                <button
+                  key={video.id}
+                  onClick={() => {
+                    setActiveVideo(i);
+                  }}
+                  className={`group/dot flex items-center gap-1.5 px-3 py-1.5 rounded-full border transition-all duration-300 cursor-pointer ${
+                    i === activeVideo
+                      ? "bg-white/[0.08] border-white/[0.15]"
+                      : "bg-white/[0.02] border-white/[0.06] hover:bg-white/[0.05] hover:border-white/[0.1]"
+                  }`}
+                  aria-label={`Play ${video.label} demo`}
+                  aria-current={i === activeVideo}
+                >
+                  <span
+                    className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
+                      i === activeVideo
+                        ? "bg-gradient-to-r from-blue-400 to-violet-400"
+                        : "bg-white/20 group-hover/dot:bg-white/40"
+                    }`}
+                  />
+                  <span
+                    className={`text-[11px] font-medium transition-colors duration-300 ${
+                      i === activeVideo ? "text-white/70" : "text-white/30 group-hover/dot:text-white/50"
+                    }`}
+                  >
+                    {video.label}
+                  </span>
+                </button>
+              ))}
+            </div>
+
             {/* Caption below video */}
-            <p className="text-center mt-6 text-p2 text-white/30 leading-relaxed font-light">
+            <p className="text-center mt-4 text-p2 text-white/30 leading-relaxed font-light">
               This was made by AI. No camera. No crew. No editing.
             </p>
           </div>
@@ -253,22 +355,31 @@ export default function HomeClient() {
         </section>
       </FadeIn>
 
-      {/* Stats */}
+      {/* Stats — oversized gradient numerals */}
       <FadeIn>
-        <section className="border-b border-white/[0.04] py-12 px-6">
-          <div className="max-w-4xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+        <section className="relative border-b border-white/[0.04] py-24 px-6 overflow-hidden">
+          {/* Ambient glow */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[300px] pointer-events-none">
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(76,110,245,0.08)_0%,transparent_60%)]" />
+          </div>
+
+          <div className="relative max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-12 text-center">
             {[
               { value: "90%", label: "Less time creating" },
               { value: "60x", label: "More views on average" },
               { value: "5 min", label: "Setup to first video" },
               { value: "$79", label: "Per month to start" },
             ].map((stat, i) => (
-              <div key={i} className="space-y-1">
-                <div className="text-h2 font-bold tracking-tight text-white">
-                  {stat.value}
+              <FadeIn key={i} delay={i * 0.1} duration={0.6}>
+                <div className="space-y-3">
+                  <div className="text-[64px] md:text-[88px] leading-none font-bold tracking-tighter bg-gradient-to-b from-white via-white to-white/40 bg-clip-text text-transparent">
+                    {stat.value}
+                  </div>
+                  <div className="text-p3 text-white/40 font-medium">
+                    {stat.label}
+                  </div>
                 </div>
-                <div className="text-p3 text-white/25">{stat.label}</div>
-              </div>
+              </FadeIn>
             ))}
           </div>
         </section>
@@ -345,6 +456,77 @@ export default function HomeClient() {
               </Link>
             </div>
           </div>
+        </section>
+      </FadeIn>
+
+      {/* Looping reel strip — visual proof of the process at scale */}
+      <FadeIn delay={0.1} duration={0.8}>
+        <section className="relative py-20 overflow-hidden border-y border-white/[0.04]">
+          {/* Section label */}
+          <div className="max-w-4xl mx-auto px-6 mb-12 text-center">
+            <p className="text-p3 font-medium text-blue-400/70 uppercase tracking-widest mb-3">
+              The output
+            </p>
+            <h2 className="text-h2 sm:text-h1 font-bold tracking-tight text-white leading-tight">
+              This is what you get.
+              <br />
+              <span className="text-white/40">Every single day.</span>
+            </h2>
+          </div>
+
+          {/* Edge fade masks */}
+          <div className="absolute left-0 bottom-20 top-44 w-32 bg-gradient-to-r from-[#050508] to-transparent z-10 pointer-events-none" />
+          <div className="absolute right-0 bottom-20 top-44 w-32 bg-gradient-to-l from-[#050508] to-transparent z-10 pointer-events-none" />
+
+          {/* Looping track */}
+          <div className="flex gap-5 animate-loop-left hover:[animation-play-state:paused] w-max">
+            {[...Array(2)].map((_, dupIdx) =>
+              [
+                "from-blue-900/30 via-[#0a0e17] to-violet-900/30",
+                "from-emerald-900/30 via-[#0a0e17] to-blue-900/30",
+                "from-amber-900/30 via-[#0a0e17] to-rose-900/30",
+                "from-violet-900/30 via-[#0a0e17] to-fuchsia-900/30",
+                "from-cyan-900/30 via-[#0a0e17] to-blue-900/30",
+                "from-rose-900/30 via-[#0a0e17] to-violet-900/30",
+                "from-blue-900/30 via-[#0a0e17] to-emerald-900/30",
+                "from-violet-900/30 via-[#0a0e17] to-amber-900/30",
+              ].map((gradient, i) => (
+                <div
+                  key={`${dupIdx}-${i}`}
+                  className="relative w-[180px] sm:w-[220px] aspect-[9/16] flex-shrink-0 rounded-2xl overflow-hidden border border-white/[0.06] bg-gradient-to-b from-white/[0.02] to-transparent group/reel"
+                >
+                  <div className={`absolute inset-0 bg-gradient-to-b ${gradient}`} />
+                  {/* Subtle mesh */}
+                  <div
+                    className="absolute inset-0 opacity-[0.04]"
+                    style={{
+                      backgroundImage:
+                        "linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)",
+                      backgroundSize: "30px 30px",
+                    }}
+                  />
+                  {/* AI badge */}
+                  <div className="absolute top-3 left-3 flex items-center gap-1.5 px-2 py-1 rounded-full bg-white/[0.06] border border-white/[0.08] backdrop-blur-sm">
+                    <Sparkles className="w-2.5 h-2.5 text-blue-400/70" />
+                    <span className="text-[9px] text-white/40 font-medium">AI</span>
+                  </div>
+                  {/* Center play */}
+                  <div className="absolute inset-0 flex items-center justify-center opacity-60 group-hover/reel:opacity-100 transition-opacity duration-300">
+                    <div className="w-10 h-10 rounded-full bg-white/[0.08] border border-white/[0.12] flex items-center justify-center backdrop-blur-sm">
+                      <Play className="w-4 h-4 text-white/80 ml-0.5" />
+                    </div>
+                  </div>
+                  {/* Bottom fade */}
+                  <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-[#050508] to-transparent" />
+                </div>
+              ))
+            )}
+          </div>
+
+          {/* Caption */}
+          <p className="text-center mt-10 text-p3 text-white/30 font-light">
+            Every video on this page was generated by Official AI
+          </p>
         </section>
       </FadeIn>
 
