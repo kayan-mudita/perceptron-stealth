@@ -77,11 +77,11 @@ const productCoreLinks: NavLink[] = [
 ];
 
 const productFeatureLinks: NavLink[] = [
-  { label: "AI Video Studio", href: "/features", icon: Camera },
-  { label: "AI Twin & Voice", href: "/features", icon: Mic },
-  { label: "Auto-Posting", href: "/features", icon: Calendar },
-  { label: "Script Engine", href: "/features", icon: Wand2 },
-  { label: "Analytics", href: "/features", icon: BarChart3 },
+  { label: "AI Video Studio", href: "/features/ai-video-studio", icon: Camera },
+  { label: "AI Twin & Voice", href: "/features/ai-twin-voice", icon: Mic },
+  { label: "Script Engine", href: "/features/script-engine", icon: Wand2 },
+  { label: "Auto-Posting", href: "/features/auto-posting", icon: Calendar },
+  { label: "Analytics", href: "/features/analytics", icon: BarChart3 },
 ];
 
 const productSolutionsLinks: NavLink[] = [
@@ -272,6 +272,7 @@ export default function Navbar() {
   const isProductActive =
     pathname === "/how-it-works" ||
     pathname === "/features" ||
+    pathname.startsWith("/features/") ||
     pathname === "/demo" ||
     pathname.startsWith("/for/");
 
