@@ -73,14 +73,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const pillars = getAllPillars();
   for (const pillar of pillars) {
     routes.push({
-      url: `${siteUrl}/learn/${pillar.slug}`,
+      url: `${siteUrl}/${pillar.slug}`,
       lastModified: now,
       changeFrequency: "weekly",
       priority: 0.85,
     });
     for (const subTopic of pillar.subTopics) {
       routes.push({
-        url: `${siteUrl}/learn/${pillar.slug}/${subTopic.slug}`,
+        url: `${siteUrl}/${pillar.slug}/${subTopic.slug}`,
         lastModified: now,
         changeFrequency: "monthly",
         priority: 0.75,

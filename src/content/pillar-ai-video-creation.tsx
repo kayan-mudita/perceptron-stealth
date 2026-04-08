@@ -38,7 +38,7 @@ export function PillarContent() {
 
       <h3>Voice Synthesis</h3>
       <p>
-        <Link href="/learn/ai-video-creation/voice-cloning-for-video">Voice cloning</Link> takes a short recording of your natural speaking voice — typically 30 seconds to a few minutes — and builds a voice model. This model captures your tone, cadence, pronunciation patterns, and vocal texture. When the AI generates video, it uses this voice model to narrate the script in a way that sounds like you, not a generic text-to-speech engine.
+        <Link href="/ai-video-creation/voice-cloning-for-video">Voice cloning</Link> takes a short recording of your natural speaking voice — typically 30 seconds to a few minutes — and builds a voice model. This model captures your tone, cadence, pronunciation patterns, and vocal texture. When the AI generates video, it uses this voice model to narrate the script in a way that sounds like you, not a generic text-to-speech engine.
       </p>
       <p>
         The best voice cloning systems today can capture subtle characteristics like the way you emphasize certain words, your natural pacing, and even regional accent variations. The result is narration that your existing clients and followers would recognize as you.
@@ -49,7 +49,7 @@ export function PillarContent() {
         The actual video generation uses diffusion models — the same class of AI that powers image generators, but extended to moving sequences. Models like Kling 2.6 and Seedance 2.0 can generate 5-10 second clips from a combination of your character sheet, a voice track, and a text prompt describing the desired scene.
       </p>
       <p>
-        Each clip is generated independently, which is where the <Link href="/learn/ai-video-creation/multi-cut-video-editing">multi-cut method</Link> becomes critical. Rather than trying to generate one long, continuous shot (which always looks artificial), the system creates multiple short clips that are then edited together like a professionally produced video.
+        Each clip is generated independently, which is where the <Link href="/ai-video-creation/multi-cut-video-editing">multi-cut method</Link> becomes critical. Rather than trying to generate one long, continuous shot (which always looks artificial), the system creates multiple short clips that are then edited together like a professionally produced video.
       </p>
 
       <h3>Multi-Cut Composition</h3>
@@ -107,7 +107,7 @@ export function PillarContent() {
 
       <h3>Composition Method</h3>
       <p>
-        Single-shot AI video — one long, unbroken clip — looks fake. Multi-cut composition — 3-8 separate clips edited together — looks professional. This is the single biggest quality differentiator in AI video today. Read our deep dive on the <Link href="/learn/ai-video-creation/multi-cut-video-editing">multi-cut method</Link> for a detailed breakdown.
+        Single-shot AI video — one long, unbroken clip — looks fake. Multi-cut composition — 3-8 separate clips edited together — looks professional. This is the single biggest quality differentiator in AI video today. Read our deep dive on the <Link href="/ai-video-creation/multi-cut-video-editing">multi-cut method</Link> for a detailed breakdown.
       </p>
 
       <h3>Model Selection</h3>
@@ -145,7 +145,7 @@ export function PillarContent() {
         Every video lands in your approval queue. Watch it, request changes if needed, and approve for posting. You can schedule it for optimal posting times or publish immediately to any connected platform.
       </p>
       <p>
-        The professionals who see the best results treat AI video like a content system, not a one-off experiment. Start with 3-5 videos per week, measure what resonates with your audience, and iterate. The <Link href="/learn/social-media-video-strategy/content-calendar-strategy">content calendar strategy guide</Link> covers this workflow in detail.
+        The professionals who see the best results treat AI video like a content system, not a one-off experiment. Start with 3-5 videos per week, measure what resonates with your audience, and iterate. The <Link href="/social-media-video-strategy/content-calendar-strategy">content calendar strategy guide</Link> covers this workflow in detail.
       </p>
     </>
   );
@@ -204,7 +204,7 @@ export const subTopicContent: Record<string, () => ReactElement> = {
           The generation model takes three inputs: your character model (what you look like), the audio segment for this clip (what you are saying), and a scene description (framing, background, mood). From these inputs, it generates a 5-10 second video clip frame by frame.
         </p>
         <p>
-          The <Link href="/learn/ai-video-creation/multi-cut-video-editing">multi-cut approach</Link> generates multiple clips per video, each optimized for its role. A hook clip might be a tight close-up with high energy. A body clip might be a medium shot with measured delivery. A CTA clip might zoom in slightly to create intimacy. Each clip is generated independently, which allows the system to optimize each one without compromising others.
+          The <Link href="/ai-video-creation/multi-cut-video-editing">multi-cut approach</Link> generates multiple clips per video, each optimized for its role. A hook clip might be a tight close-up with high energy. A body clip might be a medium shot with measured delivery. A CTA clip might zoom in slightly to create intimacy. Each clip is generated independently, which allows the system to optimize each one without compromising others.
         </p>
         <p>
           Different AI models (Kling 2.6, Seedance 2.0, and others) have different strengths. Some excel at facial expression accuracy. Others handle body movement more naturally. Advanced platforms route different clips to different models based on what each clip needs, maximizing overall quality.
@@ -237,7 +237,7 @@ export const subTopicContent: Record<string, () => ReactElement> = {
           Together, these advances mean that AI video in 2026 does not look like AI video from 2024. The gap between AI-generated and traditionally filmed content continues to narrow, and for social media formats (short, fast-paced, mobile-first), the gap is already negligible for most viewers.
         </p>
         <p>
-          The <Link href="/learn/ai-content-at-scale/ai-vs-traditional-video">AI vs traditional video production guide</Link> breaks down exactly where AI video excels, where traditional production still wins, and how to decide which approach makes sense for your specific needs.
+          The <Link href="/ai-content-at-scale/ai-vs-traditional-video">AI vs traditional video production guide</Link> breaks down exactly where AI video excels, where traditional production still wins, and how to decide which approach makes sense for your specific needs.
         </p>
       </>
     );
@@ -277,7 +277,7 @@ export const subTopicContent: Record<string, () => ReactElement> = {
 
         <h3>Voice Integration</h3>
         <p>
-          A visual avatar without your voice is only half the equation. <Link href="/learn/ai-video-creation/voice-cloning-for-video">Voice cloning</Link> creates an audio model that pairs with your visual avatar to produce complete video content. When both models are aligned, the lip movements, facial expressions, and vocal delivery work together naturally — the avatar speaks with your voice, and its mouth movements match the audio.
+          A visual avatar without your voice is only half the equation. <Link href="/ai-video-creation/voice-cloning-for-video">Voice cloning</Link> creates an audio model that pairs with your visual avatar to produce complete video content. When both models are aligned, the lip movements, facial expressions, and vocal delivery work together naturally — the avatar speaks with your voice, and its mouth movements match the audio.
         </p>
 
         <h2>What Makes a Good AI Avatar</h2>
@@ -356,7 +356,7 @@ export const subTopicContent: Record<string, () => ReactElement> = {
           <strong>Review scripts for your voice.</strong> AI-generated scripts are good starting points, but the best results come from scripts that sound like how you naturally speak. Edit scripts to match your vocabulary, pacing, and communication style.
         </p>
         <p>
-          <strong>Use the <Link href="/learn/ai-video-creation/multi-cut-video-editing">multi-cut method</Link>.</strong> Single-shot video looks artificial. Multi-cut video looks professional. Always choose platforms and settings that generate multi-cut output.
+          <strong>Use the <Link href="/ai-video-creation/multi-cut-video-editing">multi-cut method</Link>.</strong> Single-shot video looks artificial. Multi-cut video looks professional. Always choose platforms and settings that generate multi-cut output.
         </p>
         <p>
           <strong>Start with one platform.</strong> Do not try to launch on five platforms simultaneously. Pick your highest-value channel (LinkedIn for advisors, Instagram for realtors, TikTok for attorneys reaching consumers), build consistency there, then expand.
@@ -542,7 +542,7 @@ export const subTopicContent: Record<string, () => ReactElement> = {
 
         <h3>Monday: Review Content Calendar (10 minutes)</h3>
         <p>
-          Your <Link href="/learn/social-media-video-strategy/content-calendar-strategy">content calendar</Link> shows five videos scheduled for the week. AI has already generated scripts based on your content themes, industry trends, and audience engagement data. You scan the topics and scripts, making edits where needed.
+          Your <Link href="/social-media-video-strategy/content-calendar-strategy">content calendar</Link> shows five videos scheduled for the week. AI has already generated scripts based on your content themes, industry trends, and audience engagement data. You scan the topics and scripts, making edits where needed.
         </p>
 
         <h3>Tuesday-Thursday: Approve Videos (5 minutes each)</h3>
@@ -689,7 +689,7 @@ export const subTopicContent: Record<string, () => ReactElement> = {
           <strong>Transition smoothness.</strong> The moment between clips should feel seamless. Color grading, lighting, and background should be consistent across cuts so the transitions do not draw attention to themselves.
         </p>
         <p>
-          For a deeper understanding of how the full AI video pipeline works — from input processing through post-production — read the <Link href="/learn/ai-video-creation/how-ai-video-works">complete guide to AI video generation</Link>.
+          For a deeper understanding of how the full AI video pipeline works — from input processing through post-production — read the <Link href="/ai-video-creation/how-ai-video-works">complete guide to AI video generation</Link>.
         </p>
       </>
     );

@@ -63,12 +63,12 @@ const resourceLinks: FooterLink[] = [
 ];
 
 const topicLinks: FooterLink[] = [
-  { label: "AI Video Creation", href: "/learn/ai-video-creation" },
-  { label: "Video Marketing", href: "/learn/video-marketing-professionals" },
-  { label: "Social Media Video", href: "/learn/social-media-video-strategy" },
-  { label: "Real Estate Video", href: "/learn/ai-video-real-estate" },
-  { label: "Professional Services", href: "/learn/ai-video-professional-services" },
-  { label: "Content at Scale", href: "/learn/ai-content-at-scale" },
+  { label: "AI Video Creation", href: "/ai-video-creation" },
+  { label: "Video Marketing", href: "/video-marketing-professionals" },
+  { label: "Social Media Video", href: "/social-media-video-strategy" },
+  { label: "Real Estate Video", href: "/ai-video-real-estate" },
+  { label: "Professional Services", href: "/ai-video-professional-services" },
+  { label: "Content at Scale", href: "/ai-content-at-scale" },
 ];
 
 const toolLinks: FooterLink[] = [

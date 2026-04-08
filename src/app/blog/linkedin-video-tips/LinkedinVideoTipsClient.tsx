@@ -43,7 +43,7 @@ export default function LinkedinVideoTipsClient() {
       </p>
       <p>
         For a deeper dive on structuring your{" "}
-        <Link href="/learn/social-media-video-strategy/linkedin-video-strategy">
+        <Link href="/social-media-video-strategy/linkedin-video-strategy">
           LinkedIn video strategy
         </Link>
         , our pillar guide covers the full playbook.
@@ -65,7 +65,7 @@ export default function LinkedinVideoTipsClient() {
       <p>
         This is where AI video becomes a superpower — you can maintain a daily or
         twice-weekly series without the production overhead. Build a{" "}
-        <Link href="/learn/social-media-video-strategy/content-calendar-strategy">
+        <Link href="/social-media-video-strategy/content-calendar-strategy">
           content calendar strategy
         </Link>{" "}
         and let AI handle the execution.
@@ -105,7 +105,7 @@ export default function LinkedinVideoTipsClient() {
       <p>
         For the full social media strategy — including how to coordinate LinkedIn with other
         platforms — check out our{" "}
-        <Link href="/learn/social-media-video-strategy">
+        <Link href="/social-media-video-strategy">
           social media video strategy guide
         </Link>
         .

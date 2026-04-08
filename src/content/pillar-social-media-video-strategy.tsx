@@ -20,7 +20,7 @@ export function PillarContent() {
         The data is clear: professionals who post video content consistently generate significantly more inbound inquiries than those who rely on text-only updates. An <Link href="/for/attorneys">attorney</Link> who posts daily legal tips as short-form video builds a larger, more engaged audience than one who posts written articles weekly. A <Link href="/for/realtors">real estate agent</Link> who shares market updates on video dominates local search and social discovery in ways that a blog post cannot match.
       </p>
       <p>
-        The challenge has never been whether video works. The challenge is producing enough of it. Traditional video production requires scheduling, filming, editing, and distribution — a process that takes hours per piece of content. Most professionals cannot justify that time investment, which is why they post inconsistently or not at all. The solution is a systematic approach to social media video that combines smart strategy with modern production methods, including <Link href="/learn/ai-video-creation">AI video generation</Link>, to maintain a daily presence without daily filming sessions.
+        The challenge has never been whether video works. The challenge is producing enough of it. Traditional video production requires scheduling, filming, editing, and distribution — a process that takes hours per piece of content. Most professionals cannot justify that time investment, which is why they post inconsistently or not at all. The solution is a systematic approach to social media video that combines smart strategy with modern production methods, including <Link href="/ai-video-creation">AI video generation</Link>, to maintain a daily presence without daily filming sessions.
       </p>
 
       <h2 id="platform-landscape">The Platform Landscape in 2026</h2>
@@ -30,17 +30,17 @@ export function PillarContent() {
 
       <h3>LinkedIn</h3>
       <p>
-        <Link href="/learn/social-media-video-strategy/linkedin-video-strategy">LinkedIn</Link> remains the premier platform for B2B professionals, consultants, and service providers. Video on LinkedIn generates five times more engagement than text posts, and LinkedIn's algorithm heavily favors native video uploads over links to external video. The audience is professional, attention spans are longer than on consumer platforms, and the intent is business-oriented. For <Link href="/for/advisors">financial advisors</Link>, consultants, and B2B service providers, LinkedIn is the highest-value platform for video content.
+        <Link href="/social-media-video-strategy/linkedin-video-strategy">LinkedIn</Link> remains the premier platform for B2B professionals, consultants, and service providers. Video on LinkedIn generates five times more engagement than text posts, and LinkedIn's algorithm heavily favors native video uploads over links to external video. The audience is professional, attention spans are longer than on consumer platforms, and the intent is business-oriented. For <Link href="/for/advisors">financial advisors</Link>, consultants, and B2B service providers, LinkedIn is the highest-value platform for video content.
       </p>
 
       <h3>TikTok</h3>
       <p>
-        <Link href="/learn/social-media-video-strategy/tiktok-for-professionals">TikTok</Link> is no longer just for dance trends and entertainment. Professionals across law, medicine, real estate, and finance have built massive audiences by delivering expertise in TikTok's short-form, authentic format. TikTok's algorithm is uniquely meritocratic — it distributes content based on engagement, not follower count — which means a professional with zero followers can reach hundreds of thousands of people with a single well-crafted video.
+        <Link href="/social-media-video-strategy/tiktok-for-professionals">TikTok</Link> is no longer just for dance trends and entertainment. Professionals across law, medicine, real estate, and finance have built massive audiences by delivering expertise in TikTok's short-form, authentic format. TikTok's algorithm is uniquely meritocratic — it distributes content based on engagement, not follower count — which means a professional with zero followers can reach hundreds of thousands of people with a single well-crafted video.
       </p>
 
       <h3>Instagram</h3>
       <p>
-        <Link href="/learn/social-media-video-strategy/instagram-reels-for-business">Instagram Reels</Link> offer a massive discovery engine. Instagram has shifted its algorithm to prioritize Reels over static posts, making short-form video the primary path to reaching new audiences. For professionals in visually oriented industries — real estate, interior design, healthcare, fitness — Instagram remains essential.
+        <Link href="/social-media-video-strategy/instagram-reels-for-business">Instagram Reels</Link> offer a massive discovery engine. Instagram has shifted its algorithm to prioritize Reels over static posts, making short-form video the primary path to reaching new audiences. For professionals in visually oriented industries — real estate, interior design, healthcare, fitness — Instagram remains essential.
       </p>
 
       <h3>YouTube</h3>
@@ -66,7 +66,7 @@ export function PillarContent() {
         Not every platform serves the same business objective. LinkedIn excels at generating B2B leads and establishing thought leadership among peers. TikTok and Instagram Reels are discovery platforms that bring your content to people who have never heard of you. YouTube is a long-term authority builder and SEO asset.
       </p>
       <p>
-        Most professionals should focus on one primary platform and one secondary platform. Spreading across five platforms with mediocre consistency is less effective than dominating two platforms with daily content. Once you have a system in place — particularly if you are using <Link href="/learn/social-media-video-strategy/social-media-video-automation">video automation tools</Link> — expanding to additional platforms becomes manageable.
+        Most professionals should focus on one primary platform and one secondary platform. Spreading across five platforms with mediocre consistency is less effective than dominating two platforms with daily content. Once you have a system in place — particularly if you are using <Link href="/social-media-video-strategy/social-media-video-automation">video automation tools</Link> — expanding to additional platforms becomes manageable.
       </p>
 
       <h3>Establish Posting Cadence</h3>
@@ -74,7 +74,7 @@ export function PillarContent() {
         Consistency matters more than volume, but volume matters. The minimum effective dose for most platforms is 3-5 videos per week. Fewer than that and the algorithm stops distributing your content to your existing followers, let alone new audiences. The ideal cadence is daily posting — one video per day, five to seven days per week.
       </p>
       <p>
-        This cadence sounds unsustainable for a working professional, and it would be with traditional production. But with a systematic approach — batch scripting, AI video generation, and scheduled posting — daily publishing becomes a 20-minute daily review process rather than a multi-hour production commitment. The <Link href="/learn/social-media-video-strategy/content-calendar-strategy">content calendar strategy guide</Link> walks through exactly how to build this workflow.
+        This cadence sounds unsustainable for a working professional, and it would be with traditional production. But with a systematic approach — batch scripting, AI video generation, and scheduled posting — daily publishing becomes a 20-minute daily review process rather than a multi-hour production commitment. The <Link href="/social-media-video-strategy/content-calendar-strategy">content calendar strategy guide</Link> walks through exactly how to build this workflow.
       </p>
 
       <h2 id="content-formats">Content Formats That Perform</h2>
@@ -117,17 +117,17 @@ export function PillarContent() {
 
       <h3>Content Planning</h3>
       <p>
-        A <Link href="/learn/social-media-video-strategy/content-calendar-strategy">content calendar</Link> eliminates the daily question of "what should I post?" You batch-plan content in advance, mapping topics to your content pillars, tying timely content to known events (holidays, industry conferences, regulatory deadlines), and maintaining a backlog of evergreen ideas. Planning content a week or month in advance transforms posting from a creative burden into a simple approval process.
+        A <Link href="/social-media-video-strategy/content-calendar-strategy">content calendar</Link> eliminates the daily question of "what should I post?" You batch-plan content in advance, mapping topics to your content pillars, tying timely content to known events (holidays, industry conferences, regulatory deadlines), and maintaining a backlog of evergreen ideas. Planning content a week or month in advance transforms posting from a creative burden into a simple approval process.
       </p>
 
       <h3>Production at Scale</h3>
       <p>
-        <Link href="/learn/ai-video-creation">AI video generation</Link> has eliminated the production bottleneck for professionals. Instead of filming each video individually, you review AI-generated scripts, make edits to match your voice and expertise, and approve videos for generation. The AI handles character animation, <Link href="/learn/ai-video-creation/voice-cloning-for-video">voice synthesis</Link>, <Link href="/learn/ai-video-creation/multi-cut-video-editing">multi-cut editing</Link>, captioning, and platform-specific formatting. What used to require a videographer, editor, and half a day of your time now takes minutes per video.
+        <Link href="/ai-video-creation">AI video generation</Link> has eliminated the production bottleneck for professionals. Instead of filming each video individually, you review AI-generated scripts, make edits to match your voice and expertise, and approve videos for generation. The AI handles character animation, <Link href="/ai-video-creation/voice-cloning-for-video">voice synthesis</Link>, <Link href="/ai-video-creation/multi-cut-video-editing">multi-cut editing</Link>, captioning, and platform-specific formatting. What used to require a videographer, editor, and half a day of your time now takes minutes per video.
       </p>
 
       <h3>Automated Distribution</h3>
       <p>
-        <Link href="/learn/social-media-video-strategy/social-media-video-automation">Video automation tools</Link> handle cross-platform posting, optimal timing, and format adaptation. A single approved video can be automatically distributed to LinkedIn, Instagram, TikTok, and YouTube in each platform's preferred format, posted at the time when your audience is most active.
+        <Link href="/social-media-video-strategy/social-media-video-automation">Video automation tools</Link> handle cross-platform posting, optimal timing, and format adaptation. A single approved video can be automatically distributed to LinkedIn, Instagram, TikTok, and YouTube in each platform's preferred format, posted at the time when your audience is most active.
       </p>
       <p>
         The combination of planned content, AI production, and automated distribution creates a system where a professional spends 20-30 minutes per day reviewing and approving content that would have required hours of filming, editing, and manual posting. The result is not just efficiency — it is consistency that compounds over months, building an audience and a pipeline of inbound leads that traditional marketing cannot match.
@@ -190,7 +190,7 @@ export const subTopicContent: Record<string, () => ReactElement> = {
           Frequency matters more than timing precision. Posting one video per week at the "perfect" time generates less total reach than posting five videos per week at varying times. The algorithm rewards consistency — profiles that post regularly receive preferential distribution over profiles that post sporadically, regardless of content quality.
         </p>
         <p>
-          The recommended cadence for LinkedIn video is 3-5 posts per week. This frequency keeps you consistently visible in your network's feed, builds algorithmic momentum, and provides enough data to understand which topics and formats resonate. Using a <Link href="/learn/social-media-video-strategy/content-calendar-strategy">content calendar</Link> to plan this cadence in advance eliminates the friction of daily content decisions.
+          The recommended cadence for LinkedIn video is 3-5 posts per week. This frequency keeps you consistently visible in your network's feed, builds algorithmic momentum, and provides enough data to understand which topics and formats resonate. Using a <Link href="/social-media-video-strategy/content-calendar-strategy">content calendar</Link> to plan this cadence in advance eliminates the friction of daily content decisions.
         </p>
 
         <h2>Content That Generates Leads on LinkedIn</h2>
@@ -222,7 +222,7 @@ export const subTopicContent: Record<string, () => ReactElement> = {
 
         <h3>Format and Dimensions</h3>
         <p>
-          LinkedIn supports both horizontal (16:9) and vertical (9:16) video. Horizontal video performs better on desktop, while vertical fills more of the mobile screen. Given that a majority of LinkedIn usage is now mobile, vertical or square (1:1) formats tend to outperform horizontal for engagement. If you are generating video with <Link href="/learn/ai-video-creation">AI video tools</Link>, specify LinkedIn as the target platform to ensure proper formatting.
+          LinkedIn supports both horizontal (16:9) and vertical (9:16) video. Horizontal video performs better on desktop, while vertical fills more of the mobile screen. Given that a majority of LinkedIn usage is now mobile, vertical or square (1:1) formats tend to outperform horizontal for engagement. If you are generating video with <Link href="/ai-video-creation">AI video tools</Link>, specify LinkedIn as the target platform to ensure proper formatting.
         </p>
 
         <h3>Captions Are Mandatory</h3>
@@ -245,13 +245,13 @@ export const subTopicContent: Record<string, () => ReactElement> = {
           Sustainable LinkedIn video success comes from systems, not willpower. The professionals who maintain a daily posting cadence for months and years are not more disciplined — they have better systems.
         </p>
         <p>
-          <strong>Batch content planning.</strong> Dedicate 30 minutes per week to planning the next week's content. Map each day to a content pillar, identify timely topics, and draft or review scripts. A <Link href="/learn/social-media-video-strategy/content-calendar-strategy">content calendar</Link> makes this process repeatable.
+          <strong>Batch content planning.</strong> Dedicate 30 minutes per week to planning the next week's content. Map each day to a content pillar, identify timely topics, and draft or review scripts. A <Link href="/social-media-video-strategy/content-calendar-strategy">content calendar</Link> makes this process repeatable.
         </p>
         <p>
-          <strong>Streamline production.</strong> Whether you film in batches or use <Link href="/learn/ai-video-creation">AI video generation</Link>, the goal is separating content creation from content publishing. Generate a week's worth of videos in one sitting, then drip them out according to your schedule.
+          <strong>Streamline production.</strong> Whether you film in batches or use <Link href="/ai-video-creation">AI video generation</Link>, the goal is separating content creation from content publishing. Generate a week's worth of videos in one sitting, then drip them out according to your schedule.
         </p>
         <p>
-          <strong>Automate distribution.</strong> Use <Link href="/learn/social-media-video-strategy/social-media-video-automation">scheduling and automation tools</Link> to publish videos at optimal times without manual daily posting. This frees your time for engaging with comments and direct messages — the activities that actually convert viewers into leads.
+          <strong>Automate distribution.</strong> Use <Link href="/social-media-video-strategy/social-media-video-automation">scheduling and automation tools</Link> to publish videos at optimal times without manual daily posting. This frees your time for engaging with comments and direct messages — the activities that actually convert viewers into leads.
         </p>
         <p>
           <strong>Measure and iterate.</strong> Track which topics, formats, and posting times generate the most engagement and, more importantly, the most profile views and connection requests from your target audience. Double down on what works. Drop what does not. Over time, your content strategy becomes increasingly precise and effective.
@@ -342,7 +342,7 @@ export const subTopicContent: Record<string, () => ReactElement> = {
 
         <h3>Compliance Considerations</h3>
         <p>
-          Professionals in regulated industries need to be thoughtful about what they share. General education is almost always safe — "here is how [process] works" or "here is what the law says about [topic]." Specific advice to specific situations is where compliance risk emerges. Always include appropriate disclaimers and avoid creating an implied professional relationship. The script review process in <Link href="/learn/ai-video-creation">AI video generation</Link> provides a natural checkpoint for compliance review before any content publishes.
+          Professionals in regulated industries need to be thoughtful about what they share. General education is almost always safe — "here is how [process] works" or "here is what the law says about [topic]." Specific advice to specific situations is where compliance risk emerges. Always include appropriate disclaimers and avoid creating an implied professional relationship. The script review process in <Link href="/ai-video-creation">AI video generation</Link> provides a natural checkpoint for compliance review before any content publishes.
         </p>
 
         <h3>Handling Negative Comments</h3>
@@ -362,7 +362,7 @@ export const subTopicContent: Record<string, () => ReactElement> = {
           TikTok rewards volume more than any other platform. The ideal cadence is one to three videos per day, though one high-quality video per day is a strong minimum. Because TikTok's algorithm gives every video a fresh chance regardless of your posting history, there is no penalty for posting frequently — only compounding opportunity.
         </p>
         <p>
-          This volume requirement is where <Link href="/learn/social-media-video-strategy/social-media-video-automation">social media video automation</Link> becomes essential. Producing one to three videos per day through traditional filming is unsustainable for a practicing professional. AI-generated video, combined with a systematic <Link href="/learn/social-media-video-strategy/content-calendar-strategy">content calendar</Link>, makes this cadence achievable without sacrificing your billable hours or patient appointments.
+          This volume requirement is where <Link href="/social-media-video-strategy/social-media-video-automation">social media video automation</Link> becomes essential. Producing one to three videos per day through traditional filming is unsustainable for a practicing professional. AI-generated video, combined with a systematic <Link href="/social-media-video-strategy/content-calendar-strategy">content calendar</Link>, makes this cadence achievable without sacrificing your billable hours or patient appointments.
         </p>
 
         <h3>Hashtag Strategy</h3>
@@ -372,7 +372,7 @@ export const subTopicContent: Record<string, () => ReactElement> = {
 
         <h3>Cross-Platform Repurposing</h3>
         <p>
-          TikTok content can be repurposed to <Link href="/learn/social-media-video-strategy/instagram-reels-for-business">Instagram Reels</Link>, YouTube Shorts, and even LinkedIn with minor adjustments. Remove the TikTok watermark (or better, use the original file), adjust captions for each platform's style, and post natively. A single piece of content that performs well on TikTok often performs well across all short-form platforms, multiplying your reach without multiplying your production effort.
+          TikTok content can be repurposed to <Link href="/social-media-video-strategy/instagram-reels-for-business">Instagram Reels</Link>, YouTube Shorts, and even LinkedIn with minor adjustments. Remove the TikTok watermark (or better, use the original file), adjust captions for each platform's style, and post natively. A single piece of content that performs well on TikTok often performs well across all short-form platforms, multiplying your reach without multiplying your production effort.
         </p>
 
         <h2>Measuring TikTok Success for Professionals</h2>
@@ -505,10 +505,10 @@ export const subTopicContent: Record<string, () => ReactElement> = {
           The biggest challenge with Instagram Reels is volume. Posting one Reel per day — the minimum for serious growth — means producing 30 videos per month. For a working professional, this volume is only sustainable with systems in place.
         </p>
         <p>
-          <Link href="/learn/ai-video-creation">AI video generation</Link> solves the production bottleneck. Instead of filming, editing, and captioning each Reel individually, you review scripts, approve AI-generated video, and schedule posts. The AI handles <Link href="/learn/ai-video-creation/voice-cloning-for-video">voice synthesis</Link>, visual generation, <Link href="/learn/ai-video-creation/multi-cut-video-editing">multi-cut editing</Link>, and platform-specific formatting for Instagram's 9:16 vertical format.
+          <Link href="/ai-video-creation">AI video generation</Link> solves the production bottleneck. Instead of filming, editing, and captioning each Reel individually, you review scripts, approve AI-generated video, and schedule posts. The AI handles <Link href="/ai-video-creation/voice-cloning-for-video">voice synthesis</Link>, visual generation, <Link href="/ai-video-creation/multi-cut-video-editing">multi-cut editing</Link>, and platform-specific formatting for Instagram's 9:16 vertical format.
         </p>
         <p>
-          Combined with a <Link href="/learn/social-media-video-strategy/content-calendar-strategy">content calendar</Link> for planning and <Link href="/learn/social-media-video-strategy/social-media-video-automation">automation tools</Link> for scheduling, a professional can maintain a daily Reels presence in under 30 minutes per day. That is the difference between knowing Instagram Reels work for business growth and actually executing the strategy consistently enough to see results. <Link href="/demo">See how it works</Link> in a quick demo.
+          Combined with a <Link href="/social-media-video-strategy/content-calendar-strategy">content calendar</Link> for planning and <Link href="/social-media-video-strategy/social-media-video-automation">automation tools</Link> for scheduling, a professional can maintain a daily Reels presence in under 30 minutes per day. That is the difference between knowing Instagram Reels work for business growth and actually executing the strategy consistently enough to see results. <Link href="/demo">See how it works</Link> in a quick demo.
         </p>
       </>
     );
@@ -535,7 +535,7 @@ export const subTopicContent: Record<string, () => ReactElement> = {
 
         <h3>Layer 1: Content Planning and Scripting</h3>
         <p>
-          The automation pipeline starts with content planning. A <Link href="/learn/social-media-video-strategy/content-calendar-strategy">content calendar</Link> maps out what you will post, when, and on which platform. AI-powered scripting tools then generate draft scripts based on your content pillars, trending topics in your industry, and proven content structures. You review and edit these scripts — the AI handles the first draft, you provide the expertise and voice.
+          The automation pipeline starts with content planning. A <Link href="/social-media-video-strategy/content-calendar-strategy">content calendar</Link> maps out what you will post, when, and on which platform. AI-powered scripting tools then generate draft scripts based on your content pillars, trending topics in your industry, and proven content structures. You review and edit these scripts — the AI handles the first draft, you provide the expertise and voice.
         </p>
         <p>
           This layer saves the most time for most professionals. Starting from a blank page every day is the primary reason content creation feels overwhelming. When a script is waiting for your review each morning, the cognitive load drops dramatically. You are editing and approving, not creating from zero.
@@ -543,7 +543,7 @@ export const subTopicContent: Record<string, () => ReactElement> = {
 
         <h3>Layer 2: Video Production</h3>
         <p>
-          <Link href="/learn/ai-video-creation">AI video generation</Link> is the production layer. Once a script is approved, the AI generates video using your <Link href="/learn/ai-video-creation/ai-avatar-video-guide">digital avatar</Link> and <Link href="/learn/ai-video-creation/voice-cloning-for-video">cloned voice</Link>. The system handles character animation, lip synchronization, <Link href="/learn/ai-video-creation/multi-cut-video-editing">multi-cut composition</Link>, background generation, captioning, and platform-specific formatting — all automatically.
+          <Link href="/ai-video-creation">AI video generation</Link> is the production layer. Once a script is approved, the AI generates video using your <Link href="/ai-video-creation/ai-avatar-video-guide">digital avatar</Link> and <Link href="/ai-video-creation/voice-cloning-for-video">cloned voice</Link>. The system handles character animation, lip synchronization, <Link href="/ai-video-creation/multi-cut-video-editing">multi-cut composition</Link>, background generation, captioning, and platform-specific formatting — all automatically.
         </p>
         <p>
           For professionals who prefer appearing on camera, automation at this layer takes a different form: batch filming. You record 10-20 clips in a single session, then use automated editing tools to add captions, trim, and format for each platform. The key principle is the same: separate production from distribution so you are not filming the same day you are posting.
@@ -662,7 +662,7 @@ export const subTopicContent: Record<string, () => ReactElement> = {
           The number one reason professionals fail at social media content creation is not a lack of ideas, talent, or budget — it is a lack of planning. Without a content calendar, every day begins with the same draining question: "What should I post today?" That daily decision fatigue is what causes most professionals to post inconsistently, miss days, and eventually abandon their social media efforts entirely.
         </p>
         <p>
-          A content calendar solves this by moving the creative decision-making to a single planning session. Instead of deciding what to post in the moment — usually while juggling client work, meetings, and deadlines — you batch your planning in advance. When Monday morning arrives, you do not wonder what to post. You open your calendar, see that today's topic is "three things to know about [topic]" for <Link href="/learn/social-media-video-strategy/linkedin-video-strategy">LinkedIn</Link> and a myth-buster for <Link href="/learn/social-media-video-strategy/instagram-reels-for-business">Instagram Reels</Link>, and you move to execution instead of ideation.
+          A content calendar solves this by moving the creative decision-making to a single planning session. Instead of deciding what to post in the moment — usually while juggling client work, meetings, and deadlines — you batch your planning in advance. When Monday morning arrives, you do not wonder what to post. You open your calendar, see that today's topic is "three things to know about [topic]" for <Link href="/social-media-video-strategy/linkedin-video-strategy">LinkedIn</Link> and a myth-buster for <Link href="/social-media-video-strategy/instagram-reels-for-business">Instagram Reels</Link>, and you move to execution instead of ideation.
         </p>
         <p>
           A content calendar is not just an organizational tool. It is a strategic asset. It ensures you cover all your content pillars, maintain platform-appropriate cadence, capitalize on timely events, and build a body of work that positions you as the definitive authority in your field. The professionals who generate the most leads from social media content creation all have one thing in common: they plan their content in advance.
@@ -706,7 +706,7 @@ export const subTopicContent: Record<string, () => ReactElement> = {
 
         <h3>Step 3: Set Your Posting Cadence</h3>
         <p>
-          Your cadence should be ambitious but sustainable. The minimum effective cadence for most platforms is 3-5 posts per week. The ideal is daily or more. Here is a realistic cadence framework for a professional using <Link href="/learn/social-media-video-strategy/social-media-video-automation">automation tools</Link>:
+          Your cadence should be ambitious but sustainable. The minimum effective cadence for most platforms is 3-5 posts per week. The ideal is daily or more. Here is a realistic cadence framework for a professional using <Link href="/social-media-video-strategy/social-media-video-automation">automation tools</Link>:
         </p>
         <p>
           <strong>Primary platform (e.g., LinkedIn):</strong> 5 videos per week (weekdays).
@@ -745,7 +745,7 @@ export const subTopicContent: Record<string, () => ReactElement> = {
           <strong>Fill the calendar.</strong> Map topics to each slot in your calendar grid, mixing evergreen pillar content with timely topics. Ensure you are rotating through all content pillars over a two-week period.
         </p>
         <p>
-          <strong>Draft or review scripts.</strong> If you use <Link href="/learn/ai-video-creation">AI video generation</Link>, review the AI-generated scripts for each planned topic. Edit for accuracy, voice, and completeness. If you film manually, write bullet-point outlines for each video.
+          <strong>Draft or review scripts.</strong> If you use <Link href="/ai-video-creation">AI video generation</Link>, review the AI-generated scripts for each planned topic. Edit for accuracy, voice, and completeness. If you film manually, write bullet-point outlines for each video.
         </p>
 
         <h3>The Monthly Review</h3>
@@ -792,7 +792,7 @@ export const subTopicContent: Record<string, () => ReactElement> = {
           <strong>Build a backlog.</strong> Maintain a running list of content ideas — topics, questions from clients, interesting industry developments — that you can pull from during planning sessions. The backlog ensures you never sit down to an empty calendar with no ideas. Add to it throughout the week as inspiration strikes.
         </p>
         <p>
-          <strong>Automate what you can.</strong> Use <Link href="/learn/social-media-video-strategy/social-media-video-automation">automation tools</Link> for scheduling, formatting, and distribution. The less manual work involved in executing your calendar, the more likely you are to maintain it consistently.
+          <strong>Automate what you can.</strong> Use <Link href="/social-media-video-strategy/social-media-video-automation">automation tools</Link> for scheduling, formatting, and distribution. The less manual work involved in executing your calendar, the more likely you are to maintain it consistently.
         </p>
         <p>
           <strong>Accept imperfection.</strong> A good-enough video posted today is more valuable than a perfect video posted never. The calendar is a guide, not a contract. If you need to swap a topic, simplify a video, or cross-post where you planned original content, that is fine. Consistency of presence matters more than perfection of any individual piece.

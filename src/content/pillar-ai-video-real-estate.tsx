@@ -32,7 +32,7 @@ export function PillarContent() {
         Listings with video receive significantly more views, more inquiries, and sell faster than listings with photos alone. The National Association of Realtors reports that 73% of homeowners prefer to list with an agent who uses video. Yet fewer than 10% of agents produce listing videos consistently. That gap is the opportunity.
       </p>
       <p>
-        AI video for real estate makes listing video production scalable. Instead of hiring a videographer for each listing (or only producing videos for your premium properties), you can generate a professional <Link href="/learn/ai-video-real-estate/listing-tour-videos">listing tour video</Link> for every property in your portfolio. The AI uses your character model to present each listing with your voice and likeness, maintaining brand consistency across every video.
+        AI video for real estate makes listing video production scalable. Instead of hiring a videographer for each listing (or only producing videos for your premium properties), you can generate a professional <Link href="/ai-video-real-estate/listing-tour-videos">listing tour video</Link> for every property in your portfolio. The AI uses your character model to present each listing with your voice and likeness, maintaining brand consistency across every video.
       </p>
       <p>
         The most effective listing videos follow a proven structure: a hook that highlights the property's strongest feature, a walkthrough that covers key selling points in order of buyer priority, and a call to action that drives scheduling. AI video platforms can generate this entire sequence from a property description and photos, with you presenting as the on-camera agent. The result is a listing video that looks professionally produced and positions you as the agent behind the property.
@@ -43,7 +43,7 @@ export function PillarContent() {
 
       <h2 id="building-local-authority">Building Local Authority</h2>
       <p>
-        The most successful real estate agents are recognized as the local expert in their market. They are the person buyers and sellers think of first when real estate comes up in conversation. Video is the fastest path to that positioning, and three content types drive it: <Link href="/learn/ai-video-real-estate/real-estate-market-updates">market update videos</Link>, <Link href="/learn/ai-video-real-estate/neighborhood-spotlight-videos">neighborhood spotlight videos</Link>, and educational content for buyers and sellers.
+        The most successful real estate agents are recognized as the local expert in their market. They are the person buyers and sellers think of first when real estate comes up in conversation. Video is the fastest path to that positioning, and three content types drive it: <Link href="/ai-video-real-estate/real-estate-market-updates">market update videos</Link>, <Link href="/ai-video-real-estate/neighborhood-spotlight-videos">neighborhood spotlight videos</Link>, and educational content for buyers and sellers.
       </p>
       <p>
         <strong>Market update videos</strong> position you as someone who understands the numbers. When you publish a weekly video breaking down median prices, days on market, inventory levels, and rate trends for your local area, you demonstrate expertise that static social posts cannot match. Homeowners considering selling watch these videos to gauge timing. Buyers watch them to understand what they can afford. Both groups remember the agent who provided the analysis.
@@ -60,7 +60,7 @@ export function PillarContent() {
 
       <h2 id="platform-strategy">Platform Strategy for Agents</h2>
       <p>
-        Real estate agents need to be where their clients are, and different client segments live on different platforms. A comprehensive <Link href="/learn/ai-video-real-estate/real-estate-social-media">real estate social media strategy</Link> covers multiple channels, each with a specific role in your lead generation funnel.
+        Real estate agents need to be where their clients are, and different client segments live on different platforms. A comprehensive <Link href="/ai-video-real-estate/real-estate-social-media">real estate social media strategy</Link> covers multiple channels, each with a specific role in your lead generation funnel.
       </p>
       <p>
         <strong>Instagram and TikTok</strong> are discovery platforms. Short-form vertical video (Reels and TikToks) reaches people who are not yet searching for an agent but may be in the early stages of considering a move. Listing tours, neighborhood highlights, and quick tips perform well here. The algorithm rewards consistency, which is exactly what AI video enables.
@@ -80,7 +80,7 @@ export function PillarContent() {
 
       <h2 id="measuring-video-roi">Measuring Video ROI</h2>
       <p>
-        The return on investment for <Link href="/learn/ai-video-real-estate/real-estate-video-roi">real estate video marketing</Link> is measured in listings, closings, and commission income -- not just views and likes. While vanity metrics indicate reach, the metrics that matter are lead generation, listing appointments, and closed transactions that trace back to video content.
+        The return on investment for <Link href="/ai-video-real-estate/real-estate-video-roi">real estate video marketing</Link> is measured in listings, closings, and commission income -- not just views and likes. While vanity metrics indicate reach, the metrics that matter are lead generation, listing appointments, and closed transactions that trace back to video content.
       </p>
       <p>
         Agents who maintain consistent AI video programs typically report measurable results within 60-90 days. The first indicator is an increase in inbound inquiries -- people reaching out because they saw your content, rather than you cold-calling or buying leads. These inbound leads convert at significantly higher rates because the prospect already knows you, trusts your expertise, and chose to contact you.
@@ -100,13 +100,13 @@ export function PillarContent() {
         <strong>Upload professional photos.</strong> Your headshot photos should reflect how you present yourself to clients -- professional but approachable. If you wear a blazer to listing appointments, wear one in your photos. Consistency between your AI video appearance and your in-person appearance builds trust when clients meet you face to face.
       </p>
       <p>
-        <strong>Record your voice naturally.</strong> Speak as you would to a client during a consultation, not as if you are reading a teleprompter. Your voice clone will reproduce whatever tone you provide, so give it your authentic, conversational voice. Learn more about <Link href="/learn/ai-video-creation/voice-cloning-for-video">voice cloning best practices</Link> for optimal results.
+        <strong>Record your voice naturally.</strong> Speak as you would to a client during a consultation, not as if you are reading a teleprompter. Your voice clone will reproduce whatever tone you provide, so give it your authentic, conversational voice. Learn more about <Link href="/ai-video-creation/voice-cloning-for-video">voice cloning best practices</Link> for optimal results.
       </p>
       <p>
         <strong>Start with your highest-value content.</strong> For most agents, that means listing videos for active properties and a weekly market update. These two content types have the most direct line to revenue. Neighborhood spotlights and educational content can be added once your core workflow is established.
       </p>
       <p>
-        <strong>Build a content calendar.</strong> Consistency beats volume. Three videos per week, posted reliably, outperforms a burst of ten videos followed by two weeks of silence. The <Link href="/learn/social-media-video-strategy/content-calendar-strategy">content calendar strategy guide</Link> covers how to structure your weekly video rhythm for maximum impact.
+        <strong>Build a content calendar.</strong> Consistency beats volume. Three videos per week, posted reliably, outperforms a burst of ten videos followed by two weeks of silence. The <Link href="/social-media-video-strategy/content-calendar-strategy">content calendar strategy guide</Link> covers how to structure your weekly video rhythm for maximum impact.
       </p>
       <p>
         <strong>Track what generates business.</strong> From day one, ask every new lead how they found you. Tag leads that originate from video content and track them through your pipeline. Within 90 days, you will have enough data to calculate your video marketing ROI with precision.
@@ -167,7 +167,7 @@ export const subTopicContent: Record<string, () => ReactElement> = {
 
         <h2>Shot Planning for AI-Generated Listing Videos</h2>
         <p>
-          AI video generation uses the <Link href="/learn/ai-video-creation/multi-cut-video-editing">multi-cut method</Link> to create professional-looking output. For listing tours, shot planning means deciding which visual compositions accompany each section of your script.
+          AI video generation uses the <Link href="/ai-video-creation/multi-cut-video-editing">multi-cut method</Link> to create professional-looking output. For listing tours, shot planning means deciding which visual compositions accompany each section of your script.
         </p>
 
         <h3>Presenter Shots</h3>
@@ -228,7 +228,7 @@ export const subTopicContent: Record<string, () => ReactElement> = {
           <strong>Inconsistent production quality.</strong> If your luxury listings get polished videos and your entry-level listings get phone recordings, you signal to potential sellers that you only invest in high-commission properties. AI video eliminates this inconsistency by maintaining the same production quality across every listing regardless of price point.
         </p>
         <p>
-          For a deeper dive into your overall <Link href="/learn/ai-video-real-estate/real-estate-social-media">real estate social media strategy</Link>, including how listing videos fit into your broader content plan, read our comprehensive platform-by-platform guide.
+          For a deeper dive into your overall <Link href="/ai-video-real-estate/real-estate-social-media">real estate social media strategy</Link>, including how listing videos fit into your broader content plan, read our comprehensive platform-by-platform guide.
         </p>
       </>
     );
@@ -325,7 +325,7 @@ export const subTopicContent: Record<string, () => ReactElement> = {
           Market updates are ideal for AI video production because the format is predictable and script-driven. The workflow looks like this: pull your weekly data on Monday, review or write the script by Tuesday, approve the AI-generated video by Wednesday, and publish by Thursday. This four-day cycle ensures your data is current and your production is consistent.
         </p>
         <p>
-          AI video platforms can generate market updates with your likeness presenting the data, with on-screen text or graphics highlighting key numbers. The <Link href="/learn/ai-video-creation/multi-cut-video-editing">multi-cut method</Link> ensures the video feels dynamic -- cutting between your presenter shots and data overlay screens prevents the static talking-head look that causes viewers to scroll past.
+          AI video platforms can generate market updates with your likeness presenting the data, with on-screen text or graphics highlighting key numbers. The <Link href="/ai-video-creation/multi-cut-video-editing">multi-cut method</Link> ensures the video feels dynamic -- cutting between your presenter shots and data overlay screens prevents the static talking-head look that causes viewers to scroll past.
         </p>
         <p>
           <Link href="/for/realtors">Real estate agents using AI video</Link> for weekly market updates report that this single content type generates more inbound leads than any other. The combination of consistent publishing, local expertise demonstration, and search-friendly content creates a compounding lead generation engine that grows stronger with every week of content. <Link href="/demo">Schedule a demo</Link> to see how the market update workflow operates end to end.
@@ -417,7 +417,7 @@ export const subTopicContent: Record<string, () => ReactElement> = {
 
         <h3>Binge</h3>
         <p>
-          If your first video is helpful, the viewer watches more. They explore your neighborhood guide playlist, watch your <Link href="/learn/ai-video-real-estate/real-estate-market-updates">market update videos</Link>, and browse your <Link href="/learn/ai-video-real-estate/listing-tour-videos">listing tour videos</Link>. Each video builds familiarity and trust. By the time they have watched four or five of your videos, you are no longer a stranger -- you are their go-to source for local real estate information.
+          If your first video is helpful, the viewer watches more. They explore your neighborhood guide playlist, watch your <Link href="/ai-video-real-estate/real-estate-market-updates">market update videos</Link>, and browse your <Link href="/ai-video-real-estate/listing-tour-videos">listing tour videos</Link>. Each video builds familiarity and trust. By the time they have watched four or five of your videos, you are no longer a stranger -- you are their go-to source for local real estate information.
         </p>
 
         <h3>Contact</h3>
@@ -438,7 +438,7 @@ export const subTopicContent: Record<string, () => ReactElement> = {
           The production workflow is straightforward: research the neighborhood and outline talking points, write or review the script, gather photos and visual assets (your own photos, licensed images, or screenshots from Google Maps and community websites), and submit for AI video generation. The system produces a multi-cut video that alternates between your presenter delivery and neighborhood visuals.
         </p>
         <p>
-          <Link href="/for/realtors">Agents who use AI video</Link> for neighborhood content can produce one spotlight per week, building a comprehensive library that covers every major neighborhood in their market within a few months. This library becomes an evergreen lead generation engine that works for you 24 hours a day, capturing search traffic and building authority while you focus on active transactions. Explore the <Link href="/learn/ai-video-real-estate/real-estate-social-media">social media strategy guide</Link> to learn how to distribute neighborhood content across platforms for maximum reach.
+          <Link href="/for/realtors">Agents who use AI video</Link> for neighborhood content can produce one spotlight per week, building a comprehensive library that covers every major neighborhood in their market within a few months. This library becomes an evergreen lead generation engine that works for you 24 hours a day, capturing search traffic and building authority while you focus on active transactions. Explore the <Link href="/ai-video-real-estate/real-estate-social-media">social media strategy guide</Link> to learn how to distribute neighborhood content across platforms for maximum reach.
         </p>
       </>
     );
@@ -467,7 +467,7 @@ export const subTopicContent: Record<string, () => ReactElement> = {
 
         <h3>Reels Strategy</h3>
         <p>
-          High-performing real estate Reels fall into several categories: <Link href="/learn/ai-video-real-estate/listing-tour-videos">listing tour videos</Link> (30-60 seconds highlighting a property's best features), market update snippets (15-30 seconds with one key data point), neighborhood tips (quick highlights of local spots), and buyer/seller education (answering one common question per Reel). AI video generates all of these formats from scripts, maintaining your on-camera presence without filming.
+          High-performing real estate Reels fall into several categories: <Link href="/ai-video-real-estate/listing-tour-videos">listing tour videos</Link> (30-60 seconds highlighting a property's best features), market update snippets (15-30 seconds with one key data point), neighborhood tips (quick highlights of local spots), and buyer/seller education (answering one common question per Reel). AI video generates all of these formats from scripts, maintaining your on-camera presence without filming.
         </p>
 
         <h3>Hashtag and Caption Strategy</h3>
@@ -487,7 +487,7 @@ export const subTopicContent: Record<string, () => ReactElement> = {
 
         <h3>Content Types</h3>
         <p>
-          Focus on three content pillars: <Link href="/learn/ai-video-real-estate/neighborhood-spotlight-videos">neighborhood guides</Link> (5-10 minutes, comprehensive overviews of local areas), <Link href="/learn/ai-video-real-estate/real-estate-market-updates">market updates</Link> (3-5 minutes, monthly or bi-weekly data analysis), and educational content (5-15 minutes, deep dives on buying, selling, investing, and financing). These content types target high-intent search queries that indicate active buying or selling consideration.
+          Focus on three content pillars: <Link href="/ai-video-real-estate/neighborhood-spotlight-videos">neighborhood guides</Link> (5-10 minutes, comprehensive overviews of local areas), <Link href="/ai-video-real-estate/real-estate-market-updates">market updates</Link> (3-5 minutes, monthly or bi-weekly data analysis), and educational content (5-15 minutes, deep dives on buying, selling, investing, and financing). These content types target high-intent search queries that indicate active buying or selling consideration.
         </p>
 
         <h3>YouTube SEO</h3>
@@ -565,7 +565,7 @@ export const subTopicContent: Record<string, () => ReactElement> = {
           The key to sustainable multi-platform presence is systems, not willpower. <Link href="/for/realtors">Agents using AI video</Link> build a weekly content system that looks like this: review and approve five to seven video scripts on Monday (30-45 minutes), AI generates platform-specific versions of each video by Tuesday, schedule all content for the week using a scheduling tool on Tuesday, and spend 10 minutes daily responding to comments and messages.
         </p>
         <p>
-          This system produces 20+ pieces of platform-optimized content per week from under two hours of agent time. Without AI video, the same output would require 15-20 hours of filming, editing, and formatting. The <Link href="/learn/social-media-video-strategy/content-calendar-strategy">content calendar strategy guide</Link> provides a detailed framework for building this system. To see the production workflow in action, <Link href="/demo">request a demo</Link> and explore how AI video fits into your specific practice.
+          This system produces 20+ pieces of platform-optimized content per week from under two hours of agent time. Without AI video, the same output would require 15-20 hours of filming, editing, and formatting. The <Link href="/social-media-video-strategy/content-calendar-strategy">content calendar strategy guide</Link> provides a detailed framework for building this system. To see the production workflow in action, <Link href="/demo">request a demo</Link> and explore how AI video fits into your specific practice.
         </p>
       </>
     );
@@ -609,7 +609,7 @@ export const subTopicContent: Record<string, () => ReactElement> = {
 
         <h3>Pre-Listing Research</h3>
         <p>
-          Sellers research agents online before inviting them to present. When a potential seller finds your YouTube channel with 50 <Link href="/learn/ai-video-real-estate/listing-tour-videos">listing tour videos</Link>, weekly <Link href="/learn/ai-video-real-estate/real-estate-market-updates">market updates</Link>, and comprehensive <Link href="/learn/ai-video-real-estate/neighborhood-spotlight-videos">neighborhood guides</Link>, you arrive at the listing appointment with pre-established credibility. Track this by asking every listing prospect: "How did you find me, and what did you see online before we met?" Document the answers systematically.
+          Sellers research agents online before inviting them to present. When a potential seller finds your YouTube channel with 50 <Link href="/ai-video-real-estate/listing-tour-videos">listing tour videos</Link>, weekly <Link href="/ai-video-real-estate/real-estate-market-updates">market updates</Link>, and comprehensive <Link href="/ai-video-real-estate/neighborhood-spotlight-videos">neighborhood guides</Link>, you arrive at the listing appointment with pre-established credibility. Track this by asking every listing prospect: "How did you find me, and what did you see online before we met?" Document the answers systematically.
         </p>
 
         <h3>Listing Presentation Win Rate</h3>
@@ -704,7 +704,7 @@ export const subTopicContent: Record<string, () => ReactElement> = {
           <strong>12 months:</strong> Video content library becomes a significant competitive advantage. Referral network amplification kicks in as clients share your content and professional contacts recommend you based on your visible expertise. The agents who maintain consistency at this stage report that video is their single most productive marketing channel.
         </p>
         <p>
-          The agents who see the strongest ROI are the ones who commit to consistency, measure rigorously, and iterate based on data. <Link href="/for/realtors">Learn how leading agents use AI video</Link> to build a measurable lead generation engine, or <Link href="/demo">request a demo</Link> to see the platform in action. For a broader view of how video fits into your overall <Link href="/learn/ai-video-real-estate/real-estate-social-media">real estate social media strategy</Link>, explore our platform-by-platform guide.
+          The agents who see the strongest ROI are the ones who commit to consistency, measure rigorously, and iterate based on data. <Link href="/for/realtors">Learn how leading agents use AI video</Link> to build a measurable lead generation engine, or <Link href="/demo">request a demo</Link> to see the platform in action. For a broader view of how video fits into your overall <Link href="/ai-video-real-estate/real-estate-social-media">real estate social media strategy</Link>, explore our platform-by-platform guide.
         </p>
       </>
     );

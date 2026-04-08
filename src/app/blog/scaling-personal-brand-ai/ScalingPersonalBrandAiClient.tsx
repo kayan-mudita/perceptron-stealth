@@ -39,7 +39,7 @@ export default function ScalingPersonalBrandAiClient() {
         Video content is the most efficient way to answer those questions at scale. A single
         60-second video communicates more about your personality, expertise, and communication
         style than an entire website. For the complete framework, see our guide to{" "}
-        <Link href="/learn/video-marketing-professionals/professional-video-branding">
+        <Link href="/video-marketing-professionals/professional-video-branding">
           building your brand through video
         </Link>
         .
@@ -127,11 +127,11 @@ export default function ScalingPersonalBrandAiClient() {
       </p>
       <p>
         For the full framework on producing consistent content at scale, explore our{" "}
-        <Link href="/learn/ai-content-at-scale/scaling-personal-brand">
+        <Link href="/ai-content-at-scale/scaling-personal-brand">
           guide to scaling your personal brand with AI
         </Link>
         . And for maintaining brand consistency across high-volume output, see our{" "}
-        <Link href="/learn/ai-content-at-scale/content-consistency">
+        <Link href="/ai-content-at-scale/content-consistency">
           content consistency guide
         </Link>
         .

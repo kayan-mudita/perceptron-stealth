@@ -104,7 +104,7 @@ export default function PillarSidebar({
               {subTopics.map((st) => (
                 <li key={st.slug}>
                   <Link
-                    href={`/learn/${pillarSlug}/${st.slug}`}
+                    href={`/${pillarSlug}/${st.slug}`}
                     className="block text-p3 text-white/30 hover:text-white/60 py-1.5 px-2 rounded-md hover:bg-white/[0.03] transition-colors"
                   >
                     {st.title}
@@ -179,7 +179,7 @@ export default function PillarSidebar({
               {crossLinkPillarSlugs.map((slug) => (
                 <li key={slug}>
                   <Link
-                    href={`/learn/${slug}`}
+                    href={`/${slug}`}
                     className="block text-p3 text-white/30 hover:text-white/60 py-1.5 px-2 rounded-md hover:bg-white/[0.03] transition-colors"
                   >
                     {pillarLabels[slug] || formatBlogSlug(slug)}

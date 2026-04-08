@@ -50,7 +50,7 @@ export default function RealEstateAgentsAiClient() {
       <h2>What AI-powered real estate content looks like</h2>
       <p>
         Agents using{" "}
-        <Link href="/learn/ai-video-real-estate">AI video for real estate</Link> are
+        <Link href="/ai-video-real-estate">AI video for real estate</Link> are
         producing three main types of content without ever picking up a camera:
       </p>
 
@@ -58,7 +58,7 @@ export default function RealEstateAgentsAiClient() {
       <p>
         Instead of scheduling a filming day for each new listing, agents write a quick script
         highlighting the property's best features and let AI generate a{" "}
-        <Link href="/learn/ai-video-real-estate/listing-tour-videos">
+        <Link href="/ai-video-real-estate/listing-tour-videos">
           listing tour video
         </Link>{" "}
         with their digital twin presenting the property. Combined with property photos as
@@ -69,7 +69,7 @@ export default function RealEstateAgentsAiClient() {
       <h3>2. Market update videos</h3>
       <p>
         Weekly{" "}
-        <Link href="/learn/ai-video-real-estate/real-estate-market-updates">
+        <Link href="/ai-video-real-estate/real-estate-market-updates">
           market update videos
         </Link>{" "}
         are the highest-ROI content type in real estate because they position you as the
@@ -114,7 +114,7 @@ export default function RealEstateAgentsAiClient() {
       <p>
         The agents seeing the best results are not just posting videos in isolation. They are
         building a complete{" "}
-        <Link href="/learn/ai-video-real-estate/real-estate-social-media">
+        <Link href="/ai-video-real-estate/real-estate-social-media">
           real estate social media strategy
         </Link>{" "}
         around AI-generated content:
@@ -155,11 +155,11 @@ export default function RealEstateAgentsAiClient() {
       <p>
         If you want to understand how AI video technology works under the hood, check out
         our{" "}
-        <Link href="/learn/ai-video-real-estate">
+        <Link href="/ai-video-real-estate">
           complete guide to AI video for real estate
         </Link>
         . And if you are curious about measuring the actual return, read our breakdown of{" "}
-        <Link href="/learn/ai-video-real-estate/real-estate-video-roi">
+        <Link href="/ai-video-real-estate/real-estate-video-roi">
           real estate video marketing ROI
         </Link>
         .

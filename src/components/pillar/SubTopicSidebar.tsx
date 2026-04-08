@@ -84,7 +84,7 @@ export default function SubTopicSidebar({
       <div className="sticky top-20 space-y-6">
         {/* Back to pillar */}
         <Link
-          href={`/learn/${pillarSlug}`}
+          href={`/${pillarSlug}`}
           className="flex items-center gap-2 text-p3 text-white/30 hover:text-white/60 transition-colors"
         >
           <ArrowLeft className="w-3 h-3" />
@@ -107,7 +107,7 @@ export default function SubTopicSidebar({
                 return (
                   <li key={st.slug}>
                     <Link
-                      href={`/learn/${pillarSlug}/${st.slug}`}
+                      href={`/${pillarSlug}/${st.slug}`}
                       className={`block text-p3 py-2 px-3 rounded-lg transition-colors ${
                         isActive
                           ? `text-white/80 font-medium border-l-2 ${accentBorder} ${activeBg}`

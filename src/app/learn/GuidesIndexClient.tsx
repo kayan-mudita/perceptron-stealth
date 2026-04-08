@@ -65,7 +65,7 @@ export default function GuidesIndexClient() {
               return (
                 <FadeIn key={pillar.slug} delay={i * 0.08} duration={0.5}>
                   <Link
-                    href={`/learn/${pillar.slug}`}
+                    href={`/${pillar.slug}`}
                     className="group relative p-6 rounded-2xl card-hairline hover:border-white/[0.12] transition-all h-full flex flex-col"
                   >
                     <div className={`absolute top-0 left-0 right-0 h-px bg-gradient-to-r ${gradient}`} />

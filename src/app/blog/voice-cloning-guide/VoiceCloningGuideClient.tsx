@@ -36,7 +36,7 @@ export default function VoiceCloningGuideClient() {
       </p>
       <p>
         The technology pairs directly with{" "}
-        <Link href="/learn/ai-video-creation/ai-avatar-video-guide">AI avatar video</Link>{" "}
+        <Link href="/ai-video-creation/ai-avatar-video-guide">AI avatar video</Link>{" "}
         to create a complete digital twin: your face, your expressions, and your voice,
         delivering your words.
       </p>
@@ -78,7 +78,7 @@ export default function VoiceCloningGuideClient() {
       </p>
       <p>
         This is especially important when you are using AI to{" "}
-        <Link href="/learn/ai-video-creation/voice-cloning-for-video">
+        <Link href="/ai-video-creation/voice-cloning-for-video">
           scale video production
         </Link>
         . Without voice cloning, you are limited to either recording every voiceover
@@ -126,7 +126,7 @@ export default function VoiceCloningGuideClient() {
       <p>
         If you are new to AI video, voice cloning is one component of a larger system. Start
         with our{" "}
-        <Link href="/learn/ai-video-creation">
+        <Link href="/ai-video-creation">
           complete guide to AI video creation
         </Link>{" "}
         to understand how all the pieces — avatars, voice cloning, multi-cut editing — fit
