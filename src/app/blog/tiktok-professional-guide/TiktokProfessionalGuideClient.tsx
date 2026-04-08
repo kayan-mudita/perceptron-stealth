@@ -38,7 +38,7 @@ export default function TiktokProfessionalGuideClient() {
         For professionals, this is transformative. A family lawyer in Denver can reach every
         person in the metro area who has been searching for divorce-related content — without
         spending a dollar on ads. For a deeper dive, see our{" "}
-        <Link href="/learn/social-media-video-strategy/tiktok-for-professionals">
+        <Link href="/social-media-video-strategy/tiktok-for-professionals">
           complete guide to TikTok for professionals
         </Link>
         .
@@ -92,7 +92,7 @@ export default function TiktokProfessionalGuideClient() {
       <h2>Cross-platform strategy</h2>
       <p>
         TikTok content repurposes perfectly.{" "}
-        <Link href="/learn/social-media-video-strategy/instagram-reels-for-business">
+        <Link href="/social-media-video-strategy/instagram-reels-for-business">
           Instagram Reels
         </Link>{" "}
         use the same format and similar algorithms. A video you create for TikTok can be
@@ -100,7 +100,7 @@ export default function TiktokProfessionalGuideClient() {
       </p>
       <p>
         This is where{" "}
-        <Link href="/learn/social-media-video-strategy/social-media-video-automation">
+        <Link href="/social-media-video-strategy/social-media-video-automation">
           social media video automation
         </Link>{" "}
         becomes critical. Manually repurposing content for four platforms is a full-time job.
@@ -117,7 +117,7 @@ export default function TiktokProfessionalGuideClient() {
       <p>
         For the broader social media strategy that ties TikTok, LinkedIn, and Instagram
         together, see our{" "}
-        <Link href="/learn/social-media-video-strategy">
+        <Link href="/social-media-video-strategy">
           social media video strategy guide
         </Link>
         .

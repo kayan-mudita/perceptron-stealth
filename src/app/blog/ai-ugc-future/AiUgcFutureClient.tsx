@@ -44,7 +44,7 @@ export default function AiUgcFutureClient() {
       <h2>What AI UGC actually looks like</h2>
       <p>
         AI-generated UGC is not a deepfake or a cartoon avatar. Modern{" "}
-        <Link href="/learn/ai-video-creation">AI video generation</Link> creates a
+        <Link href="/ai-video-creation">AI video generation</Link> creates a
         photorealistic digital twin from a single photo or short calibration clip. The twin
         speaks with your voice, matches your facial expressions, and delivers your script in
         a way that looks indistinguishable from a self-recorded clip.
@@ -70,7 +70,7 @@ export default function AiUgcFutureClient() {
         <li>
           <strong>Quality has crossed the threshold.</strong> Twelve months ago, AI video was
           obviously synthetic.{" "}
-          <Link href="/learn/ai-video-creation/ai-avatar-video-guide">
+          <Link href="/ai-video-creation/ai-avatar-video-guide">
             Modern AI avatars
           </Link>{" "}
           have reached a point where casual viewers cannot tell the difference, especially in
@@ -117,7 +117,7 @@ export default function AiUgcFutureClient() {
       </ol>
       <p>
         You can{" "}
-        <Link href="/learn/ai-video-creation/create-videos-without-filming">
+        <Link href="/ai-video-creation/create-videos-without-filming">
           create videos without ever filming
         </Link>{" "}
         and still build the kind of personal brand that drives inbound leads.
@@ -137,7 +137,7 @@ export default function AiUgcFutureClient() {
       </p>
       <p>
         If you want to understand the technology behind this, start with our{" "}
-        <Link href="/learn/ai-video-creation">complete guide to AI video creation</Link>.
+        <Link href="/ai-video-creation">complete guide to AI video creation</Link>.
       </p>
     </BlogPostTemplate>
   );

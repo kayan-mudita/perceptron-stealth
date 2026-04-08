@@ -39,7 +39,7 @@ export default function FiveContentFormatsClient() {
       </p>
       <p>
         Building a{" "}
-        <Link href="/learn/video-marketing-professionals/video-content-strategy">
+        <Link href="/video-marketing-professionals/video-content-strategy">
           video content strategy
         </Link>{" "}
         around FAQs is the single fastest path to a content library that actually drives
@@ -81,7 +81,7 @@ export default function FiveContentFormatsClient() {
         Client stories work because they let prospects see themselves in the narrative. They
         shift your positioning from "I sell a service" to "I solve problems like yours."
         This format maps directly to the consideration stage of the{" "}
-        <Link href="/learn/video-marketing-professionals/video-marketing-funnel">
+        <Link href="/video-marketing-professionals/video-marketing-funnel">
           video marketing funnel
         </Link>{" "}
         — it is what moves someone from "I know this person" to "I should hire this person."
@@ -112,7 +112,7 @@ export default function FiveContentFormatsClient() {
       </p>
       <p>
         If you want to go deeper on building a sustainable content engine, our{" "}
-        <Link href="/learn/video-marketing-professionals">
+        <Link href="/video-marketing-professionals">
           guide to video marketing for professionals
         </Link>{" "}
         covers the strategy, metrics, and workflows that make consistent content creation

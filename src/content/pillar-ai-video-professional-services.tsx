@@ -23,7 +23,7 @@ export function PillarContent() {
         Yet most professionals resist video for entirely predictable reasons. They are busy. They do not enjoy being on camera. They worry about compliance. They tried it once, posted three videos, saw no results, and concluded that video does not work for their practice. The reality is that video works exceptionally well for professional services -- but only when it is executed consistently and strategically. Sporadic posting produces sporadic results.
       </p>
       <p>
-        This guide covers how professionals across legal, medical, and financial services are using video marketing -- and specifically <Link href="/learn/ai-video-creation">AI video generation</Link> -- to build authority, generate leads, and grow their practices without sacrificing billable hours to a camera and editing software.
+        This guide covers how professionals across legal, medical, and financial services are using video marketing -- and specifically <Link href="/ai-video-creation">AI video generation</Link> -- to build authority, generate leads, and grow their practices without sacrificing billable hours to a camera and editing software.
       </p>
 
       <h2 id="unique-challenges">Unique Challenges for Regulated Professionals</h2>
@@ -33,13 +33,13 @@ export function PillarContent() {
 
       <h3>Regulatory and Compliance Constraints</h3>
       <p>
-        <Link href="/learn/ai-video-professional-services/video-marketing-for-lawyers">Attorneys</Link> must navigate bar association advertising rules that vary by state. Some jurisdictions require specific disclaimers. Others restrict the types of claims that can be made in advertising. Making a video that says "We win 95% of our cases" might be factually accurate but could violate ethical advertising rules in your jurisdiction.
+        <Link href="/ai-video-professional-services/video-marketing-for-lawyers">Attorneys</Link> must navigate bar association advertising rules that vary by state. Some jurisdictions require specific disclaimers. Others restrict the types of claims that can be made in advertising. Making a video that says "We win 95% of our cases" might be factually accurate but could violate ethical advertising rules in your jurisdiction.
       </p>
       <p>
-        <Link href="/learn/ai-video-professional-services/video-marketing-for-doctors">Doctors and healthcare providers</Link> must consider HIPAA regulations when discussing patient outcomes, even in generalized terms. They must avoid making diagnostic claims in content that could be interpreted as medical advice. And they need to be careful about before-and-after imagery, which is regulated differently across specialties and states.
+        <Link href="/ai-video-professional-services/video-marketing-for-doctors">Doctors and healthcare providers</Link> must consider HIPAA regulations when discussing patient outcomes, even in generalized terms. They must avoid making diagnostic claims in content that could be interpreted as medical advice. And they need to be careful about before-and-after imagery, which is regulated differently across specialties and states.
       </p>
       <p>
-        <Link href="/learn/ai-video-professional-services/video-marketing-for-advisors">Financial advisors</Link> operate under SEC, FINRA, or state regulatory oversight depending on their registration. Every piece of marketing content may need compliance review and archival. Performance claims require specific disclosures. And the line between education and advice can create liability if not managed carefully.
+        <Link href="/ai-video-professional-services/video-marketing-for-advisors">Financial advisors</Link> operate under SEC, FINRA, or state regulatory oversight depending on their registration. Every piece of marketing content may need compliance review and archival. Performance claims require specific disclosures. And the line between education and advice can create liability if not managed carefully.
       </p>
       <p>
         These constraints do not make video marketing impossible -- they make it require more thoughtful execution. The professionals who succeed with video are the ones who build compliance into their content workflow from the beginning, not as an afterthought.
@@ -58,7 +58,7 @@ export function PillarContent() {
         The fundamental tension in professional services video marketing is that the people who need to be on camera are the same people whose time is most valuable. An attorney billing $500 per hour cannot justify spending four hours per week filming and editing video content. A surgeon cannot block operating room time for a content shoot. A financial advisor managing $100 million in AUM cannot afford to spend half a day per week on production.
       </p>
       <p>
-        This is the exact problem that AI video generation solves. By separating the intellectual contribution (reviewing and approving scripts) from the production work (filming, editing, publishing), AI video lets professionals maintain a daily content presence while spending only 15-20 minutes per day on review. The <Link href="/learn/ai-video-creation/how-ai-video-works">AI video pipeline</Link> handles everything from character animation to platform-specific formatting.
+        This is the exact problem that AI video generation solves. By separating the intellectual contribution (reviewing and approving scripts) from the production work (filming, editing, publishing), AI video lets professionals maintain a daily content presence while spending only 15-20 minutes per day on review. The <Link href="/ai-video-creation/how-ai-video-works">AI video pipeline</Link> handles everything from character animation to platform-specific formatting.
       </p>
 
       <h2 id="ai-video-advantage">The AI Video Advantage for Professional Services</h2>
@@ -99,7 +99,7 @@ export function PillarContent() {
         <Link href="/for/attorneys">Attorneys</Link> see the highest ROI from educational content that answers questions potential clients are already asking. "What should I do after a car accident?" "How does child custody work in [state]?" "Can I sue my landlord for mold?" These are high-intent searches, and a short video that answers the question while positioning you as the expert drives consultation bookings more effectively than any other marketing channel.
       </p>
       <p>
-        The most successful law firm video strategies focus on practice-area-specific content published to TikTok, Instagram Reels, and YouTube Shorts for consumer-facing practices, and LinkedIn for B2B practices like corporate law or employment defense. Read the complete <Link href="/learn/ai-video-professional-services/video-marketing-for-lawyers">video marketing guide for lawyers</Link> for detailed strategies by practice area.
+        The most successful law firm video strategies focus on practice-area-specific content published to TikTok, Instagram Reels, and YouTube Shorts for consumer-facing practices, and LinkedIn for B2B practices like corporate law or employment defense. Read the complete <Link href="/ai-video-professional-services/video-marketing-for-lawyers">video marketing guide for lawyers</Link> for detailed strategies by practice area.
       </p>
 
       <h3>Medical Video Marketing</h3>
@@ -107,7 +107,7 @@ export function PillarContent() {
         <Link href="/for/doctors">Doctors and healthcare providers</Link> build patient trust most effectively through educational content that demystifies conditions, procedures, and treatment options. A dermatologist explaining the difference between retinol and tretinoin. An orthopedic surgeon walking through what to expect before and after knee replacement. A pediatrician addressing common concerns about childhood vaccinations.
       </p>
       <p>
-        Medical video marketing requires particular attention to accuracy and tone. Content should educate without diagnosing, inform without creating anxiety, and build trust without making promises. The <Link href="/learn/ai-video-professional-services/video-marketing-for-doctors">complete guide to video marketing for doctors</Link> covers HIPAA considerations, content frameworks, and distribution strategies specific to healthcare.
+        Medical video marketing requires particular attention to accuracy and tone. Content should educate without diagnosing, inform without creating anxiety, and build trust without making promises. The <Link href="/ai-video-professional-services/video-marketing-for-doctors">complete guide to video marketing for doctors</Link> covers HIPAA considerations, content frameworks, and distribution strategies specific to healthcare.
       </p>
 
       <h3>Financial Advisor Video Marketing</h3>
@@ -115,7 +115,7 @@ export function PillarContent() {
         <Link href="/for/advisors">Financial advisors</Link> compete in a market where most prospects cannot distinguish between advisors based on credentials alone. Video is the differentiator -- it lets prospects evaluate your communication style, expertise, and personality before committing to a meeting. Advisors who post consistent video content on LinkedIn report significantly higher inbound AUM inquiries than those who rely on text-only content.
       </p>
       <p>
-        The most effective financial advisor video content includes market commentary (timely), retirement planning tips (evergreen), and myth-busting (engaging). The <Link href="/learn/ai-video-professional-services/video-marketing-for-advisors">financial advisor video marketing guide</Link> covers compliance-friendly content strategies, LinkedIn optimization, and thought leadership frameworks.
+        The most effective financial advisor video content includes market commentary (timely), retirement planning tips (evergreen), and myth-busting (engaging). The <Link href="/ai-video-professional-services/video-marketing-for-advisors">financial advisor video marketing guide</Link> covers compliance-friendly content strategies, LinkedIn optimization, and thought leadership frameworks.
       </p>
 
       <h2 id="getting-started">Getting Started With Video Marketing for Professional Services</h2>
@@ -135,7 +135,7 @@ export function PillarContent() {
 
       <h3>Month 2-3: Build Consistency</h3>
       <p>
-        Increase to 3-5 videos per week. Develop a <Link href="/learn/social-media-video-strategy/content-calendar-strategy">content calendar</Link> that balances timely commentary with evergreen educational content. Monitor which topics generate the most engagement and consultation requests, then produce more content on those themes.
+        Increase to 3-5 videos per week. Develop a <Link href="/social-media-video-strategy/content-calendar-strategy">content calendar</Link> that balances timely commentary with evergreen educational content. Monitor which topics generate the most engagement and consultation requests, then produce more content on those themes.
       </p>
 
       <h3>Month 4+: Scale and Optimize</h3>
@@ -146,7 +146,7 @@ export function PillarContent() {
         The professionals who see the strongest results from video marketing are the ones who treat it as a long-term practice development strategy, not a short-term experiment. Consistency compounds. A library of 200 videos working for you around the clock is worth more than any single viral hit. <Link href="/demo">Schedule a demo</Link> to see how AI video can work for your specific practice.
       </p>
       <p>
-        For detailed strategies tailored to your profession, explore our guides on <Link href="/learn/ai-video-professional-services/video-marketing-for-lawyers">video marketing for lawyers</Link>, <Link href="/learn/ai-video-professional-services/video-marketing-for-doctors">video marketing for doctors</Link>, and <Link href="/learn/ai-video-professional-services/video-marketing-for-advisors">video marketing for financial advisors</Link>. For content inspiration, see our collection of <Link href="/learn/ai-video-professional-services/legal-video-content-ideas">legal video content ideas</Link> and our guide to <Link href="/learn/ai-video-professional-services/building-authority-with-video">building professional authority with video</Link>.
+        For detailed strategies tailored to your profession, explore our guides on <Link href="/ai-video-professional-services/video-marketing-for-lawyers">video marketing for lawyers</Link>, <Link href="/ai-video-professional-services/video-marketing-for-doctors">video marketing for doctors</Link>, and <Link href="/ai-video-professional-services/video-marketing-for-advisors">video marketing for financial advisors</Link>. For content inspiration, see our collection of <Link href="/ai-video-professional-services/legal-video-content-ideas">legal video content ideas</Link> and our guide to <Link href="/ai-video-professional-services/building-authority-with-video">building professional authority with video</Link>.
       </p>
     </>
   );
@@ -188,7 +188,7 @@ export const subTopicContent: Record<string, () => ReactElement> = {
           <strong>Estate planning</strong> videos drive consultations by highlighting the consequences of not having a plan -- what happens when you die without a will, how probate works, and who makes medical decisions if you are incapacitated. <strong>Business law</strong> videos targeting other professionals perform well on LinkedIn, covering topics like LLC vs. corporation, contract essentials, and employer liability.
         </p>
         <p>
-          For a comprehensive list organized by practice area and funnel stage, see our guide to <Link href="/learn/ai-video-professional-services/legal-video-content-ideas">legal video content ideas</Link>.
+          For a comprehensive list organized by practice area and funnel stage, see our guide to <Link href="/ai-video-professional-services/legal-video-content-ideas">legal video content ideas</Link>.
         </p>
 
         <h2>Ethical Advertising Considerations</h2>
@@ -227,7 +227,7 @@ export const subTopicContent: Record<string, () => ReactElement> = {
 
         <h3>Authenticity Over Production Value</h3>
         <p>
-          Lawyers sometimes hesitate to use video because they feel their content needs to look like a television commercial. The opposite is true. Viewers on social media distrust overly polished, obviously produced content. They respond to authenticity -- a knowledgeable professional speaking directly about a topic they understand deeply. The <Link href="/learn/ai-video-creation/multi-cut-video-editing">multi-cut editing method</Link> produces videos that feel professional without feeling corporate, striking the right balance for trust-building.
+          Lawyers sometimes hesitate to use video because they feel their content needs to look like a television commercial. The opposite is true. Viewers on social media distrust overly polished, obviously produced content. They respond to authenticity -- a knowledgeable professional speaking directly about a topic they understand deeply. The <Link href="/ai-video-creation/multi-cut-video-editing">multi-cut editing method</Link> produces videos that feel professional without feeling corporate, striking the right balance for trust-building.
         </p>
 
         <h2>Platform Strategy for Law Firms</h2>
@@ -388,7 +388,7 @@ export const subTopicContent: Record<string, () => ReactElement> = {
           For <Link href="/for/doctors">doctors ready to start building their video presence</Link>, the process begins with identifying the 20 questions your patients ask most frequently. Each question becomes a video. AI video generation handles the production, and your role is reviewing scripts for clinical accuracy. The result is a growing library of educational content that builds patient trust and drives appointment bookings around the clock. <Link href="/demo">See how it works</Link>.
         </p>
         <p>
-          To understand the broader strategy of using video to establish yourself as a recognized authority in your specialty, read our guide on <Link href="/learn/ai-video-professional-services/building-authority-with-video">building professional authority with video</Link>.
+          To understand the broader strategy of using video to establish yourself as a recognized authority in your specialty, read our guide on <Link href="/ai-video-professional-services/building-authority-with-video">building professional authority with video</Link>.
         </p>
       </>
     );
@@ -502,7 +502,7 @@ export const subTopicContent: Record<string, () => ReactElement> = {
           Thought leadership video is a long-term play. The advisor who publishes consistent, thoughtful video content for two years builds a professional reputation that cannot be replicated quickly. New competitors entering the market face a massive content gap. Existing competitors who are not creating video content fall further behind with each passing month. This compounding advantage is what makes video marketing a strategic investment rather than a tactical experiment.
         </p>
         <p>
-          For a deeper exploration of how to build lasting professional authority through video, read our comprehensive guide on <Link href="/learn/ai-video-professional-services/building-authority-with-video">building professional authority with video</Link>. For advisors ready to start, <Link href="/for/advisors">explore how AI video works for financial advisory practices</Link> or <Link href="/demo">schedule a demo</Link> to see the platform in action.
+          For a deeper exploration of how to build lasting professional authority through video, read our comprehensive guide on <Link href="/ai-video-professional-services/building-authority-with-video">building professional authority with video</Link>. For advisors ready to start, <Link href="/for/advisors">explore how AI video works for financial advisory practices</Link> or <Link href="/demo">schedule a demo</Link> to see the platform in action.
         </p>
       </>
     );
@@ -519,7 +519,7 @@ export const subTopicContent: Record<string, () => ReactElement> = {
           The challenge most law firms face is not the willingness to create video content -- it is figuring out what to make videos about. After filming a few obvious topics, many attorneys run out of ideas and stop producing content. This guide solves that problem with over 50 legal video content ideas organized by practice area, content type, and marketing funnel stage. Each idea can be produced as a short-form video (30-60 seconds for TikTok, Instagram Reels, and YouTube Shorts) or expanded into longer-form content (3-10 minutes for YouTube).
         </p>
         <p>
-          With <Link href="/learn/ai-video-creation">AI video generation</Link>, each of these ideas can be turned into a finished video in minutes rather than hours. The bottleneck is no longer production -- it is topic selection and script review. This guide removes the topic selection bottleneck entirely.
+          With <Link href="/ai-video-creation">AI video generation</Link>, each of these ideas can be turned into a finished video in minutes rather than hours. The bottleneck is no longer production -- it is topic selection and script review. This guide removes the topic selection bottleneck entirely.
         </p>
 
         <h2>Personal Injury Content Ideas</h2>
@@ -725,7 +725,7 @@ export const subTopicContent: Record<string, () => ReactElement> = {
           Then repeat. Every week, select the next set of topics. Over time, you build a library that covers every question a potential client might have. That library becomes a 24/7 lead generation asset that no amount of paid advertising can replicate.
         </p>
         <p>
-          For the broader strategy of how to use video to position yourself as a trusted authority, read our guide on <Link href="/learn/ai-video-professional-services/building-authority-with-video">building professional authority with video</Link>. For details on how <Link href="/learn/ai-video-creation">AI video generation</Link> makes it possible to produce this volume of content without blocking out days for filming, explore the complete guide. And when you are ready to start building your content library, <Link href="/for/attorneys">see how the platform works for law firms</Link>.
+          For the broader strategy of how to use video to position yourself as a trusted authority, read our guide on <Link href="/ai-video-professional-services/building-authority-with-video">building professional authority with video</Link>. For details on how <Link href="/ai-video-creation">AI video generation</Link> makes it possible to produce this volume of content without blocking out days for filming, explore the complete guide. And when you are ready to start building your content library, <Link href="/for/attorneys">see how the platform works for law firms</Link>.
         </p>
       </>
     );
@@ -859,7 +859,7 @@ export const subTopicContent: Record<string, () => ReactElement> = {
           <strong>Media and speaking invitations:</strong> When industry publications, podcasts, and conference organizers contact you, your authority has extended beyond your direct audience to the broader professional ecosystem.
         </p>
         <p>
-          Building professional authority with video is the single most impactful long-term investment a professional can make in their practice development. The professionals who start now will own their market's attention for years to come. For industry-specific strategies, explore our guides on <Link href="/learn/ai-video-professional-services/video-marketing-for-lawyers">video marketing for lawyers</Link>, <Link href="/learn/ai-video-professional-services/video-marketing-for-doctors">video marketing for doctors</Link>, and <Link href="/learn/ai-video-professional-services/video-marketing-for-advisors">video marketing for financial advisors</Link>. To see how AI video makes consistent publishing feasible for busy professionals, <Link href="/demo">schedule a demo</Link>.
+          Building professional authority with video is the single most impactful long-term investment a professional can make in their practice development. The professionals who start now will own their market's attention for years to come. For industry-specific strategies, explore our guides on <Link href="/ai-video-professional-services/video-marketing-for-lawyers">video marketing for lawyers</Link>, <Link href="/ai-video-professional-services/video-marketing-for-doctors">video marketing for doctors</Link>, and <Link href="/ai-video-professional-services/video-marketing-for-advisors">video marketing for financial advisors</Link>. To see how AI video makes consistent publishing feasible for busy professionals, <Link href="/demo">schedule a demo</Link>.
         </p>
       </>
     );

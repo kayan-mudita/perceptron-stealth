@@ -160,12 +160,12 @@ const learnLinks: NavLink[] = [
 ];
 
 const topicLinks: NavLink[] = [
-  { label: "AI Video Creation", href: "/learn/ai-video-creation", icon: Video },
-  { label: "Video Marketing", href: "/learn/video-marketing-professionals", icon: BarChart3 },
-  { label: "Social Media Video", href: "/learn/social-media-video-strategy", icon: Share2 },
-  { label: "Real Estate Video", href: "/learn/ai-video-real-estate", icon: Home },
-  { label: "Professional Services", href: "/learn/ai-video-professional-services", icon: Briefcase },
-  { label: "Content at Scale", href: "/learn/ai-content-at-scale", icon: Layers },
+  { label: "AI Video Creation", href: "/ai-video-creation", icon: Video },
+  { label: "Video Marketing", href: "/video-marketing-professionals", icon: BarChart3 },
+  { label: "Social Media Video", href: "/social-media-video-strategy", icon: Share2 },
+  { label: "Real Estate Video", href: "/ai-video-real-estate", icon: Home },
+  { label: "Professional Services", href: "/ai-video-professional-services", icon: Briefcase },
+  { label: "Content at Scale", href: "/ai-content-at-scale", icon: Layers },
 ];
 
 // ─── Helpers ───────────────────────────────────────────────────────
@@ -285,7 +285,7 @@ export default function Navbar() {
     pathname === "/blog" ||
     pathname.startsWith("/blog/") ||
     pathname === "/learn" ||
-    pathname.startsWith("/learn/") ||
+    pathname.startsWith("/") ||
     pathname === "/tools" ||
     pathname.startsWith("/tools/");
 

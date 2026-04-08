@@ -81,7 +81,7 @@ export default function BatchVideoWorkflowClient() {
       <p>
         This is where AI transforms the workflow. With traditional video, 30 videos would
         take weeks of filming and editing. With AI{" "}
-        <Link href="/learn/ai-content-at-scale/batch-video-creation">
+        <Link href="/ai-content-at-scale/batch-video-creation">
           batch video creation
         </Link>
         , you upload your scripts, select your AI twin, and generate all 30 in a single
@@ -129,12 +129,12 @@ export default function BatchVideoWorkflowClient() {
       </p>
       <p>
         For the complete{" "}
-        <Link href="/learn/ai-content-at-scale/ai-content-repurposing">
+        <Link href="/ai-content-at-scale/ai-content-repurposing">
           AI content repurposing guide
         </Link>
         , see our pillar on scaling content. And if you want to understand how batching fits
         into a broader content consistency strategy, read our guide on{" "}
-        <Link href="/learn/ai-content-at-scale/content-consistency">
+        <Link href="/ai-content-at-scale/content-consistency">
           content consistency for brand building
         </Link>
         .

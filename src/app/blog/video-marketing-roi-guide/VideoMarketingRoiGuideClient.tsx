@@ -102,7 +102,7 @@ export default function VideoMarketingRoiGuideClient() {
       <h2>Which metrics actually matter</h2>
       <p>
         For a deeper breakdown of the specific{" "}
-        <Link href="/learn/video-marketing-professionals/video-marketing-metrics">
+        <Link href="/video-marketing-professionals/video-marketing-metrics">
           video marketing metrics that matter
         </Link>
         , we have a dedicated guide. But here is the short version: focus on cost per lead
@@ -120,7 +120,7 @@ export default function VideoMarketingRoiGuideClient() {
       </p>
       <p>
         This is why the{" "}
-        <Link href="/learn/video-marketing-professionals/video-marketing-roi">
+        <Link href="/video-marketing-professionals/video-marketing-roi">
           full ROI picture
         </Link>{" "}
         only becomes clear when you measure over quarters, not weeks. The professionals who
@@ -138,7 +138,7 @@ export default function VideoMarketingRoiGuideClient() {
       <p>
         For the complete strategy on building and measuring a video marketing program, see
         our{" "}
-        <Link href="/learn/video-marketing-professionals">
+        <Link href="/video-marketing-professionals">
           guide to video marketing for professionals
         </Link>
         .

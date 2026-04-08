@@ -23,7 +23,7 @@ export function PillarContent() {
         The professionals who benefit most from AI content creation at scale are those whose businesses depend on trust and visibility: <Link href="/for/attorneys">attorneys</Link>, <Link href="/for/doctors">doctors</Link>, <Link href="/for/realtors">real estate agents</Link>, and <Link href="/for/advisors">financial advisors</Link>. These are professionals who know that content builds authority, but who have historically been unable to produce enough of it because their primary job is serving clients, not creating media.
       </p>
       <p>
-        AI changes the equation. A solo practitioner can now maintain the content output of a team with a full-time videographer, writer, and social media manager. The technology has matured to the point where <Link href="/learn/ai-video-creation">AI-generated video</Link> is indistinguishable from traditionally produced content for most viewers, and AI-assisted writing produces drafts that need light editing rather than complete rewrites.
+        AI changes the equation. A solo practitioner can now maintain the content output of a team with a full-time videographer, writer, and social media manager. The technology has matured to the point where <Link href="/ai-video-creation">AI-generated video</Link> is indistinguishable from traditionally produced content for most viewers, and AI-assisted writing produces drafts that need light editing rather than complete rewrites.
       </p>
 
       <h2 id="why-volume-matters">Why Volume Matters for Growth</h2>
@@ -34,7 +34,7 @@ export function PillarContent() {
         The math is straightforward. If you post once per week, your content has seven chances per month to reach new people. If you post daily, you have thirty chances. More importantly, daily posting triggers algorithmic rewards: platforms show your content to more of your existing followers, recommend it to new audiences more frequently, and give your account higher authority scores in their ranking systems.
       </p>
       <p>
-        This is why <Link href="/learn/ai-content-at-scale/content-consistency">content consistency</Link> beats one-off virality for professionals building long-term practices. A single viral video might generate a spike of attention, but it does not build the sustained trust that converts followers into clients. Daily visibility does. When someone sees your face and hears your perspective every day for three months, you become the default expert in their mind for your area of practice.
+        This is why <Link href="/ai-content-at-scale/content-consistency">content consistency</Link> beats one-off virality for professionals building long-term practices. A single viral video might generate a spike of attention, but it does not build the sustained trust that converts followers into clients. Daily visibility does. When someone sees your face and hears your perspective every day for three months, you become the default expert in their mind for your area of practice.
       </p>
       <p>
         The challenge has never been understanding that more content equals more growth. The challenge has been producing that content without burning out or hiring a full production team. AI content creation at scale solves this production problem directly.
@@ -66,12 +66,12 @@ export function PillarContent() {
         The production layer is where AI does the heavy lifting. From your input, the system generates multiple content assets: video scripts, blog outlines, social media captions, and email content. Each asset is formatted for its target platform and optimized for engagement on that specific channel.
       </p>
       <p>
-        <Link href="/learn/ai-video-creation/how-ai-video-works">AI video generation</Link> produces ready-to-publish video from scripts and your digital avatar. AI writing tools produce drafts that capture your voice and expertise. The key is that all of these outputs trace back to your original input -- they represent your ideas, produced at scale.
+        <Link href="/ai-video-creation/how-ai-video-works">AI video generation</Link> produces ready-to-publish video from scripts and your digital avatar. AI writing tools produce drafts that capture your voice and expertise. The key is that all of these outputs trace back to your original input -- they represent your ideas, produced at scale.
       </p>
 
       <h3>The Repurposing Layer: Multiply Every Idea</h3>
       <p>
-        The most efficient content engines do not create every piece of content from scratch. Instead, they use <Link href="/learn/ai-content-at-scale/ai-content-repurposing">content repurposing</Link> to turn one core idea into ten or more distinct assets. A single video becomes a blog post, a LinkedIn carousel, three Twitter posts, an email newsletter segment, and an Instagram Reel -- each reformatted and optimized for its platform, but all derived from the same core message.
+        The most efficient content engines do not create every piece of content from scratch. Instead, they use <Link href="/ai-content-at-scale/ai-content-repurposing">content repurposing</Link> to turn one core idea into ten or more distinct assets. A single video becomes a blog post, a LinkedIn carousel, three Twitter posts, an email newsletter segment, and an Instagram Reel -- each reformatted and optimized for its platform, but all derived from the same core message.
       </p>
       <p>
         Repurposing is where AI content creation at scale becomes truly powerful. Without AI, repurposing is tedious manual work. With AI, it is automatic -- one input generates a cascade of outputs across every channel you publish on.
@@ -92,12 +92,12 @@ export function PillarContent() {
         Many professionals start by assembling a stack of individual tools -- one for video generation, one for writing, one for scheduling, one for analytics. This approach creates friction at every handoff point and makes it difficult to maintain consistency across content types. An integrated platform that handles the full pipeline from ideation through publication reduces friction, improves consistency, and is significantly easier to maintain.
       </p>
       <p>
-        The ideal platform handles script generation, <Link href="/learn/ai-video-creation/voice-cloning-for-video">voice cloning</Link>, video generation, text content creation, multi-platform formatting, scheduling, and performance analytics in a single workflow. This integration is what makes daily publishing sustainable rather than overwhelming.
+        The ideal platform handles script generation, <Link href="/ai-video-creation/voice-cloning-for-video">voice cloning</Link>, video generation, text content creation, multi-platform formatting, scheduling, and performance analytics in a single workflow. This integration is what makes daily publishing sustainable rather than overwhelming.
       </p>
 
       <h3>The Batch Production Workflow</h3>
       <p>
-        The most time-efficient approach to scaled content is <Link href="/learn/ai-content-at-scale/batch-video-creation">batch production</Link> -- creating a week or even a month of content in a single focused session. Rather than creating one video per day (which requires daily context-switching), you batch-produce all of your content in one or two sessions per week, then schedule it for automated distribution.
+        The most time-efficient approach to scaled content is <Link href="/ai-content-at-scale/batch-video-creation">batch production</Link> -- creating a week or even a month of content in a single focused session. Rather than creating one video per day (which requires daily context-switching), you batch-produce all of your content in one or two sessions per week, then schedule it for automated distribution.
       </p>
       <p>
         Batch production works because it eliminates startup costs. Every time you switch from client work to content creation, there is a mental transition period. Batching consolidates that transition into a single event, making the per-piece time cost dramatically lower.
@@ -134,7 +134,7 @@ export function PillarContent() {
         Give any content strategy at least 60-90 days before making major changes. Algorithms need time to learn your publishing patterns, and audiences need time to discover and form habits around your content. Premature pivots -- changing your approach after two weeks of underwhelming results -- prevent you from ever reaching the compounding phase where scaled content creation delivers its strongest returns.
       </p>
       <p>
-        The professionals who see the strongest results with AI content creation at scale are those who commit to the system, publish consistently, review their data monthly, and make incremental adjustments rather than wholesale pivots. The <Link href="/learn/ai-content-at-scale/scaling-personal-brand">scaling your personal brand guide</Link> covers the strategic framework for building this kind of sustained content presence.
+        The professionals who see the strongest results with AI content creation at scale are those who commit to the system, publish consistently, review their data monthly, and make incremental adjustments rather than wholesale pivots. The <Link href="/ai-content-at-scale/scaling-personal-brand">scaling your personal brand guide</Link> covers the strategic framework for building this kind of sustained content presence.
       </p>
       <p>
         Ready to see how AI content creation at scale works in practice? <Link href="/demo">Request a demo</Link> to explore how the platform handles the full pipeline from ideation through multi-platform distribution.
@@ -155,7 +155,7 @@ export const subTopicContent: Record<string, () => ReactElement> = {
           The economics of repurposing are compelling. Creating one piece of original content requires the most effort -- developing the idea, structuring the argument, capturing your unique perspective. Transforming that content into additional formats requires significantly less effort because the intellectual work is already done. AI reduces the transformation effort to near zero, which means the marginal cost of each additional piece of content approaches nothing while the marginal reach continues to increase.
         </p>
         <p>
-          For professionals managing <Link href="/learn/ai-content-at-scale">AI content creation at scale</Link>, repurposing is not optional. It is the core strategy that makes daily multi-platform publishing sustainable without requiring daily content creation from scratch.
+          For professionals managing <Link href="/ai-content-at-scale">AI content creation at scale</Link>, repurposing is not optional. It is the core strategy that makes daily multi-platform publishing sustainable without requiring daily content creation from scratch.
         </p>
 
         <h2>The One-to-Ten Framework</h2>
@@ -224,7 +224,7 @@ export const subTopicContent: Record<string, () => ReactElement> = {
 
         <h3>Batch Repurposing Sessions</h3>
         <p>
-          Many professionals combine repurposing with <Link href="/learn/ai-content-at-scale/batch-video-creation">batch content creation</Link>. In a single session, you create 5-7 core assets and then run the entire batch through the repurposing pipeline. This produces 50-70 individual content pieces from a single working session -- enough content to sustain daily multi-platform publishing for one to two weeks.
+          Many professionals combine repurposing with <Link href="/ai-content-at-scale/batch-video-creation">batch content creation</Link>. In a single session, you create 5-7 core assets and then run the entire batch through the repurposing pipeline. This produces 50-70 individual content pieces from a single working session -- enough content to sustain daily multi-platform publishing for one to two weeks.
         </p>
 
         <h2>Distribution Strategy for Repurposed Content</h2>
@@ -247,7 +247,7 @@ export const subTopicContent: Record<string, () => ReactElement> = {
           One common concern with repurposing is that audiences who follow you on multiple platforms will see the same content repeated. In practice, this is rarely a problem for two reasons. First, most followers only see a fraction of your content on any given platform due to algorithmic filtering. Second, format translation means the same idea looks and feels different across platforms -- a 60-second TikTok and a 1,200-word blog post deliver the same insight but through entirely different experiences.
         </p>
         <p>
-          The real risk is not repetition -- it is inconsistency. Audiences who encounter your content across multiple platforms should recognize a consistent voice, perspective, and quality level. <Link href="/learn/ai-content-at-scale/content-consistency">Content consistency</Link> across repurposed assets is what builds brand recognition regardless of which platform someone discovers you on.
+          The real risk is not repetition -- it is inconsistency. Audiences who encounter your content across multiple platforms should recognize a consistent voice, perspective, and quality level. <Link href="/ai-content-at-scale/content-consistency">Content consistency</Link> across repurposed assets is what builds brand recognition regardless of which platform someone discovers you on.
         </p>
 
         <h2>Measuring Repurposing Effectiveness</h2>
@@ -258,7 +258,7 @@ export const subTopicContent: Record<string, () => ReactElement> = {
           Also track the aggregate performance of each core idea across all its derivatives. Some topics resonate across every platform and format, while others perform well in one context but not others. This insight helps you choose better topics for future core assets and refine your overall content strategy.
         </p>
         <p>
-          The <Link href="/learn/ai-content-at-scale/scaling-personal-brand">scaling your personal brand guide</Link> covers how repurposing fits into the broader strategy of using AI to build professional authority at scale.
+          The <Link href="/ai-content-at-scale/scaling-personal-brand">scaling your personal brand guide</Link> covers how repurposing fits into the broader strategy of using AI to build professional authority at scale.
         </p>
       </>
     );
@@ -275,7 +275,7 @@ export const subTopicContent: Record<string, () => ReactElement> = {
           The core problem batch creation solves is context-switching. Every time you shift from client work to content creation, there is a startup cost -- mentally transitioning, logging into tools, reviewing your content calendar, finding your creative rhythm. When you create content one piece at a time, you pay this startup cost every single day. When you batch, you pay it once per session and amortize it across ten, twenty, or thirty pieces of content.
         </p>
         <p>
-          Professionals who adopt batch video creation workflows consistently report that their total time spent on content decreases by 50-70% compared to daily production, while their output volume increases. The combination of less time and more content is what makes <Link href="/learn/ai-content-at-scale">AI content creation at scale</Link> viable for busy professionals.
+          Professionals who adopt batch video creation workflows consistently report that their total time spent on content decreases by 50-70% compared to daily production, while their output volume increases. The combination of less time and more content is what makes <Link href="/ai-content-at-scale">AI content creation at scale</Link> viable for busy professionals.
         </p>
 
         <h2>The Batch Production Framework</h2>
@@ -307,7 +307,7 @@ export const subTopicContent: Record<string, () => ReactElement> = {
 
         <h3>Phase 3: Video Generation (Automated)</h3>
         <p>
-          Once scripts are approved, video generation happens automatically. The <Link href="/learn/ai-video-creation/how-ai-video-works">AI video pipeline</Link> takes each approved script, generates the audio using your cloned voice, creates multi-cut video clips using your digital avatar, and assembles each into a finished, platform-optimized video.
+          Once scripts are approved, video generation happens automatically. The <Link href="/ai-video-creation/how-ai-video-works">AI video pipeline</Link> takes each approved script, generates the audio using your cloned voice, creates multi-cut video clips using your digital avatar, and assembles each into a finished, platform-optimized video.
         </p>
         <p>
           Because generation is automated, you do not need to be present during this phase. You can approve scripts at the end of a Monday morning session and have all seven videos ready for review by Monday afternoon. This asynchronous production is a key advantage of AI-powered batch creation -- the AI works in parallel on all your videos while you return to client work.
@@ -346,7 +346,7 @@ export const subTopicContent: Record<string, () => ReactElement> = {
           Once you are comfortable with weekly batching, the natural next step is monthly batching. Creating 25-30 videos in a single session requires more upfront planning but delivers even greater efficiency gains.
         </p>
         <p>
-          Monthly batching works best when you have a <Link href="/learn/ai-content-at-scale/content-consistency">consistent content framework</Link> that you can apply week over week. If each week follows the same structural template (tip on Monday, case study on Wednesday, FAQ on Friday), monthly batching simply means filling in 4-5 versions of each template for the coming month.
+          Monthly batching works best when you have a <Link href="/ai-content-at-scale/content-consistency">consistent content framework</Link> that you can apply week over week. If each week follows the same structural template (tip on Monday, case study on Wednesday, FAQ on Friday), monthly batching simply means filling in 4-5 versions of each template for the coming month.
         </p>
         <p>
           The main challenge with monthly batching is time-sensitivity. Content about current events or breaking news cannot be batched a month in advance. The solution is to batch your evergreen content monthly and leave slots in your schedule for timely content that you produce in smaller, responsive batches. A common split is 70% evergreen (batched monthly) and 30% timely (batched weekly or produced individually).
@@ -366,7 +366,7 @@ export const subTopicContent: Record<string, () => ReactElement> = {
 
         <h3>Repurposing Integration</h3>
         <p>
-          The most efficient batch workflows integrate <Link href="/learn/ai-content-at-scale/ai-content-repurposing">content repurposing</Link> into the batch session. After generating your core video batch, the system automatically produces derivative content -- blog posts, social text posts, carousels, email segments -- from each video. A single batch session that produces seven videos can simultaneously produce 50 or more total content pieces across all formats and platforms.
+          The most efficient batch workflows integrate <Link href="/ai-content-at-scale/ai-content-repurposing">content repurposing</Link> into the batch session. After generating your core video batch, the system automatically produces derivative content -- blog posts, social text posts, carousels, email segments -- from each video. A single batch session that produces seven videos can simultaneously produce 50 or more total content pieces across all formats and platforms.
         </p>
 
         <h2>Common Batch Production Mistakes</h2>
@@ -383,7 +383,7 @@ export const subTopicContent: Record<string, () => ReactElement> = {
           <strong>Ignoring performance data.</strong> Review which batched content performed best before planning your next batch. Let data guide your topic selection and format choices. The difference between a good batch and a great batch is learning from what your audience responds to.
         </p>
         <p>
-          For a detailed comparison of how batch AI video production compares to traditional filming approaches, see the <Link href="/learn/ai-content-at-scale/ai-vs-traditional-video">AI vs traditional video production guide</Link>.
+          For a detailed comparison of how batch AI video production compares to traditional filming approaches, see the <Link href="/ai-content-at-scale/ai-vs-traditional-video">AI vs traditional video production guide</Link>.
         </p>
       </>
     );
@@ -423,7 +423,7 @@ export const subTopicContent: Record<string, () => ReactElement> = {
 
         <h3>Cost Per Video</h3>
         <p>
-          When you calculate cost per video (including time costs valued at your billing rate), the comparison is stark. Traditional production: $200-800 per video. AI production: $5-25 per video. This order-of-magnitude difference is what enables the volume that makes <Link href="/learn/ai-content-at-scale">AI content creation at scale</Link> economically viable.
+          When you calculate cost per video (including time costs valued at your billing rate), the comparison is stark. Traditional production: $200-800 per video. AI production: $5-25 per video. This order-of-magnitude difference is what enables the volume that makes <Link href="/ai-content-at-scale">AI content creation at scale</Link> economically viable.
         </p>
 
         <h2>Quality Comparison</h2>
@@ -449,7 +449,7 @@ export const subTopicContent: Record<string, () => ReactElement> = {
 
         <h3>The Quality Gap Is Closing</h3>
         <p>
-          Two years ago, AI video was immediately recognizable as artificial. Today, using <Link href="/learn/ai-video-creation/multi-cut-video-editing">multi-cut composition</Link> and modern generation models, AI video is difficult to distinguish from traditional video in social media formats. The quality gap continues to narrow with each model generation, and for the specific use case of professional talking-head content on social platforms, the practical quality difference is negligible for most viewers.
+          Two years ago, AI video was immediately recognizable as artificial. Today, using <Link href="/ai-video-creation/multi-cut-video-editing">multi-cut composition</Link> and modern generation models, AI video is difficult to distinguish from traditional video in social media formats. The quality gap continues to narrow with each model generation, and for the specific use case of professional talking-head content on social platforms, the practical quality difference is negligible for most viewers.
         </p>
 
         <h2>Speed Comparison</h2>
@@ -464,7 +464,7 @@ export const subTopicContent: Record<string, () => ReactElement> = {
           AI video production from concept to published video takes minutes to hours. Script generation is instant. Script review takes 2-5 minutes. Video generation takes 5-15 minutes. Review and approval takes 2-5 minutes. Total elapsed time for a single video: 15-30 minutes, most of which is your review time rather than production time.
         </p>
         <p>
-          For <Link href="/learn/ai-content-at-scale/batch-video-creation">batch production</Link>, the speed advantage compounds. Producing 30 videos through traditional production would require multiple full-day filming sessions spread over weeks. Producing 30 videos through AI batch creation requires a single 2-3 hour session for topic planning and script review, followed by automated generation.
+          For <Link href="/ai-content-at-scale/batch-video-creation">batch production</Link>, the speed advantage compounds. Producing 30 videos through traditional production would require multiple full-day filming sessions spread over weeks. Producing 30 videos through AI batch creation requires a single 2-3 hour session for topic planning and script review, followed by automated generation.
         </p>
 
         <h2>Scalability Comparison</h2>
@@ -484,7 +484,7 @@ export const subTopicContent: Record<string, () => ReactElement> = {
 
         <h3>Use AI Video When:</h3>
         <p>
-          You need consistent daily or near-daily content for social media. You need to respond quickly to timely events or trending topics. You are a solo professional who cannot justify hiring a production team. You need multi-platform content in multiple formats from the same source material. You are building a <Link href="/learn/ai-content-at-scale/scaling-personal-brand">personal brand</Link> that requires sustained visibility over months and years.
+          You need consistent daily or near-daily content for social media. You need to respond quickly to timely events or trending topics. You are a solo professional who cannot justify hiring a production team. You need multi-platform content in multiple formats from the same source material. You are building a <Link href="/ai-content-at-scale/scaling-personal-brand">personal brand</Link> that requires sustained visibility over months and years.
         </p>
 
         <h3>The Hybrid Approach</h3>
@@ -536,7 +536,7 @@ export const subTopicContent: Record<string, () => ReactElement> = {
           For maximum impact, daily publishing (5-7 posts per week) is the target. This frequency ensures that your audience encounters your content in their feed nearly every day, which builds the familiarity and trust that drive business outcomes. Platforms also reward daily publishers with better algorithmic distribution because consistent activity signals a valuable, active account.
         </p>
         <p>
-          Daily publishing sounds overwhelming -- and without AI, it is. This is precisely why <Link href="/learn/ai-content-at-scale">AI content creation at scale</Link> has become essential for professionals who want to compete on content. AI eliminates the production bottleneck that makes daily publishing impossible through traditional means.
+          Daily publishing sounds overwhelming -- and without AI, it is. This is precisely why <Link href="/ai-content-at-scale">AI content creation at scale</Link> has become essential for professionals who want to compete on content. AI eliminates the production bottleneck that makes daily publishing impossible through traditional means.
         </p>
 
         <h3>The Minimum Viable Frequency</h3>
@@ -562,7 +562,7 @@ export const subTopicContent: Record<string, () => ReactElement> = {
 
         <h3>Systems Over Willpower</h3>
         <p>
-          Maintaining quality at volume requires systems, not willpower. A content framework that defines your recurring content types, a <Link href="/learn/ai-content-at-scale/batch-video-creation">batch production workflow</Link> that creates content in advance, and a review process that catches errors before publication -- these systems ensure quality without requiring heroic daily effort.
+          Maintaining quality at volume requires systems, not willpower. A content framework that defines your recurring content types, a <Link href="/ai-content-at-scale/batch-video-creation">batch production workflow</Link> that creates content in advance, and a review process that catches errors before publication -- these systems ensure quality without requiring heroic daily effort.
         </p>
         <p>
           When your content system is working, maintaining quality at daily volume feels no different than maintaining quality at weekly volume. Each individual piece goes through the same review process. The difference is that your production system generates five or seven pieces per week instead of one, so your review effort is spread across more content without proportionally increasing.
@@ -596,7 +596,7 @@ export const subTopicContent: Record<string, () => ReactElement> = {
           Consistency applies not just to frequency but to presence across platforms. Your audience exists across LinkedIn, Instagram, TikTok, YouTube, Facebook, and email. Consistent publishing means showing up on all relevant platforms, not just your favorite one.
         </p>
         <p>
-          This is where <Link href="/learn/ai-content-at-scale/ai-content-repurposing">content repurposing</Link> becomes essential. Creating unique content for every platform every day is unsustainable. Creating one core piece and automatically repurposing it across all platforms is sustainable. Your audience on LinkedIn sees a professional text post. Your audience on Instagram sees a short video. Your email subscribers get a summary with additional context. Different formats, same core value, consistent presence everywhere.
+          This is where <Link href="/ai-content-at-scale/ai-content-repurposing">content repurposing</Link> becomes essential. Creating unique content for every platform every day is unsustainable. Creating one core piece and automatically repurposing it across all platforms is sustainable. Your audience on LinkedIn sees a professional text post. Your audience on Instagram sees a short video. Your email subscribers get a summary with additional context. Different formats, same core value, consistent presence everywhere.
         </p>
 
         <h2>Measuring the Impact of Consistency</h2>
@@ -607,7 +607,7 @@ export const subTopicContent: Record<string, () => ReactElement> = {
           The real results emerge at 60-90 days of consistent publishing. By this point, algorithms actively distribute your content to new audiences. Your existing audience has formed a habit of engaging with your content. Your content library is large enough to surface in search results and recommended feeds. And the trust compounding -- the cumulative effect of daily visibility -- begins converting followers into actual business inquiries.
         </p>
         <p>
-          Track your metrics monthly, not daily. Daily metrics fluctuate wildly and encourage premature strategy changes. Monthly metrics reveal trends: is your audience growing? Is engagement increasing? Are you getting more inbound inquiries? These are the signals that your consistency is working. The <Link href="/learn/ai-content-at-scale/scaling-personal-brand">personal brand scaling guide</Link> provides a detailed measurement framework for tracking these outcomes over time.
+          Track your metrics monthly, not daily. Daily metrics fluctuate wildly and encourage premature strategy changes. Monthly metrics reveal trends: is your audience growing? Is engagement increasing? Are you getting more inbound inquiries? These are the signals that your consistency is working. The <Link href="/ai-content-at-scale/scaling-personal-brand">personal brand scaling guide</Link> provides a detailed measurement framework for tracking these outcomes over time.
         </p>
       </>
     );
@@ -645,7 +645,7 @@ export const subTopicContent: Record<string, () => ReactElement> = {
 
         <h3>Layer 1: Content Creation</h3>
         <p>
-          The foundation is <Link href="/learn/ai-content-at-scale">AI content creation at scale</Link>. Your content system should produce daily video and written content that showcases your expertise, perspective, and personality. The content types that build the strongest personal brands include:
+          The foundation is <Link href="/ai-content-at-scale">AI content creation at scale</Link>. Your content system should produce daily video and written content that showcases your expertise, perspective, and personality. The content types that build the strongest personal brands include:
         </p>
         <p>
           <strong>Expertise demonstrations.</strong> Educational content that teaches your audience something valuable -- legal rights they should know, investment principles they should understand, market dynamics that affect their decisions. This content establishes you as an authority.
@@ -668,7 +668,7 @@ export const subTopicContent: Record<string, () => ReactElement> = {
           <strong>LinkedIn</strong> is the primary platform for professional credibility. <Link href="/for/advisors">Financial advisors</Link> and B2B professionals should treat LinkedIn as their home base. <strong>Instagram</strong> and <strong>TikTok</strong> reach broader consumer audiences and are particularly effective for <Link href="/for/attorneys">attorneys</Link> targeting consumers and <Link href="/for/realtors">real estate agents</Link> building local presence. <strong>YouTube</strong> builds long-term search visibility because YouTube videos surface in Google search results. <strong>Email</strong> is the only channel you fully own and control, making it essential for converting social followers into a durable audience relationship.
         </p>
         <p>
-          <Link href="/learn/ai-content-at-scale/ai-content-repurposing">Content repurposing</Link> makes multi-platform distribution sustainable. A single core piece of content automatically becomes platform-optimized versions for every channel in your stack. You maintain presence everywhere without creating unique content for each platform.
+          <Link href="/ai-content-at-scale/ai-content-repurposing">Content repurposing</Link> makes multi-platform distribution sustainable. A single core piece of content automatically becomes platform-optimized versions for every channel in your stack. You maintain presence everywhere without creating unique content for each platform.
         </p>
 
         <h3>Layer 3: Engagement and Community</h3>
@@ -714,10 +714,10 @@ export const subTopicContent: Record<string, () => ReactElement> = {
           Scaling a personal brand with AI is a process, not an event. Here is a practical 90-day plan for professionals starting from zero or near-zero content presence.
         </p>
         <p>
-          <strong>Days 1-7: Foundation.</strong> Set up your AI content tools. Upload reference photos and record voice samples for <Link href="/learn/ai-video-creation">AI video generation</Link>. Define your core topics and content categories. Choose your primary and secondary platforms. Build a content calendar for the first month.
+          <strong>Days 1-7: Foundation.</strong> Set up your AI content tools. Upload reference photos and record voice samples for <Link href="/ai-video-creation">AI video generation</Link>. Define your core topics and content categories. Choose your primary and secondary platforms. Build a content calendar for the first month.
         </p>
         <p>
-          <strong>Days 8-30: Establish cadence.</strong> Publish daily on your primary platform and 3-5 times per week on secondary platforms. Focus on <Link href="/learn/ai-content-at-scale/content-consistency">consistency</Link> over perfection. Build your content buffer to at least one week ahead. Do not obsess over metrics during this phase -- you are building habits and training algorithms.
+          <strong>Days 8-30: Establish cadence.</strong> Publish daily on your primary platform and 3-5 times per week on secondary platforms. Focus on <Link href="/ai-content-at-scale/content-consistency">consistency</Link> over perfection. Build your content buffer to at least one week ahead. Do not obsess over metrics during this phase -- you are building habits and training algorithms.
         </p>
         <p>
           <strong>Days 31-60: Optimize and expand.</strong> Review your first month's performance data. Identify which topics and formats performed best. Double down on what works. Expand your platform presence if bandwidth allows. Start integrating content repurposing to increase total output without increasing input effort.

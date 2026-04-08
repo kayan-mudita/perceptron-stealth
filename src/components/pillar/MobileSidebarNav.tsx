@@ -132,7 +132,7 @@ export default function MobileSidebarNav({
                 return (
                   <li key={st.slug}>
                     <Link
-                      href={`/learn/${pillarSlug}/${st.slug}`}
+                      href={`/${pillarSlug}/${st.slug}`}
                       onClick={() => setOpen(false)}
                       className={`block text-p2 py-2.5 px-3 rounded-lg transition-colors ${
                         isActive
@@ -202,7 +202,7 @@ export default function MobileSidebarNav({
                 {crossLinkPillarSlugs.map((slug) => (
                   <li key={slug}>
                     <Link
-                      href={`/learn/${slug}`}
+                      href={`/${slug}`}
                       onClick={() => setOpen(false)}
                       className="block text-p2 text-white/35 active:text-white/70 py-2 px-3 rounded-lg active:bg-white/[0.04] transition-colors"
                     >

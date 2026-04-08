@@ -45,7 +45,7 @@ export default function PillarPageTemplate({ slug, toc, children }: PillarPageTe
   if (!pillar) return null;
 
   const siteUrl = "https://officialai.com";
-  const pageUrl = `${siteUrl}/learn/${slug}`;
+  const pageUrl = `${siteUrl}/${slug}`;
   const gradient = accentGradients[pillar.accentColor] || accentGradients.blue;
   const badge = accentBadge[pillar.accentColor] || accentBadge.blue;
 
@@ -67,7 +67,7 @@ export default function PillarPageTemplate({ slug, toc, children }: PillarPageTe
     hasPart: pillar.subTopics.map((st) => ({
       "@type": "Article",
       name: st.title,
-      url: `${siteUrl}/learn/${slug}/${st.slug}`,
+      url: `${siteUrl}/${slug}/${st.slug}`,
     })),
   };
 
@@ -179,7 +179,7 @@ export default function PillarPageTemplate({ slug, toc, children }: PillarPageTe
                   {pillar.subTopics.map((st) => (
                     <Link
                       key={st.slug}
-                      href={`/learn/${slug}/${st.slug}`}
+                      href={`/${slug}/${st.slug}`}
                       className="group p-5 rounded-xl card-hairline hover:border-white/[0.12] transition-all"
                     >
                       <h3 className="text-p2 font-medium text-white/70 group-hover:text-white/90 transition-colors mb-1.5">

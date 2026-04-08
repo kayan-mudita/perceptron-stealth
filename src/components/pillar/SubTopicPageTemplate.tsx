@@ -36,7 +36,7 @@ export default function SubTopicPageTemplate({
 
   const { pillar, subTopic, prevSubTopic, nextSubTopic } = result;
   const siteUrl = "https://officialai.com";
-  const pageUrl = `${siteUrl}/learn/${pillarSlug}/${subTopicSlug}`;
+  const pageUrl = `${siteUrl}/${pillarSlug}/${subTopicSlug}`;
   const badge = accentBadge[pillar.accentColor] || accentBadge.blue;
 
   const articleSchema = {
@@ -54,7 +54,7 @@ export default function SubTopicPageTemplate({
     isPartOf: {
       "@type": "Article",
       name: pillar.title,
-      url: `${siteUrl}/learn/${pillarSlug}`,
+      url: `${siteUrl}/${pillarSlug}`,
     },
   };
 
@@ -73,13 +73,13 @@ export default function SubTopicPageTemplate({
               items={[
                 { label: "Home", href: "/" },
                 { label: "Guides", href: "/learn" },
-                { label: pillar.title, href: `/learn/${pillarSlug}` },
+                { label: pillar.title, href: `/${pillarSlug}` },
                 { label: subTopic.title },
               ]}
             />
 
             <Link
-              href={`/learn/${pillarSlug}`}
+              href={`/${pillarSlug}`}
               className={`inline-flex items-center gap-2 px-3 py-1 rounded-full border text-p3 font-medium mb-6 ${badge} hover:opacity-80 transition-opacity`}
             >
               <pillar.icon className="w-3.5 h-3.5" />
@@ -139,7 +139,7 @@ export default function SubTopicPageTemplate({
               <div className="grid grid-cols-2 gap-4 mt-12 pt-8 border-t border-white/[0.06]">
                 {prevSubTopic ? (
                   <Link
-                    href={`/learn/${pillarSlug}/${prevSubTopic.slug}`}
+                    href={`/${pillarSlug}/${prevSubTopic.slug}`}
                     className="group p-4 rounded-xl card-hairline hover:border-white/[0.12] transition-all"
                   >
                     <div className="text-p3 text-white/20 mb-1 flex items-center gap-1">
@@ -154,7 +154,7 @@ export default function SubTopicPageTemplate({
                 )}
                 {nextSubTopic ? (
                   <Link
-                    href={`/learn/${pillarSlug}/${nextSubTopic.slug}`}
+                    href={`/${pillarSlug}/${nextSubTopic.slug}`}
                     className="group p-4 rounded-xl card-hairline hover:border-white/[0.12] transition-all text-right"
                   >
                     <div className="text-p3 text-white/20 mb-1 flex items-center justify-end gap-1">

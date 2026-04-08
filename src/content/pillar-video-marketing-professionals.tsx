@@ -23,7 +23,7 @@ export function PillarContent() {
         Yet most professionals struggle with video marketing — not because they doubt its value, but because traditional video production is expensive, time-consuming, and logistically difficult. Hiring a videographer, scheduling filming sessions, editing footage, and distributing across platforms can consume thousands of dollars and dozens of hours per month. This friction is why the majority of professionals post video sporadically or not at all, creating an enormous opportunity for those who solve the production problem.
       </p>
       <p>
-        Modern <Link href="/learn/ai-video-creation">AI video creation tools</Link> have fundamentally changed this equation. What once required a full production crew can now be accomplished with a script review and an approval click. But the technology is only half the story. The strategy — what to say, where to post it, how to measure results, and how to scale — is what separates professionals who generate real business results from those who post randomly and wonder why nothing happens.
+        Modern <Link href="/ai-video-creation">AI video creation tools</Link> have fundamentally changed this equation. What once required a full production crew can now be accomplished with a script review and an approval click. But the technology is only half the story. The strategy — what to say, where to post it, how to measure results, and how to scale — is what separates professionals who generate real business results from those who post randomly and wonder why nothing happens.
       </p>
 
       <h2 id="building-a-strategy">Building a Video Marketing Strategy</h2>
@@ -31,7 +31,7 @@ export function PillarContent() {
         A video marketing strategy is not a content calendar. It is a system that connects your business objectives to specific video content types, platforms, and metrics. Without a strategy, you are creating content in a vacuum — hoping something sticks rather than engineering predictable results.
       </p>
       <p>
-        The foundation of any effective <Link href="/learn/video-marketing-professionals/video-content-strategy">video content strategy</Link> is understanding your audience's decision journey. Every potential client moves through stages: they become aware of a problem, consider potential solutions, and decide on a provider. Your video content should address each stage with the right message, tone, and call to action.
+        The foundation of any effective <Link href="/video-marketing-professionals/video-content-strategy">video content strategy</Link> is understanding your audience's decision journey. Every potential client moves through stages: they become aware of a problem, consider potential solutions, and decide on a provider. Your video content should address each stage with the right message, tone, and call to action.
       </p>
 
       <h3>Content Pillars</h3>
@@ -52,7 +52,7 @@ export function PillarContent() {
 
       <h3>The Video Marketing Funnel</h3>
       <p>
-        Not all videos serve the same purpose. <Link href="/learn/video-marketing-professionals/video-marketing-funnel">The video marketing funnel</Link> maps specific content types to each stage of the buyer journey. Top-of-funnel videos focus on education and awareness — answering common questions and addressing widespread pain points. Middle-of-funnel videos build credibility and differentiation — showcasing your approach, philosophy, and results. Bottom-of-funnel videos drive action — presenting clear calls to action, consultations, and next steps.
+        Not all videos serve the same purpose. <Link href="/video-marketing-professionals/video-marketing-funnel">The video marketing funnel</Link> maps specific content types to each stage of the buyer journey. Top-of-funnel videos focus on education and awareness — answering common questions and addressing widespread pain points. Middle-of-funnel videos build credibility and differentiation — showcasing your approach, philosophy, and results. Bottom-of-funnel videos drive action — presenting clear calls to action, consultations, and next steps.
       </p>
       <p>
         Professionals who only create one type of video — usually educational top-of-funnel content — attract viewers but struggle to convert them. A complete funnel ensures that you are not just building an audience, but systematically moving that audience toward becoming clients.
@@ -60,13 +60,13 @@ export function PillarContent() {
 
       <h2 id="measuring-performance">Measuring Video Performance</h2>
       <p>
-        The most common mistake in video marketing for business is measuring the wrong things. Views are not a business metric. Likes are not a business metric. The metrics that matter are the ones tied directly to revenue: leads generated, consultations booked, clients acquired, and <Link href="/learn/video-marketing-professionals/video-marketing-roi">return on investment</Link>.
+        The most common mistake in video marketing for business is measuring the wrong things. Views are not a business metric. Likes are not a business metric. The metrics that matter are the ones tied directly to revenue: leads generated, consultations booked, clients acquired, and <Link href="/video-marketing-professionals/video-marketing-roi">return on investment</Link>.
       </p>
       <p>
         This does not mean vanity metrics are useless — views, watch time, and engagement rates are useful diagnostic tools. They tell you whether your content is reaching people and holding attention. But they are leading indicators, not outcomes. The distinction is critical because many professionals abandon video marketing after seeing modest view counts, not realizing that a video with 200 views that generates three consultation calls has a higher ROI than a viral video with 50,000 views and zero conversions.
       </p>
       <p>
-        Effective measurement requires attribution — tracking the path from video view to business outcome. This means asking new clients how they found you, using unique landing pages or tracking links in video descriptions, and monitoring which content topics correlate with inbound inquiries. The <Link href="/learn/video-marketing-professionals/video-marketing-metrics">video marketing metrics guide</Link> covers the specific numbers to track and how to build a measurement system that connects content to revenue.
+        Effective measurement requires attribution — tracking the path from video view to business outcome. This means asking new clients how they found you, using unique landing pages or tracking links in video descriptions, and monitoring which content topics correlate with inbound inquiries. The <Link href="/video-marketing-professionals/video-marketing-metrics">video marketing metrics guide</Link> covers the specific numbers to track and how to build a measurement system that connects content to revenue.
       </p>
 
       <h2 id="platform-selection">Choosing the Right Platforms</h2>
@@ -102,10 +102,10 @@ export function PillarContent() {
         Scaling requires removing yourself from the production bottleneck. Your role as a professional should be strategic — approving topics, reviewing scripts for accuracy, and ensuring the content reflects your expertise and values. Everything else — filming, editing, formatting, captioning, scheduling, and publishing — should be automated or delegated.
       </p>
       <p>
-        <Link href="/learn/ai-video-creation">AI video creation</Link> is the most effective scaling mechanism available today. It eliminates the production bottleneck entirely. You review and approve; the AI produces. This workflow enables the volume required for results (three to five videos per week) without the time investment that makes traditional production unsustainable.
+        <Link href="/ai-video-creation">AI video creation</Link> is the most effective scaling mechanism available today. It eliminates the production bottleneck entirely. You review and approve; the AI produces. This workflow enables the volume required for results (three to five videos per week) without the time investment that makes traditional production unsustainable.
       </p>
       <p>
-        <Link href="/learn/video-marketing-professionals/professional-video-branding">Building your brand through video</Link> is a compounding process. The first 30 days build awareness. The first 90 days build recognition. The first six months build authority. Professionals who sustain consistent video output for six months or more become the default experts in their market — the person prospects think of first when they need the service you provide.
+        <Link href="/video-marketing-professionals/professional-video-branding">Building your brand through video</Link> is a compounding process. The first 30 days build awareness. The first 90 days build recognition. The first six months build authority. Professionals who sustain consistent video output for six months or more become the default experts in their market — the person prospects think of first when they need the service you provide.
       </p>
       <p>
         If you are ready to see what AI-powered video marketing looks like in practice, <Link href="/demo">try the free demo</Link>. Upload a photo, generate a video in 30 seconds, and experience firsthand how modern AI video production works. The technology has reached the point where the barrier to professional video marketing is no longer production — it is the decision to start.
@@ -136,7 +136,7 @@ export const subTopicContent: Record<string, () => ReactElement> = {
 
         <h3>Calculating Total Cost</h3>
         <p>
-          Total cost includes everything required to produce and distribute your video content. For traditional video production, this typically includes videographer fees, editing costs, equipment rental, your time (valued at your hourly rate), and any paid distribution or promotion costs. For <Link href="/learn/ai-video-creation">AI video production</Link>, costs are significantly lower — typically a monthly platform subscription plus the time you spend reviewing scripts and approving content.
+          Total cost includes everything required to produce and distribute your video content. For traditional video production, this typically includes videographer fees, editing costs, equipment rental, your time (valued at your hourly rate), and any paid distribution or promotion costs. For <Link href="/ai-video-creation">AI video production</Link>, costs are significantly lower — typically a monthly platform subscription plus the time you spend reviewing scripts and approving content.
         </p>
         <p>
           Do not forget to include your time as a cost. If you spend four hours per week filming, editing, and posting videos, and your billable rate is $400/hour, your time cost alone is $6,400 per month. This is often the largest hidden cost in traditional video production and one of the primary advantages of AI video — reducing your time investment from hours to minutes per week.
@@ -214,7 +214,7 @@ export const subTopicContent: Record<string, () => ReactElement> = {
           Track these metrics monthly and look for trends. Is your CPL decreasing as your content library grows? Is one platform generating a disproportionate share of leads? Are certain content themes or topics driving more conversions than others? These trends inform strategic decisions about where to invest more and what to adjust.
         </p>
         <p>
-          The <Link href="/learn/video-marketing-professionals/video-marketing-metrics">video marketing metrics guide</Link> covers the specific engagement and performance metrics to track alongside your ROI metrics, giving you both the business outcomes and the content performance data needed to optimize your strategy.
+          The <Link href="/video-marketing-professionals/video-marketing-metrics">video marketing metrics guide</Link> covers the specific engagement and performance metrics to track alongside your ROI metrics, giving you both the business outcomes and the content performance data needed to optimize your strategy.
         </p>
 
         <h2>Common ROI Mistakes</h2>
@@ -233,10 +233,10 @@ export const subTopicContent: Record<string, () => ReactElement> = {
 
         <h2>Maximizing Your Video Marketing ROI</h2>
         <p>
-          The professionals with the highest video marketing ROI share several characteristics. They post consistently — at least three to five times per week. They use a <Link href="/learn/video-marketing-professionals/video-content-strategy">defined content strategy</Link> rather than posting randomly. They track results and iterate based on data. And they minimize production costs by using AI video tools that reduce time and expense without sacrificing quality.
+          The professionals with the highest video marketing ROI share several characteristics. They post consistently — at least three to five times per week. They use a <Link href="/video-marketing-professionals/video-content-strategy">defined content strategy</Link> rather than posting randomly. They track results and iterate based on data. And they minimize production costs by using AI video tools that reduce time and expense without sacrificing quality.
         </p>
         <p>
-          If you are spending thousands per month on traditional video production, switching to <Link href="/learn/ai-video-creation">AI video creation</Link> can dramatically improve your ROI by reducing the cost side of the equation while maintaining or increasing output volume. <Link href="/demo">Schedule a demo</Link> to see how the economics compare for your specific practice.
+          If you are spending thousands per month on traditional video production, switching to <Link href="/ai-video-creation">AI video creation</Link> can dramatically improve your ROI by reducing the cost side of the equation while maintaining or increasing output volume. <Link href="/demo">Schedule a demo</Link> to see how the economics compare for your specific practice.
         </p>
       </>
     );
@@ -308,7 +308,7 @@ export const subTopicContent: Record<string, () => ReactElement> = {
 
         <h3>Sustainable Production</h3>
         <p>
-          The cadence you choose must be sustainable. A burst of daily content followed by weeks of silence is worse than consistent three-per-week posting. This is where production method matters enormously. Traditional video production at five videos per week requires significant time investment — hours of filming, editing, and post-production. <Link href="/learn/ai-video-creation">AI video creation</Link> reduces this to minutes of script review per week, making daily posting sustainable even for the busiest professionals.
+          The cadence you choose must be sustainable. A burst of daily content followed by weeks of silence is worse than consistent three-per-week posting. This is where production method matters enormously. Traditional video production at five videos per week requires significant time investment — hours of filming, editing, and post-production. <Link href="/ai-video-creation">AI video creation</Link> reduces this to minutes of script review per week, making daily posting sustainable even for the busiest professionals.
         </p>
 
         <h2>Platform Strategy</h2>
@@ -333,7 +333,7 @@ export const subTopicContent: Record<string, () => ReactElement> = {
 
         <h2>Content Mapping to the Funnel</h2>
         <p>
-          Every video you create should map to a specific stage of the <Link href="/learn/video-marketing-professionals/video-marketing-funnel">video marketing funnel</Link>. This ensures you are not only attracting an audience but systematically converting that audience into clients.
+          Every video you create should map to a specific stage of the <Link href="/video-marketing-professionals/video-marketing-funnel">video marketing funnel</Link>. This ensures you are not only attracting an audience but systematically converting that audience into clients.
         </p>
         <p>
           <strong>Awareness content</strong> (60% of output): Educational tips, myth-busting, industry commentary, and answers to common questions. This content reaches the widest audience and establishes your expertise.
@@ -350,7 +350,7 @@ export const subTopicContent: Record<string, () => ReactElement> = {
           A content strategy without measurement is a content guess. Track performance at two levels: content metrics (views, engagement, completion rates) and business metrics (leads, consultations, clients). Content metrics tell you what resonates with your audience. Business metrics tell you what generates revenue.
         </p>
         <p>
-          Review performance weekly. Identify your top-performing content by engagement and by lead generation — these are often different videos. Double down on topics, formats, and styles that drive results. Retire or rework approaches that consistently underperform. The <Link href="/learn/video-marketing-professionals/video-marketing-metrics">metrics that matter guide</Link> covers exactly what to track and how to interpret the data.
+          Review performance weekly. Identify your top-performing content by engagement and by lead generation — these are often different videos. Double down on topics, formats, and styles that drive results. Retire or rework approaches that consistently underperform. The <Link href="/video-marketing-professionals/video-marketing-metrics">metrics that matter guide</Link> covers exactly what to track and how to interpret the data.
         </p>
         <p>
           Your content strategy is a living document. Revisit and refine it quarterly based on accumulated data. The topics that resonated in Q1 may shift in Q2 as market conditions, audience interests, and competitive dynamics evolve. A rigid strategy becomes a stale strategy. Build in flexibility to adjust while maintaining the structural consistency that drives results.
@@ -386,7 +386,7 @@ export const subTopicContent: Record<string, () => ReactElement> = {
           This omnipresence effect is why posting cadence matters so much for branding. A <Link href="/for/realtors">real estate agent</Link> who posts daily market insights becomes the agent their local audience thinks of first. A <Link href="/for/doctors">physician</Link> who posts daily health tips becomes the trusted expert their community turns to. Frequency creates familiarity, and familiarity builds trust.
         </p>
         <p>
-          Maintaining this consistency with traditional video production is nearly impossible for a working professional. <Link href="/learn/ai-video-creation">AI video creation</Link> solves this by reducing your involvement to script review and approval — typically 20-30 minutes per week — while maintaining the daily output that builds omnipresence.
+          Maintaining this consistency with traditional video production is nearly impossible for a working professional. <Link href="/ai-video-creation">AI video creation</Link> solves this by reducing your involvement to script review and approval — typically 20-30 minutes per week — while maintaining the daily output that builds omnipresence.
         </p>
 
         <h3>Depth: Demonstrating Real Expertise</h3>
@@ -465,7 +465,7 @@ export const subTopicContent: Record<string, () => ReactElement> = {
           <strong>Competitive mentions:</strong> Are prospects comparing you to competitors, or are they coming to you as the default choice? Strong professional brands reduce competitive comparison because the prospect has already been pre-sold through content.
         </p>
         <p>
-          The <Link href="/learn/video-marketing-professionals/video-marketing-roi">ROI measurement guide</Link> covers how to connect these brand indicators to specific revenue outcomes, ensuring your branding investment is grounded in business results rather than vanity metrics.
+          The <Link href="/video-marketing-professionals/video-marketing-roi">ROI measurement guide</Link> covers how to connect these brand indicators to specific revenue outcomes, ensuring your branding investment is grounded in business results rather than vanity metrics.
         </p>
 
         <h2>Getting Started With Video Branding</h2>
@@ -547,7 +547,7 @@ export const subTopicContent: Record<string, () => ReactElement> = {
 
         <h3>Conversion Rate by Source</h3>
         <p>
-          Track the conversion rate from lead to client, segmented by acquisition source. Leads who find you through video often convert at higher rates than leads from other channels because video builds trust before the first interaction. If your video leads convert at 40% while your Google Ads leads convert at 15%, that difference has significant implications for <Link href="/learn/video-marketing-professionals/video-marketing-roi">ROI calculation</Link> and budget allocation.
+          Track the conversion rate from lead to client, segmented by acquisition source. Leads who find you through video often convert at higher rates than leads from other channels because video builds trust before the first interaction. If your video leads convert at 40% while your Google Ads leads convert at 15%, that difference has significant implications for <Link href="/video-marketing-professionals/video-marketing-roi">ROI calculation</Link> and budget allocation.
         </p>
 
         <h3>Revenue Attributed to Video</h3>
@@ -615,7 +615,7 @@ export const subTopicContent: Record<string, () => ReactElement> = {
           <strong>High leads, low conversion:</strong> You are attracting interest but not converting prospects into clients. This may be a sales process issue rather than a content issue — examine your consultation experience, follow-up process, and whether your content is attracting the right audience.
         </p>
         <p>
-          The <Link href="/learn/video-marketing-professionals/video-content-strategy">content strategy guide</Link> covers how to translate metric insights into specific content adjustments, ensuring your video marketing continually improves based on data rather than assumptions.
+          The <Link href="/video-marketing-professionals/video-content-strategy">content strategy guide</Link> covers how to translate metric insights into specific content adjustments, ensuring your video marketing continually improves based on data rather than assumptions.
         </p>
       </>
     );
@@ -656,7 +656,7 @@ export const subTopicContent: Record<string, () => ReactElement> = {
 
         <h3>Awareness Stage Metrics</h3>
         <p>
-          At the awareness stage, track reach and impression metrics — how many unique people are seeing your content. Also track new follower growth, which indicates that viewers found enough value to want more. View count matters here more than at other stages, because the primary objective is exposure. The <Link href="/learn/video-marketing-professionals/video-marketing-metrics">metrics guide</Link> covers these in detail.
+          At the awareness stage, track reach and impression metrics — how many unique people are seeing your content. Also track new follower growth, which indicates that viewers found enough value to want more. View count matters here more than at other stages, because the primary objective is exposure. The <Link href="/video-marketing-professionals/video-marketing-metrics">metrics guide</Link> covers these in detail.
         </p>
 
         <h3>Awareness Stage Calls to Action</h3>
@@ -727,18 +727,18 @@ export const subTopicContent: Record<string, () => ReactElement> = {
           Not every video should be a sales pitch, and not every video should be a generic tip. The optimal ratio for most professionals is approximately 60% awareness content, 25% consideration content, and 15% decision content. This ensures you are continuously attracting new viewers while also nurturing existing audiences toward conversion.
         </p>
         <p>
-          This ratio is not fixed. If you are just starting and need to build an audience, skew toward 70-80% awareness content. If you have a large audience but few conversions, increase consideration and decision content to 40-50%. Use your <Link href="/learn/video-marketing-professionals/video-marketing-metrics">metrics</Link> to determine where your funnel is leaking and adjust ratios accordingly.
+          This ratio is not fixed. If you are just starting and need to build an audience, skew toward 70-80% awareness content. If you have a large audience but few conversions, increase consideration and decision content to 40-50%. Use your <Link href="/video-marketing-professionals/video-marketing-metrics">metrics</Link> to determine where your funnel is leaking and adjust ratios accordingly.
         </p>
 
         <h2>Mapping Your Funnel to Your Content Calendar</h2>
         <p>
-          A practical video marketing funnel maps directly to your weekly <Link href="/learn/video-marketing-professionals/video-content-strategy">content strategy</Link>. If you post five videos per week, a typical distribution might be: three awareness videos (Monday, Wednesday, Friday tips or commentary), one consideration video (Tuesday process or philosophy piece), and one decision video (Thursday consultation invitation or testimonial).
+          A practical video marketing funnel maps directly to your weekly <Link href="/video-marketing-professionals/video-content-strategy">content strategy</Link>. If you post five videos per week, a typical distribution might be: three awareness videos (Monday, Wednesday, Friday tips or commentary), one consideration video (Tuesday process or philosophy piece), and one decision video (Thursday consultation invitation or testimonial).
         </p>
         <p>
           This consistent cadence ensures your audience encounters all three funnel stages over the course of a week, maintaining a balanced journey from discovery to conversion. Over time, the cumulative effect of this systematic approach generates a predictable, growing stream of qualified leads.
         </p>
         <p>
-          The professionals who see the best results from the funnel approach treat it as a system, not a one-time exercise. They track which videos generate the most top-of-funnel views, which generate the deepest consideration engagement, and which generate actual consultations — then continuously refine each stage based on performance data. The <Link href="/learn/video-marketing-professionals/video-marketing-roi">ROI measurement guide</Link> shows how to quantify the business impact of this systematic approach.
+          The professionals who see the best results from the funnel approach treat it as a system, not a one-time exercise. They track which videos generate the most top-of-funnel views, which generate the deepest consideration engagement, and which generate actual consultations — then continuously refine each stage based on performance data. The <Link href="/video-marketing-professionals/video-marketing-roi">ROI measurement guide</Link> shows how to quantify the business impact of this systematic approach.
         </p>
         <p>
           Ready to build your video marketing funnel? <Link href="/demo">Start with a demo</Link> to see how AI video production makes it practical to maintain the content volume required for a full funnel strategy — without the production overhead that makes most professionals abandon their efforts within the first month.

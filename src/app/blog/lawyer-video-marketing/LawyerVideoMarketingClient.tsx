@@ -38,7 +38,7 @@ export default function LawyerVideoMarketingClient() {
         Video conveys all three of those qualities faster than any other medium. A 60-second
         video where a real attorney explains what to expect at a first consultation builds
         more trust than a 2,000-word blog post. For a deeper exploration, see our{" "}
-        <Link href="/learn/ai-video-professional-services/video-marketing-for-lawyers">
+        <Link href="/ai-video-professional-services/video-marketing-for-lawyers">
           complete guide to video marketing for lawyers
         </Link>
         .
@@ -112,7 +112,7 @@ export default function LawyerVideoMarketingClient() {
       </ol>
       <p>
         For more content ideas specific to law firms, see our guide to{" "}
-        <Link href="/learn/ai-video-professional-services/legal-video-content-ideas">
+        <Link href="/ai-video-professional-services/legal-video-content-ideas">
           legal video content ideas
         </Link>
         .
@@ -133,7 +133,7 @@ export default function LawyerVideoMarketingClient() {
       </p>
       <p>
         For the broader strategy on{" "}
-        <Link href="/learn/ai-video-professional-services/building-authority-with-video">
+        <Link href="/ai-video-professional-services/building-authority-with-video">
           building professional authority with video
         </Link>
         , our pillar guide covers the full approach.
@@ -148,7 +148,7 @@ export default function LawyerVideoMarketingClient() {
       </p>
       <p>
         For the complete professional services video strategy, visit our{" "}
-        <Link href="/learn/ai-video-professional-services">
+        <Link href="/ai-video-professional-services">
           AI video for professional services guide
         </Link>
         .

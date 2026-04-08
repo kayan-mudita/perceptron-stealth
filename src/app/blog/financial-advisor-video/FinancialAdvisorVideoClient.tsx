@@ -131,11 +131,11 @@ export default function FinancialAdvisorVideoClient() {
       </p>
       <p>
         For the complete playbook, including platform-specific strategies, see our guide to{" "}
-        <Link href="/learn/ai-video-professional-services/video-marketing-for-advisors">
+        <Link href="/ai-video-professional-services/video-marketing-for-advisors">
           video marketing for financial advisors
         </Link>
         . And for the broader professional video strategy, visit our{" "}
-        <Link href="/learn/ai-video-professional-services/building-authority-with-video">
+        <Link href="/ai-video-professional-services/building-authority-with-video">
           guide to building authority with video
         </Link>
         .

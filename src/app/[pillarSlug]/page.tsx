@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import Link from "next/link";
 import { getAllPillars, getPillarBySlug } from "@/data/topic-libraries";
 import PillarPageTemplate from "@/components/pillar/PillarPageTemplate";
 import { pillarContent } from "@/content";
@@ -8,6 +7,10 @@ import { pillarContent } from "@/content";
 interface Props {
   params: { pillarSlug: string };
 }
+
+// Strict — only the slugs returned by generateStaticParams resolve.
+// Anything else 404s instead of being caught by this dynamic segment.
+export const dynamicParams = false;
 
 export function generateStaticParams() {
   return getAllPillars().map((p) => ({ pillarSlug: p.slug }));
@@ -19,7 +22,7 @@ export function generateMetadata({ params }: Props): Metadata {
   return {
     title: pillar.headline,
     description: pillar.description,
-    alternates: { canonical: `/learn/${pillar.slug}` },
+    alternates: { canonical: `/${pillar.slug}` },
   };
 }
 

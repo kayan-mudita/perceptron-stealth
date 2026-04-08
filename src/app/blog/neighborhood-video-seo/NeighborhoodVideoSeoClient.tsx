@@ -19,7 +19,7 @@ export default function NeighborhoodVideoSeoClient() {
         what the seller already believes: that you know their neighborhood better than anyone
         else. The agents who consistently win listings are the ones who establish that
         perception long before the pitch — and{" "}
-        <Link href="/learn/ai-video-real-estate/neighborhood-spotlight-videos">
+        <Link href="/ai-video-real-estate/neighborhood-spotlight-videos">
           neighborhood spotlight videos
         </Link>{" "}
         are one of the most effective ways to do it.
@@ -117,14 +117,14 @@ export default function NeighborhoodVideoSeoClient() {
         which YouTube videos drive traffic to your website. Over time, neighborhood videos
         become your most reliable source of inbound listing appointments. For the full
         breakdown, see our guide to{" "}
-        <Link href="/learn/ai-video-real-estate/real-estate-video-roi">
+        <Link href="/ai-video-real-estate/real-estate-video-roi">
           real estate video marketing ROI
         </Link>
         .
       </p>
       <p>
         If you want to build a complete AI-powered real estate content system, start with our{" "}
-        <Link href="/learn/ai-video-real-estate">
+        <Link href="/ai-video-real-estate">
           guide to AI video for real estate
         </Link>
         .

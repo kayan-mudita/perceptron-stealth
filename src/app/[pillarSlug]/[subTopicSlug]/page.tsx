@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import Link from "next/link";
 import { getAllPillars, getSubTopic } from "@/data/topic-libraries";
 import SubTopicPageTemplate from "@/components/pillar/SubTopicPageTemplate";
 import { subTopicContentRegistry } from "@/content";
@@ -8,6 +7,10 @@ import { subTopicContentRegistry } from "@/content";
 interface Props {
   params: { pillarSlug: string; subTopicSlug: string };
 }
+
+// Strict — only known pillar/subtopic combos resolve.
+// Anything else 404s instead of being caught by this dynamic segment.
+export const dynamicParams = false;
 
 export function generateStaticParams() {
   return getAllPillars().flatMap((p) =>
@@ -25,7 +28,7 @@ export function generateMetadata({ params }: Props): Metadata {
     title: result.subTopic.title,
     description: result.subTopic.description,
     alternates: {
-      canonical: `/learn/${params.pillarSlug}/${params.subTopicSlug}`,
+      canonical: `/${params.pillarSlug}/${params.subTopicSlug}`,
     },
   };
 }
