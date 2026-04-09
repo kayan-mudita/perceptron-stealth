@@ -8,9 +8,10 @@ import SessionProvider from "@/components/SessionProvider";
 import CameraCapture from "@/components/onboarding/CameraCapture";
 import CharacterSheetReveal from "@/components/onboarding/CharacterSheetReveal";
 import VoiceCapture from "@/components/onboarding/VoiceCapture";
+import VideoLoadingScreen from "@/components/onboarding/VideoLoadingScreen";
 import PaywallStep from "@/components/onboarding/PaywallStep";
 
-type Step = "photo" | "character" | "voice" | "paywall";
+type Step = "photo" | "character" | "voice" | "video_loading" | "paywall";
 
 const STEP_CONFIG: { key: Step; label: string; emoji: string }[] = [
   { key: "photo", label: "Your photo", emoji: "\uD83D\uDCF8" },
@@ -30,7 +31,11 @@ const STEP_CONTENT: Record<Step, { heading: string; sub: string }> = {
   },
   voice: {
     heading: "Now let's hear you.",
-    sub: "5 seconds is all we need to clone your voice.",
+    sub: "A few seconds is all we need to clone your voice.",
+  },
+  video_loading: {
+    heading: "Creating your first video...",
+    sub: "Your face. Your voice. Almost ready.",
   },
   paywall: {
     heading: "Your AI twin is alive.",
@@ -261,15 +266,15 @@ function DemoOnboardingFlow() {
       // Non-blocking
     } finally {
       setVoiceUploading(false);
-      setStep("paywall");
       generatePreviewVideo();
+      setStep("video_loading");
     }
   }, [generatePreviewVideo]);
 
   const handleSkipVoice = useCallback(() => {
     trackEvent("demo_voice_skipped");
-    setStep("paywall");
     generatePreviewVideo();
+    setStep("video_loading");
   }, [generatePreviewVideo]);
 
   const { heading, sub } = STEP_CONTENT[step];
@@ -278,8 +283,8 @@ function DemoOnboardingFlow() {
     <div className="relative min-h-screen bg-[#060610] flex flex-col overflow-hidden">
       <AmbientBg />
 
-      {/* Header */}
-      <div className="relative z-10 flex items-center justify-between px-6 py-5">
+      {/* Header — hidden during video loading for full-screen takeover */}
+      <div className={`relative z-10 flex items-center justify-between px-6 py-5 transition-opacity ${step === "video_loading" ? "opacity-0 pointer-events-none" : "opacity-100"}`}>
         <motion.div
           initial={{ opacity: 0, x: -8 }}
           animate={{ opacity: 1, x: 0 }}
@@ -304,6 +309,8 @@ function DemoOnboardingFlow() {
       {/* Content */}
       <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-6 pb-16 pt-2">
         <div className="w-full max-w-sm">
+          {/* Heading — hidden during video_loading (component has its own) */}
+          {step !== "video_loading" && (
           <AnimatePresence mode="wait">
             <motion.div
               key={step + "-h"}
@@ -319,6 +326,7 @@ function DemoOnboardingFlow() {
               <p className="text-[14px] text-white/40 mt-2 font-medium">{sub}</p>
             </motion.div>
           </AnimatePresence>
+          )}
 
           <AnimatePresence mode="wait">
             {step === "photo" && (
@@ -365,6 +373,22 @@ function DemoOnboardingFlow() {
                 >
                   Skip for now — you can add your voice later
                 </button>
+              </motion.div>
+            )}
+
+            {step === "video_loading" && (
+              <motion.div
+                key="video_loading"
+                initial={{ opacity: 0, x: 24 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -24 }}
+                transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+              >
+                <VideoLoadingScreen
+                  photoUrl={photoUrl}
+                  videoReady={!!videoUrl}
+                  onComplete={() => setStep("paywall")}
+                />
               </motion.div>
             )}
 
