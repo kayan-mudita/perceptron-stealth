@@ -1,13 +1,15 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo, useState } from "react";
-import { Calculator } from "lucide-react";
+import { ArrowRight, Calculator, Sparkles } from "lucide-react";
 import MarketingLayout from "@/components/marketing/MarketingLayout";
-import CTASection from "@/components/marketing/CTASection";
 import HeroAurora from "@/components/marketing/HeroAurora";
 import GradientText from "@/components/marketing/GradientText";
 import PageBackdrop from "@/components/marketing/PageBackdrop";
+import GlowBlob from "@/components/marketing/GlowBlob";
 import MeshMockup from "@/components/marketing/MeshMockup";
+import FadeIn from "@/components/motion/FadeIn";
 
 const OFFICIAL_AI_MONTHLY = 79;
 const OFFICIAL_AI_VIDEOS_INCLUDED = 30;
@@ -221,12 +223,51 @@ export default function VideoRoiClient() {
         </div>
       </section>
 
-      <CTASection
-        heading="Stop spending hours on video"
-        description="Generate, caption, and post 30 videos a month for less than one hour of agency time."
-        badge={`${currency(OFFICIAL_AI_MONTHLY)}/mo flat`}
-        buttonText="Start free trial"
-      />
+      {/* CTA outro */}
+      <section className="relative py-28 px-6 border-t border-white/[0.04] overflow-hidden">
+        <GlowBlob color="special" size="xl" position="top" intensity={0.08} />
+        <GlowBlob color="utility" size="lg" position="bottom" intensity={0.06} />
+
+        <div className="relative max-w-3xl mx-auto text-center">
+          <FadeIn>
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] mb-6">
+              <Sparkles className="w-3 h-3 text-utility-300" />
+              <span className="text-p3 text-white/60 font-medium">
+                {currency(OFFICIAL_AI_MONTHLY)}/mo flat
+              </span>
+            </div>
+          </FadeIn>
+          <FadeIn delay={0.05}>
+            <h2 className="text-h2 sm:text-h1 font-bold tracking-[-0.03em] text-white leading-[1.08] mb-5">
+              Stop spending hours{" "}
+              <GradientText tone="brand">on video.</GradientText>
+            </h2>
+          </FadeIn>
+          <FadeIn delay={0.1}>
+            <p className="text-p1 text-white/45 max-w-xl mx-auto mb-8">
+              Generate, caption, and post 30 videos a month for less than one
+              hour of agency time.
+            </p>
+          </FadeIn>
+          <FadeIn delay={0.15}>
+            <div className="flex flex-wrap items-center justify-center gap-4">
+              <Link
+                href="/auth/signup"
+                className="btn-cta-glow inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white text-black text-p2 font-semibold hover:bg-white/90 transition-colors"
+              >
+                Start free trial
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+              <Link
+                href="/pricing"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-white/[0.10] text-white/80 text-p2 font-semibold hover:bg-white/[0.04] hover:text-white transition-colors"
+              >
+                See pricing
+              </Link>
+            </div>
+          </FadeIn>
+        </div>
+      </section>
     </MarketingLayout>
   );
 }

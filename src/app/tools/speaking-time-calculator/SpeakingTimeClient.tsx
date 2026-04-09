@@ -1,13 +1,15 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo, useState } from "react";
-import { Clock } from "lucide-react";
+import { ArrowRight, Clock, Sparkles } from "lucide-react";
 import MarketingLayout from "@/components/marketing/MarketingLayout";
-import CTASection from "@/components/marketing/CTASection";
 import HeroAurora from "@/components/marketing/HeroAurora";
 import GradientText from "@/components/marketing/GradientText";
 import PageBackdrop from "@/components/marketing/PageBackdrop";
+import GlowBlob from "@/components/marketing/GlowBlob";
 import MeshMockup from "@/components/marketing/MeshMockup";
+import FadeIn from "@/components/motion/FadeIn";
 
 const PACES = [
   { label: "Slow (120 wpm)", wpm: 120 },
@@ -160,13 +162,51 @@ export default function SpeakingTimeClient() {
         </div>
       </section>
 
-      <CTASection
-        heading="Want scripts written for you?"
-        description="Official AI writes scripts in your voice and turns them into ready-to-post videos."
-        badge="No filming, no editing"
-        buttonText="See how it works"
-        buttonHref="/how-it-works"
-      />
+      {/* CTA outro */}
+      <section className="relative py-28 px-6 border-t border-white/[0.04] overflow-hidden">
+        <GlowBlob color="special" size="xl" position="top" intensity={0.08} />
+        <GlowBlob color="utility" size="lg" position="bottom" intensity={0.06} />
+
+        <div className="relative max-w-3xl mx-auto text-center">
+          <FadeIn>
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] mb-6">
+              <Sparkles className="w-3 h-3 text-utility-300" />
+              <span className="text-p3 text-white/60 font-medium">
+                No filming, no editing
+              </span>
+            </div>
+          </FadeIn>
+          <FadeIn delay={0.05}>
+            <h2 className="text-h2 sm:text-h1 font-bold tracking-[-0.03em] text-white leading-[1.08] mb-5">
+              Want scripts{" "}
+              <GradientText tone="brand">written for you?</GradientText>
+            </h2>
+          </FadeIn>
+          <FadeIn delay={0.1}>
+            <p className="text-p1 text-white/45 max-w-xl mx-auto mb-8">
+              Official AI writes scripts in your voice and turns them into
+              ready-to-post videos.
+            </p>
+          </FadeIn>
+          <FadeIn delay={0.15}>
+            <div className="flex flex-wrap items-center justify-center gap-4">
+              <Link
+                href="/how-it-works"
+                className="btn-cta-glow inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white text-black text-p2 font-semibold hover:bg-white/90 transition-colors"
+              >
+                See how it works
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+              <Link
+                href="/features/script-engine"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-white/[0.10] text-white/80 text-p2 font-semibold hover:bg-white/[0.04] hover:text-white transition-colors"
+              >
+                Script engine
+              </Link>
+            </div>
+          </FadeIn>
+        </div>
+      </section>
     </MarketingLayout>
   );
 }
