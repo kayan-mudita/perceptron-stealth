@@ -55,7 +55,15 @@ export default function VoiceCapture({ onCapture, uploading = false }: VoiceCapt
     setMicError(false);
     chunksRef.current = [];
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      // Request audio with echo cancellation and noise suppression for cleaner samples
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true,
+          sampleRate: { ideal: 44100 },
+        },
+      });
       streamRef.current = stream;
 
       // Set up analyser for waveform visualization
@@ -66,7 +74,17 @@ export default function VoiceCapture({ onCapture, uploading = false }: VoiceCapt
       source.connect(analyser);
       analyserRef.current = analyser;
 
-      const recorder = new MediaRecorder(stream, { mimeType: "audio/webm;codecs=opus" });
+      // Pick best available MIME type for compatibility
+      const mimeType = MediaRecorder.isTypeSupported("audio/webm;codecs=opus")
+        ? "audio/webm;codecs=opus"
+        : MediaRecorder.isTypeSupported("audio/webm")
+        ? "audio/webm"
+        : MediaRecorder.isTypeSupported("audio/mp4")
+        ? "audio/mp4"
+        : ""; // Let browser choose
+
+      const recorderOptions: MediaRecorderOptions = mimeType ? { mimeType } : {};
+      const recorder = new MediaRecorder(stream, recorderOptions);
       mediaRecorderRef.current = recorder;
 
       recorder.ondataavailable = (e) => {
@@ -89,9 +107,16 @@ export default function VoiceCapture({ onCapture, uploading = false }: VoiceCapt
       setMode("recording");
       setElapsed(0);
 
-      // Timer
+      // Timer with auto-stop at 30 seconds
+      let seconds = 0;
       timerRef.current = setInterval(() => {
-        setElapsed((prev) => prev + 1);
+        seconds++;
+        setElapsed(seconds);
+        if (seconds >= 30) {
+          // Auto-stop at 30s — more than enough for voice cloning
+          recorder.stop();
+          if (timerRef.current) clearInterval(timerRef.current);
+        }
       }, 1000);
 
       // Waveform animation

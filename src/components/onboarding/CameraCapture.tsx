@@ -60,14 +60,23 @@ export default function CameraCapture({ onCapture, uploading = false }: CameraCa
     setCameraError(false);
     setCameraReady(false);
     try {
-      const s = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "user", width: { ideal: 1280 }, height: { ideal: 720 } },
-      });
+      // Try high-res first, fall back to any available camera
+      let s: MediaStream;
+      try {
+        s = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: "user", width: { ideal: 1280 }, height: { ideal: 960 } },
+        });
+      } catch {
+        // Fallback: accept any camera resolution
+        s = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
+      }
       setStream(s);
       setMode("camera");
-    } catch {
+    } catch (err: any) {
+      console.error("[CameraCapture] Camera access failed:", err.name, err.message);
       setCameraError(true);
-      fileInputRef.current?.click();
+      // Auto-open file picker as fallback
+      setTimeout(() => fileInputRef.current?.click(), 300);
     }
   }, []);
 
@@ -86,25 +95,41 @@ export default function CameraCapture({ onCapture, uploading = false }: CameraCa
     if (!videoRef.current || !canvasRef.current) return;
     const video = videoRef.current;
     const canvas = canvasRef.current;
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
+
+    // Capture at full video resolution for best quality
+    const captureWidth = Math.max(video.videoWidth, 1024);
+    const captureHeight = Math.max(video.videoHeight, 768);
+    canvas.width = captureWidth;
+    canvas.height = captureHeight;
+
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
+
+    // Mirror horizontally (selfie cameras are mirrored)
     ctx.translate(canvas.width, 0);
     ctx.scale(-1, 1);
-    ctx.drawImage(video, 0, 0);
+    ctx.drawImage(video, 0, 0, captureWidth, captureHeight);
+
+    // Use high quality JPEG (0.95) for better AI model results
     canvas.toBlob(async (blob) => {
-      if (!blob) return;
+      if (!blob) {
+        console.error("[CameraCapture] Canvas toBlob returned null");
+        return;
+      }
+
       const file = new File([blob], `selfie-${Date.now()}.jpg`, { type: "image/jpeg" });
       const url = URL.createObjectURL(blob);
       const q = await analyzePhotoQuality(file);
+
       setCapturedFile(file);
       setPreviewUrl(url);
       setQuality(q);
       setMode("preview");
+
+      // Stop camera tracks
       stream?.getTracks().forEach((t) => t.stop());
       setStream(null);
-    }, "image/jpeg", 0.92);
+    }, "image/jpeg", 0.95);
   }, [stream]);
 
   const retake = useCallback(() => {
@@ -121,7 +146,23 @@ export default function CameraCapture({ onCapture, uploading = false }: CameraCa
 
   const handleFileChange = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file || !file.type.startsWith("image/") || file.size > 10 * 1024 * 1024) return;
+    if (!file) return;
+
+    // Accept image/* plus HEIC/HEIF (iPhones)
+    const isImage = file.type.startsWith("image/") ||
+      file.name.toLowerCase().endsWith(".heic") ||
+      file.name.toLowerCase().endsWith(".heif");
+
+    if (!isImage) {
+      console.warn("[CameraCapture] Not an image file:", file.type, file.name);
+      return;
+    }
+
+    if (file.size > 15 * 1024 * 1024) {
+      console.warn("[CameraCapture] File too large:", (file.size / 1024 / 1024).toFixed(1), "MB");
+      return;
+    }
+
     const url = URL.createObjectURL(file);
     const q = await analyzePhotoQuality(file);
     setCapturedFile(file);
@@ -134,7 +175,7 @@ export default function CameraCapture({ onCapture, uploading = false }: CameraCa
   return (
     <div className="w-full max-w-sm mx-auto">
       <canvas ref={canvasRef} className="hidden" />
-      <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
+      <input ref={fileInputRef} type="file" accept="image/*,.heic,.heif" capture="user" className="hidden" onChange={handleFileChange} />
 
       <AnimatePresence mode="wait">
 

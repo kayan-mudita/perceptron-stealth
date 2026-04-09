@@ -108,7 +108,9 @@ export default function CharacterSheetReveal({
   const [stageIndex, setStageIndex] = useState(0);
   const [compositeUrl, setCompositeUrl] = useState<string | null>(null);
   const [sheetId, setSheetId] = useState<string | null>(null);
-  const [selectedPose, setSelectedPose] = useState<number | null>(null);
+  const [selectedPoses, setSelectedPoses] = useState<Set<number>>(new Set());
+  // Backwards compat: first selected pose is the "primary"
+  const selectedPose = selectedPoses.size > 0 ? Array.from(selectedPoses)[0] : null;
   const [extraPhotos, setExtraPhotos] = useState<string[]>([]);
   const [extraSheetGenerating, setExtraSheetGenerating] = useState(false);
   const [extraSheetUrl, setExtraSheetUrl] = useState<string | null>(null);
@@ -193,7 +195,15 @@ export default function CharacterSheetReveal({
   };
 
   const handlePoseSelect = (index: number) => {
-    setSelectedPose(index);
+    setSelectedPoses((prev) => {
+      const next = new Set(prev);
+      if (next.has(index)) {
+        next.delete(index);
+      } else {
+        next.add(index);
+      }
+      return next;
+    });
   };
 
   const handleConfirm = async () => {
@@ -218,7 +228,7 @@ export default function CharacterSheetReveal({
   const handleRetry = () => {
     setRetrying(true);
     hasFetched.current = false;
-    setSelectedPose(null);
+    setSelectedPoses(new Set());
     setCompositeUrl(null);
     setConfetti(false);
     generate();
@@ -407,7 +417,7 @@ export default function CharacterSheetReveal({
                 {imageLoaded && (
                   <div className="absolute inset-0 grid grid-cols-3 grid-rows-3">
                     {Array.from({ length: 9 }).map((_, i) => {
-                      const isSelected = selectedPose === i;
+                      const isSelected = selectedPoses.has(i);
                       return (
                         <button
                           key={i}
@@ -598,7 +608,7 @@ export default function CharacterSheetReveal({
                   />
                 )}
                 <span className="relative text-white">
-                  {selectedPose !== null ? "Let's go 🚀" : "Tap a pose to select it"}
+                  {selectedPoses.size > 0 ? `${selectedPoses.size} selected — Let's go 🚀` : "Tap poses to select (pick your favorites)"}
                 </span>
               </motion.button>
 
