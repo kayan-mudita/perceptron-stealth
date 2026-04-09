@@ -350,6 +350,40 @@ const FAL_MODELS: Record<string, FalModelConfig> = {
     }),
   },
 
+  // ── HeyGen (Parallel Track — routed to heygen.ts, not FAL) ──
+
+  "heygen_avatar_v": {
+    falId: "HEYGEN", // Not a FAL model — routed separately
+    name: "HeyGen Avatar V",
+    description: "Best-in-class face similarity (0.840), frame-by-frame lip sync, 175+ languages. Premium quality from 15s video reference.",
+    maxDuration: 300,
+    supportsImage: true,
+    supportsAudio: true,
+    supportsNativeAudio: true,
+    costPerSecond: 0.50,
+    buildPayload: (p) => ({
+      script: p.script,
+      photoUrl: p.photoUrl,
+      voiceId: p.voiceUrl, // HeyGen voice ID
+    }),
+  },
+
+  "heygen_avatar_iv": {
+    falId: "HEYGEN", // Not a FAL model — routed separately
+    name: "HeyGen Avatar IV",
+    description: "Photo-to-avatar with custom motion prompts. Gesture and expression control. Great for talking heads.",
+    maxDuration: 300,
+    supportsImage: true,
+    supportsAudio: true,
+    supportsNativeAudio: true,
+    costPerSecond: 0.50,
+    buildPayload: (p) => ({
+      script: p.script,
+      photoUrl: p.photoUrl,
+      voiceId: p.voiceUrl,
+    }),
+  },
+
   // ── Legacy Aliases ────────────────────────────────────────────
 
   "sora_2": {
@@ -582,8 +616,43 @@ export async function generateVideo(params: GenerateVideoParams): Promise<Genera
     }
   }
 
-  // Step 4: Route to the correct FAL model
+  // Step 4: Route to the correct provider
   const modelConfig = FAL_MODELS[params.model];
+
+  // Step 4a: HeyGen parallel track — completely separate from FAL
+  if (modelConfig?.falId === "HEYGEN") {
+    const { generateHeyGenVideo } = await import("@/lib/heygen");
+    console.log(`[generate] Routing to HeyGen track: ${params.model}`);
+
+    const heygenResult = await generateHeyGenVideo({
+      script: finalScript,
+      photoUrl: params.photoUrl,
+      voiceId: params.voiceUrl || undefined,
+      audioUrl: undefined, // Could pass pre-generated TTS audio for lip sync
+      title: params.videoId ? `Video ${params.videoId}` : "Official AI Video",
+      motionPrompt: params.model === "heygen_avatar_iv"
+        ? "Natural head movements, professional gestures, engaged expression"
+        : undefined,
+    });
+
+    if (heygenResult.videoUrl) {
+      return {
+        jobId: `HEYGEN::${heygenResult.videoId}`,
+        status: "completed",
+        videoUrl: heygenResult.videoUrl,
+        expandedPrompt,
+      };
+    }
+
+    return {
+      jobId: `HEYGEN::${heygenResult.videoId || "err"}`,
+      status: "failed",
+      error: heygenResult.error || "HeyGen generation failed",
+      expandedPrompt,
+    };
+  }
+
+  // Step 4b: FAL pipeline (default)
   if (!modelConfig) {
     // Unknown model -- fall back to Kling 2.6
     const fallbackConfig = FAL_MODELS["kling_2.6"];

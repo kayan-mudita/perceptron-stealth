@@ -74,7 +74,17 @@ export async function GET() {
     ? { status: "ok" }
     : { status: "not_configured", message: "ELEVENLABS_API_KEY missing — voice cloning won't work" };
 
-  // 10. Admin
+  // 10. HeyGen (premium avatar track)
+  checks.heygen = process.env.HEYGEN_API_KEY
+    ? { status: "ok" }
+    : { status: "not_configured", message: "HEYGEN_API_KEY missing — premium avatar generation unavailable" };
+
+  // 11. Fish Audio (TTS)
+  checks.fishAudio = process.env.FISH_AUDIO_API_KEY
+    ? { status: "ok" }
+    : { status: "not_configured", message: "FISH_AUDIO_API_KEY missing — cheapest TTS provider unavailable" };
+
+  // 12. Admin
   checks.admin = process.env.ADMIN_EMAILS
     ? { status: "ok" }
     : { status: "not_configured", message: "ADMIN_EMAILS not set — admin routes will 403 for everyone" };
