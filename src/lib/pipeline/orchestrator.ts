@@ -21,6 +21,7 @@ import { handleStitchSubmit } from "./stitch-submit";
 import { handleStitchPoll } from "./stitch-poll";
 import { handleHookGenerate } from "./hook-generate";
 import { handlePostProcess } from "./post-process";
+import { handleTTSAndAnchor } from "./tts-and-anchor";
 import type { StepResult } from "./types";
 
 /**
@@ -68,6 +69,9 @@ export async function runStep(
 
     case "poll_stitch":
       return handleStitchPoll(videoId, userId);
+
+    case "tts_and_anchor":
+      return handleTTSAndAnchor(videoId, userId);
 
     case "hook_generate":
       return handleHookGenerate(videoId, userId);

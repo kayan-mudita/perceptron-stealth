@@ -101,8 +101,9 @@ export async function handleExpand(videoId: string, userId: string): Promise<Ste
   });
 
   // Route to hook_generate for single-shot formats (skip multi-cut pipeline)
+  // Route to tts_and_anchor for multi-cut (runs TTS + Anchor in parallel, saves 3-10s)
   const isHookFormat = HOOK_FORMATS.includes(selectedFormat) || meta.mode === "hook";
-  const nextStep = isHookFormat ? "hook_generate" : "tts";
+  const nextStep = isHookFormat ? "hook_generate" : "tts_and_anchor";
 
   return {
     status: "expanded",

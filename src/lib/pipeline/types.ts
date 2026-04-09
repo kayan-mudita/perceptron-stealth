@@ -42,6 +42,10 @@ export interface CutJob {
   videoUrl: string | null;
   thumbnailUrl: string | null;
   trimTo: number | null;
+  /** Start trim offset — skip first N seconds to avoid warm-up artifacts */
+  trimStart?: number;
+  /** Which model was actually used (may differ from video.model due to per-cut routing) */
+  modelUsed?: string;
 }
 
 // ---- Per-Cut Audio Data (from audio planner) ----

@@ -25,6 +25,45 @@ import {
 import { parseMeta, stringifyMeta } from "./types";
 import type { StepResult } from "./types";
 
+// ─── Per-Cut Model Routing ────────────────────────────────────────
+// Different cut types benefit from different models.
+// Hook/CTA need face quality. B-roll needs cinematic quality.
+// Transitions are cheap — use the fastest model.
+
+const CUT_TYPE_MODEL_OVERRIDE: Record<string, string> = {
+  broll: "veo_3.1",           // Best cinematic, no face needed, cheapest
+  product_shot: "veo_3.1",    // Best detail rendering
+  transition: "ltx_fast",     // Cheapest, fastest, no face needed
+};
+
+function resolveModelForCut(
+  cutType: string,
+  selectedModel: string,
+  enablePerCutRouting: boolean
+): string {
+  if (!enablePerCutRouting) return selectedModel;
+  return CUT_TYPE_MODEL_OVERRIDE[cutType] || selectedModel;
+}
+
+// ─── Concurrency Control ──────────────────────────────────────────
+// Process cuts in batches. 4 concurrent for ≤ 5 cuts, 2 for > 5.
+const MAX_CONCURRENCY_SMALL = 4;
+const MAX_CONCURRENCY_LARGE = 2;
+
+async function processInBatches<T>(
+  items: T[],
+  concurrency: number,
+  fn: (item: T) => Promise<any>
+): Promise<PromiseSettledResult<any>[]> {
+  const results: PromiseSettledResult<any>[] = [];
+  for (let i = 0; i < items.length; i += concurrency) {
+    const batch = items.slice(i, i + concurrency);
+    const batchResults = await Promise.allSettled(batch.map(fn));
+    results.push(...batchResults);
+  }
+  return results;
+}
+
 export async function handleSubmitAllCuts(
   videoId: string,
   userId: string
@@ -86,53 +125,71 @@ export async function handleSubmitAllCuts(
     fallbackPhotoUrl = anyPhoto?.url || "";
   }
 
-  // ---- Submit ALL cuts to FAL in parallel ----
-  // Each cut gets its OWN cropped pose from the character sheet,
-  // optimized for the cut type (hook gets standing/headshot, broll gets side angle, etc.)
-  const submissions = await Promise.allSettled(
-    meta.cuts.map(async (cut, cutIndex) => {
-      // Resolve the BEST reference image for THIS SPECIFIC CUT TYPE
-      const asset = await getCharacterAssetForCut(userId, cut.type || "talking_head");
-      const photoUrl = asset.url || fallbackPhotoUrl;
+  // ---- Submit cuts with per-cut model routing + increased concurrency ----
+  // Each cut gets: its OWN cropped pose, its OWN optimal model, and
+  // we process 4 concurrent (≤5 cuts) or 2 concurrent (>5 cuts).
 
-      if (asset.source.includes("cropped")) {
-        console.log(
-          `[pipeline/cut-submit-all] Cut ${cutIndex} (${cut.type}): using cropped ${asset.source} ` +
-          `[${asset.gridPosition?.row},${asset.gridPosition?.col}] = ${asset.gridPosition?.label}`
-        );
-      } else {
-        console.log(
-          `[pipeline/cut-submit-all] Cut ${cutIndex} (${cut.type}): using ${asset.source} (not cropped)`
-        );
-      }
+  const enablePerCutRouting = !selectedModel.startsWith("heygen"); // Don't override HeyGen
+  const concurrency = meta.cuts.length <= 5 ? MAX_CONCURRENCY_SMALL : MAX_CONCURRENCY_LARGE;
 
-      // Determine video duration from audio (audio-driven planning)
-      const cutAudioEntry = meta.cutAudio?.[cutIndex];
-      let videoDuration = cut.generateDuration;
-
-      if (cutAudioEntry && cutAudioEntry.durationMs > 0) {
-        videoDuration = getVideoDurationFromAudio(cutAudioEntry.durationMs);
-        console.log(
-          `[pipeline/cut-submit-all] Cut ${cutIndex}: audio=${cutAudioEntry.durationMs}ms -> video=${videoDuration}s (was ${cut.generateDuration}s)`
-        );
-      }
-
-      const result = await generateVideo({
-        model: selectedModel,
-        photoUrl,
-        voiceUrl: "",
-        script: cut.prompt,
-        userId,
-        industry: user?.industry,
-        usePromptEngine: false,
-        duration: videoDuration,
-        // Pass 360 reference images for Kling 3.0 element-based consistency
-        referenceImageUrls: referenceImageUrls || undefined,
-      });
-
-      return { cutIndex, result, cut };
-    })
+  console.log(
+    `[pipeline/cut-submit-all] Submitting ${meta.cuts.length} cuts, concurrency=${concurrency}, ` +
+    `perCutRouting=${enablePerCutRouting}`
   );
+
+  const indexedCuts = meta.cuts.map((cut, cutIndex) => ({ cut, cutIndex }));
+
+  const submissions = await processInBatches(indexedCuts, concurrency, async ({ cut, cutIndex }) => {
+    // Per-cut model routing: B-roll → Veo 3.1, transitions → LTX Fast, etc.
+    const cutModel = resolveModelForCut(cut.type || "talking_head", selectedModel, enablePerCutRouting);
+
+    if (cutModel !== selectedModel) {
+      console.log(
+        `[pipeline/cut-submit-all] Cut ${cutIndex} (${cut.type}): routed to ${cutModel} (override from ${selectedModel})`
+      );
+    }
+
+    // Resolve the BEST reference image for THIS SPECIFIC CUT TYPE
+    const asset = await getCharacterAssetForCut(userId, cut.type || "talking_head");
+    const photoUrl = asset.url || fallbackPhotoUrl;
+
+    if (asset.source.includes("cropped")) {
+      console.log(
+        `[pipeline/cut-submit-all] Cut ${cutIndex} (${cut.type}): using cropped ${asset.source} ` +
+        `[${asset.gridPosition?.row},${asset.gridPosition?.col}] = ${asset.gridPosition?.label}`
+      );
+    } else {
+      console.log(
+        `[pipeline/cut-submit-all] Cut ${cutIndex} (${cut.type}): using ${asset.source} (not cropped)`
+      );
+    }
+
+    // Determine video duration from per-cut audio (audio-driven planning)
+    const cutAudioEntry = meta.cutAudio?.[cutIndex];
+    let videoDuration = cut.generateDuration;
+
+    if (cutAudioEntry && cutAudioEntry.durationMs > 0) {
+      videoDuration = getVideoDurationFromAudio(cutAudioEntry.durationMs);
+    }
+
+    // Resolve 360 refs only for Kling 3 models (per-cut model may differ)
+    const cutIsKling3 = cutModel.startsWith("kling_v3");
+    const cutRefs = cutIsKling3 ? referenceImageUrls : null;
+
+    const result = await generateVideo({
+      model: cutModel,
+      photoUrl,
+      voiceUrl: "",
+      script: cut.prompt,
+      userId,
+      industry: user?.industry,
+      usePromptEngine: false,
+      duration: videoDuration,
+      referenceImageUrls: cutRefs || undefined,
+    });
+
+    return { cutIndex, result, cut };
+  });
 
   // ---- Process results and store all job IDs ----
   // Re-read meta to avoid overwriting concurrent updates
@@ -199,12 +256,18 @@ export async function handleSubmitAllCuts(
       completedCount++;
     }
 
+    // Trim from 0.5s into the clip (skip warm-up artifact) instead of from 0s.
+    // AI video models often have a static/glitchy first ~0.5s as they "warm up."
+    // Skipping this produces much cleaner cuts.
+    const trimStart = cut.generateDuration > cut.duration + 1 ? 0.5 : 0;
+
     freshMeta.cutJobs[cutIndex] = {
       jobId: result.jobId,
       status: result.status,
       videoUrl: persistedVideoUrl,
       thumbnailUrl: persistedThumbnailUrl,
       trimTo: cut.duration,
+      trimStart,
     };
   }
 
