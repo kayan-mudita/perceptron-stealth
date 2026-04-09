@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { Check, RefreshCw } from "lucide-react";
+import { Check, RefreshCw, Plus, Camera, ImagePlus, Shield } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface CharacterSheetRevealProps {
@@ -109,6 +109,9 @@ export default function CharacterSheetReveal({
   const [compositeUrl, setCompositeUrl] = useState<string | null>(null);
   const [sheetId, setSheetId] = useState<string | null>(null);
   const [selectedPose, setSelectedPose] = useState<number | null>(null);
+  const [extraPhotos, setExtraPhotos] = useState<string[]>([]);
+  const [extraSheetGenerating, setExtraSheetGenerating] = useState(false);
+  const [extraSheetUrl, setExtraSheetUrl] = useState<string | null>(null);
   const [confetti, setConfetti] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -435,6 +438,134 @@ export default function CharacterSheetReveal({
                   </div>
                 )}
               </div>
+            </motion.div>
+
+            {/* Add more photos to improve AI twin */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.35 }}
+              className="space-y-3"
+            >
+              <div className="flex items-center justify-between">
+                <p className="text-[12px] font-semibold text-white/40">Improve your AI twin</p>
+                <div className="flex items-center gap-1.5">
+                  <Shield className="w-3 h-3 text-emerald-400/60" />
+                  <span className="text-[10px] text-emerald-400/60 font-medium">
+                    {extraPhotos.length === 0 ? "Basic" : extraPhotos.length < 3 ? "Good" : "Excellent"} reference
+                  </span>
+                </div>
+              </div>
+
+              {/* Reference strength bar */}
+              <div className="flex items-center gap-1">
+                {[0, 1, 2, 3, 4].map((i) => (
+                  <div
+                    key={i}
+                    className={`h-1 flex-1 rounded-full transition-all ${
+                      i <= extraPhotos.length
+                        ? "bg-emerald-500/60"
+                        : "bg-white/[0.06]"
+                    }`}
+                  />
+                ))}
+              </div>
+
+              {/* Upload more photos */}
+              <div className="flex items-center gap-2">
+                <label className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl border border-dashed border-white/[0.10] hover:border-indigo-500/30 hover:bg-indigo-500/[0.04] text-[11px] font-medium text-white/30 hover:text-white/50 cursor-pointer transition-all">
+                  <ImagePlus className="w-3.5 h-3.5" />
+                  Add photos for better results
+                  <input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    className="hidden"
+                    onChange={async (e) => {
+                      const files = Array.from(e.target.files || []);
+                      for (const file of files.slice(0, 5)) {
+                        try {
+                          const formData = new FormData();
+                          formData.append("file", file);
+                          formData.append("type", "photo");
+                          const res = await fetch("/api/upload", { method: "POST", body: formData });
+                          if (res.ok) {
+                            const { url } = await res.json();
+                            await fetch("/api/photos", {
+                              method: "POST",
+                              headers: { "Content-Type": "application/json" },
+                              body: JSON.stringify({ filename: file.name, url, isPrimary: false }),
+                            });
+                            setExtraPhotos((prev) => [...prev, url]);
+                          }
+                        } catch {}
+                      }
+                    }}
+                  />
+                </label>
+                {extraPhotos.length > 0 && (
+                  <div className="flex items-center gap-1">
+                    {extraPhotos.map((url, i) => (
+                      <div key={i} className="w-8 h-8 rounded-lg overflow-hidden border border-white/[0.08]">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={url} alt="" className="w-full h-full object-cover" />
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {extraPhotos.length > 0 && !extraSheetGenerating && !extraSheetUrl && (
+                <motion.button
+                  initial={{ opacity: 0, y: 5 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  onClick={async () => {
+                    setExtraSheetGenerating(true);
+                    try {
+                      const res = await fetch("/api/character-sheet", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ photoUrls: extraPhotos, industry }),
+                      });
+                      if (res.ok) {
+                        const data = await res.json();
+                        if (data.poses?.compositeUrl) {
+                          setExtraSheetUrl(data.poses.compositeUrl);
+                        }
+                      }
+                    } catch {}
+                    setExtraSheetGenerating(false);
+                  }}
+                  className="w-full py-2 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-[11px] font-medium text-indigo-300 hover:bg-indigo-500/15 transition-all"
+                >
+                  Generate new poses from {extraPhotos.length} photo{extraPhotos.length > 1 ? "s" : ""}
+                </motion.button>
+              )}
+
+              {extraSheetGenerating && (
+                <div className="flex items-center justify-center gap-2 py-2">
+                  <RefreshCw className="w-3 h-3 text-indigo-400 animate-spin" />
+                  <span className="text-[11px] text-indigo-400/60">Generating new pose variations...</span>
+                </div>
+              )}
+
+              {extraSheetUrl && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="rounded-xl border border-emerald-500/20 overflow-hidden"
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={extraSheetUrl} alt="Additional poses" className="w-full h-auto" />
+                  <div className="px-3 py-2 bg-emerald-500/[0.04] text-[10px] text-emerald-400/60 text-center">
+                    New poses generated — these will improve your video quality
+                  </div>
+                </motion.div>
+              )}
+
+              <p className="text-[10px] text-white/15 text-center">
+                Different angles and lighting help the AI create more realistic videos
+              </p>
             </motion.div>
 
             {/* CTA */}

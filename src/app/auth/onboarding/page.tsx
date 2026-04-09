@@ -297,8 +297,8 @@ function OnboardingFlow() {
     <div className="relative min-h-screen bg-[#060610] flex flex-col overflow-hidden">
       <AmbientBg />
 
-      {/* Header */}
-      <div className="relative z-10 flex items-center justify-between px-6 py-5">
+      {/* Header — hidden during video loading for full-screen takeover */}
+      <div className={`relative z-10 flex items-center justify-between px-6 py-5 transition-opacity ${step === "video_loading" ? "opacity-0 pointer-events-none" : "opacity-100"}`}>
         <motion.div
           initial={{ opacity: 0, x: -8 }}
           animate={{ opacity: 1, x: 0 }}
@@ -321,22 +321,24 @@ function OnboardingFlow() {
       <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-6 pb-16 pt-2">
         <div className="w-full max-w-sm">
 
-          {/* Heading */}
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={step + "-h"}
-              initial={{ opacity: 0, y: 16, filter: "blur(4px)" }}
-              animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-              exit={{ opacity: 0, y: -16, filter: "blur(4px)" }}
-              transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
-              className="text-center mb-8"
-            >
-              <h1 className="text-[28px] font-extrabold text-white tracking-tight leading-tight">
-                {heading}
-              </h1>
-              <p className="text-[14px] text-white/40 mt-2 font-medium">{sub}</p>
-            </motion.div>
-          </AnimatePresence>
+          {/* Heading — hidden during video_loading (component has its own animated text) */}
+          {step !== "video_loading" && (
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={step + "-h"}
+                initial={{ opacity: 0, y: 16, filter: "blur(4px)" }}
+                animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                exit={{ opacity: 0, y: -16, filter: "blur(4px)" }}
+                transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+                className="text-center mb-8"
+              >
+                <h1 className="text-[28px] font-extrabold text-white tracking-tight leading-tight">
+                  {heading}
+                </h1>
+                <p className="text-[14px] text-white/40 mt-2 font-medium">{sub}</p>
+              </motion.div>
+            </AnimatePresence>
+          )}
 
           {/* Step content */}
           <AnimatePresence mode="wait">

@@ -148,7 +148,7 @@ export default function VoiceCapture({ onCapture, uploading = false }: VoiceCapt
     if (audioBlob) onCapture(audioBlob);
   }, [audioBlob, onCapture]);
 
-  const tooShort = duration < 5;
+  const tooShort = duration < 2;
 
   return (
     <div className="w-full max-w-sm mx-auto">
@@ -182,7 +182,7 @@ export default function VoiceCapture({ onCapture, uploading = false }: VoiceCapt
               <p className="text-[14px] text-white/70 leading-relaxed font-medium">
                 &ldquo;{SAMPLE_SCRIPTS[scriptIndex]}&rdquo;
               </p>
-              <p className="text-[11px] text-white/20">~30 seconds is ideal. 5 seconds minimum.</p>
+              <p className="text-[11px] text-white/20">~10 seconds is ideal. 2 seconds minimum.</p>
             </div>
 
             {/* Record button */}
@@ -354,7 +354,7 @@ export default function VoiceCapture({ onCapture, uploading = false }: VoiceCapt
                 {tooShort ? (
                   <>
                     <AlertTriangle className="w-3.5 h-3.5 flex-shrink-0" />
-                    Too short. Record at least 5 seconds for good quality.
+                    Too short. Record at least 2 seconds.
                   </>
                 ) : (
                   <>
