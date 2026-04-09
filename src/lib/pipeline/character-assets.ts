@@ -25,6 +25,7 @@
 
 import prisma from "@/lib/prisma";
 import { getStartingFrameUrl } from "@/lib/starting-frame";
+import { cropPoseFromComposite, cropAll360Angles } from "./pose-cropper";
 
 // ---- Grid Position Metadata ----
 
@@ -223,9 +224,18 @@ export async function getCharacterAssetForCut(
 
   if (posesSheet?.compositeUrl) {
     const gridPosition = selectBestPose(cutType, "poses");
+    // Crop the specific pose from the composite instead of sending the full grid
+    const cropped = await cropPoseFromComposite(
+      posesSheet.compositeUrl,
+      "poses",
+      gridPosition.row,
+      gridPosition.col,
+      userId,
+      posesSheet.id
+    );
     return {
-      url: posesSheet.compositeUrl,
-      source: "poses_sheet",
+      url: cropped.url,
+      source: cropped.source === "fallback" ? "poses_sheet" : "poses_sheet_cropped",
       gridPosition,
       characterSheetId: posesSheet.id,
     };
@@ -240,9 +250,18 @@ export async function getCharacterAssetForCut(
 
   if (threeSixtySheet?.compositeUrl) {
     const gridPosition = selectBestPose(cutType, "360");
+    // Crop the specific angle from the composite
+    const cropped = await cropPoseFromComposite(
+      threeSixtySheet.compositeUrl,
+      "3d_360",
+      gridPosition.row,
+      gridPosition.col,
+      userId,
+      threeSixtySheet.id
+    );
     return {
-      url: threeSixtySheet.compositeUrl,
-      source: "360_sheet",
+      url: cropped.url,
+      source: cropped.source === "fallback" ? "360_sheet" : "360_sheet_cropped",
       gridPosition,
       characterSheetId: threeSixtySheet.id,
     };
@@ -297,6 +316,32 @@ function selectBestPose(
 
   // Default to front view
   return { row: 0, col: 0, label: "front" };
+}
+
+/**
+ * Get all 360 character sheet angles as individual cropped images.
+ * Used as `referenceImageUrls` for Kling 3.0 elements — gives the model
+ * 6 distinct angles of the person's face for maximum identity consistency.
+ *
+ * Returns null if no 360 sheet exists.
+ */
+export async function get360ReferenceImages(userId: string): Promise<string[] | null> {
+  const sheet = await prisma.characterSheet.findFirst({
+    where: { userId, type: "3d_360", status: "complete" },
+    orderBy: { createdAt: "desc" },
+    select: { id: true, compositeUrl: true },
+  });
+
+  if (!sheet?.compositeUrl) return null;
+
+  try {
+    const urls = await cropAll360Angles(sheet.compositeUrl, userId, sheet.id);
+    console.log(`[character-assets] Cropped 360 sheet into ${urls.length} individual angles for user ${userId}`);
+    return urls;
+  } catch (e: any) {
+    console.error(`[character-assets] Failed to crop 360 sheet:`, e.message);
+    return null;
+  }
 }
 
 /**

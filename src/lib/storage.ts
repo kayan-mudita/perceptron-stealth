@@ -145,3 +145,7 @@ export function audioKey(userId: string, fileId: string, ext: string): string {
 export function thumbnailKey(userId: string, fileId: string, ext: string): string {
   return `thumbnails/${userId}/${fileId}.${ext}`;
 }
+
+export function croppedPoseKey(userId: string, sheetId: string, position: string): string {
+  return `poses/${userId}/${sheetId}-${position}.jpg`;
+}

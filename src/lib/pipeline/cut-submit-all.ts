@@ -14,7 +14,7 @@
 
 import prisma from "@/lib/prisma";
 import { generateVideo } from "@/lib/generate";
-import { getBestReferenceImage } from "./character-assets";
+import { getCharacterAssetForCut, get360ReferenceImages } from "./character-assets";
 import { getVideoDurationFromAudio } from "./audio-planner";
 import {
   downloadAndStore,
@@ -53,35 +53,59 @@ export async function handleSubmitAllCuts(
     data: { sourceReview: stringifyMeta(meta) },
   });
 
-  // ---- Resolve reference image once (shared across all cuts) ----
-  const referenceImageUrl = await getBestReferenceImage(userId, meta.cuts[0].type);
-  let photoUrl = referenceImageUrl || "";
-
-  if (!photoUrl && video.photoId) {
-    const linkedPhoto = await prisma.photo.findFirst({ where: { id: video.photoId } });
-    if (linkedPhoto?.url) {
-      photoUrl = linkedPhoto.url;
-      console.warn(
-        `[pipeline/cut-submit-all] getBestReferenceImage returned null. Using video-linked photo as fallback.`
-      );
-    }
-  }
-
-  if (!photoUrl) {
-    console.error(
-      `[pipeline/cut-submit-all] No reference image available. Video generation will proceed without a character reference.`
-    );
-  }
-
-  // ---- Fetch user industry once ----
+  // ---- Fetch user info once ----
   const user = await prisma.user.findUnique({
     where: { id: userId },
     select: { industry: true },
   });
 
+  // ---- Resolve 360 reference images for Kling 3.0 elements ----
+  // These give the video model 6 distinct angles of the person's face
+  const isKling3 = selectedModel.startsWith("kling_v3");
+  const referenceImageUrls = isKling3
+    ? await get360ReferenceImages(userId)
+    : null;
+
+  if (referenceImageUrls) {
+    console.log(
+      `[pipeline/cut-submit-all] Resolved ${referenceImageUrls.length} 360 reference images for Kling 3 elements`
+    );
+  }
+
+  // ---- Fallback photo if character assets fail ----
+  let fallbackPhotoUrl = "";
+  if (video.photoId) {
+    const linkedPhoto = await prisma.photo.findFirst({ where: { id: video.photoId } });
+    if (linkedPhoto?.url) fallbackPhotoUrl = linkedPhoto.url;
+  }
+  if (!fallbackPhotoUrl) {
+    const anyPhoto = await prisma.photo.findFirst({
+      where: { userId, isPrimary: true },
+      select: { url: true },
+    });
+    fallbackPhotoUrl = anyPhoto?.url || "";
+  }
+
   // ---- Submit ALL cuts to FAL in parallel ----
+  // Each cut gets its OWN cropped pose from the character sheet,
+  // optimized for the cut type (hook gets standing/headshot, broll gets side angle, etc.)
   const submissions = await Promise.allSettled(
     meta.cuts.map(async (cut, cutIndex) => {
+      // Resolve the BEST reference image for THIS SPECIFIC CUT TYPE
+      const asset = await getCharacterAssetForCut(userId, cut.type || "talking_head");
+      const photoUrl = asset.url || fallbackPhotoUrl;
+
+      if (asset.source.includes("cropped")) {
+        console.log(
+          `[pipeline/cut-submit-all] Cut ${cutIndex} (${cut.type}): using cropped ${asset.source} ` +
+          `[${asset.gridPosition?.row},${asset.gridPosition?.col}] = ${asset.gridPosition?.label}`
+        );
+      } else {
+        console.log(
+          `[pipeline/cut-submit-all] Cut ${cutIndex} (${cut.type}): using ${asset.source} (not cropped)`
+        );
+      }
+
       // Determine video duration from audio (audio-driven planning)
       const cutAudioEntry = meta.cutAudio?.[cutIndex];
       let videoDuration = cut.generateDuration;
@@ -90,10 +114,6 @@ export async function handleSubmitAllCuts(
         videoDuration = getVideoDurationFromAudio(cutAudioEntry.durationMs);
         console.log(
           `[pipeline/cut-submit-all] Cut ${cutIndex}: audio=${cutAudioEntry.durationMs}ms -> video=${videoDuration}s (was ${cut.generateDuration}s)`
-        );
-      } else {
-        console.log(
-          `[pipeline/cut-submit-all] Cut ${cutIndex}: no per-cut audio, using default duration=${cut.generateDuration}s`
         );
       }
 
@@ -106,6 +126,8 @@ export async function handleSubmitAllCuts(
         industry: user?.industry,
         usePromptEngine: false,
         duration: videoDuration,
+        // Pass 360 reference images for Kling 3.0 element-based consistency
+        referenceImageUrls: referenceImageUrls || undefined,
       });
 
       return { cutIndex, result, cut };
