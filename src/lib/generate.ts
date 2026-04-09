@@ -4,16 +4,25 @@
 // One API key, one billing, access to every model.
 //
 // Supported models via FAL:
-//   - Kling 2.6 (image-to-video)
+//   - Kling 2.6 Pro (image-to-video)
+//   - Kling 3.0 Pro (image-to-video, multi-element, optional audio)
+//   - Kling 3.0 Pro + Audio (image-to-video with native audio generation)
+//   - Veo 3 (Google, text/image-to-video with native audio)
+//   - Seedance 2.0 (ByteDance, cinematic, director camera control, native audio)
 //   - Minimax Video / Hailuo (image-to-video)
-//   - LTX Video (image-to-video)
-//   - Wan 2.1 (image-to-video)
-//   - Luma Dream Machine
-//   - Runway Gen-3 Turbo
+//   - Hailuo 2.3 Fast Pro (fast iteration)
+//   - LTX Video 2.3 (fast generation)
+//   - LTX Fast (fastest, for testing)
+//   - Wan 2.1 (open-source fallback)
+//
+// Audio-native models (Kling 3 + Audio, Veo 3, Seedance 2.0)
+// generate synchronized voice + ambient sound IN the video,
+// allowing the pipeline to skip the separate TTS step.
 //
 // Adding a new model:
 //   1. Add its FAL model ID to FAL_MODELS below
-//   2. That's it. FAL handles the rest.
+//   2. Set supportsNativeAudio: true if it generates audio
+//   3. That's it. FAL handles the rest.
 
 import prisma from "@/lib/prisma";
 import { expandPrompt } from "@/lib/prompt-engine";
@@ -108,10 +117,35 @@ interface FalModelConfig {
   maxDuration: number;     // max seconds this model supports
   supportsImage: boolean;  // can accept a reference image
   supportsAudio: boolean;  // can accept audio input
+  /** Model generates audio (voice + ambient) natively in the video.
+   *  When true, the pipeline can skip the separate TTS step. */
+  supportsNativeAudio: boolean;
+  costPerSecond?: number;  // USD per second of generated video
   buildPayload: (params: GenerateVideoParams) => Record<string, unknown>;
 }
 
+/** Check if a model supports native audio generation (skip TTS) */
+export function modelSupportsNativeAudio(model: string): boolean {
+  return FAL_MODELS[model]?.supportsNativeAudio ?? false;
+}
+
+/** Get all available models for the UI model selector */
+export function getAvailableModels(): { id: string; name: string; description: string; nativeAudio: boolean; cost?: number }[] {
+  return Object.entries(FAL_MODELS)
+    .filter(([id]) => !id.startsWith("seedance_2.0_legacy") && !id.startsWith("sora_2"))
+    .map(([id, config]) => ({
+      id,
+      name: config.name,
+      description: config.description,
+      nativeAudio: config.supportsNativeAudio,
+      cost: config.costPerSecond,
+    }));
+}
+
 const FAL_MODELS: Record<string, FalModelConfig> = {
+
+  // ── Kling Family ──────────────────────────────────────────────
+
   "kling_2.6": {
     falId: "fal-ai/kling-video/v2.6/pro/image-to-video",
     name: "Kling 2.6 Pro",
@@ -119,6 +153,8 @@ const FAL_MODELS: Record<string, FalModelConfig> = {
     maxDuration: 10,
     supportsImage: true,
     supportsAudio: false,
+    supportsNativeAudio: false,
+    costPerSecond: 0.224,
     buildPayload: (p) => ({
       prompt: p.script,
       image_url: p.photoUrl,
@@ -130,10 +166,12 @@ const FAL_MODELS: Record<string, FalModelConfig> = {
   "kling_v3": {
     falId: "fal-ai/kling-video/v3/pro/image-to-video",
     name: "Kling 3.0 Pro",
-    description: "Latest Kling — supports multi-image elements for character consistency",
+    description: "Latest Kling — multi-image elements for character consistency",
     maxDuration: 15,
     supportsImage: true,
     supportsAudio: false,
+    supportsNativeAudio: false,
+    costPerSecond: 0.224,
     buildPayload: (p) => {
       const duration = Math.max(3, Math.min(15, p.duration || 5));
       const payload: Record<string, unknown> = {
@@ -144,19 +182,95 @@ const FAL_MODELS: Record<string, FalModelConfig> = {
         generate_audio: false,
       };
       if (p.referenceImageUrls && p.referenceImageUrls.length > 0) {
-        payload.elements = [
-          {
-            frontal_image_url: p.photoUrl,
-            reference_image_urls: p.referenceImageUrls,
-          },
-        ];
-        if (!p.script.includes("@Element1")) {
-          payload.prompt = `@Element1 ${p.script}`;
-        }
+        payload.elements = [{ frontal_image_url: p.photoUrl, reference_image_urls: p.referenceImageUrls }];
+        if (!p.script.includes("@Element1")) payload.prompt = `@Element1 ${p.script}`;
       }
       return payload;
     },
   },
+
+  "kling_v3_audio": {
+    falId: "fal-ai/kling-video/v3/pro/image-to-video",
+    name: "Kling 3.0 Pro + Audio",
+    description: "Kling 3 with native audio — generates voice + ambient sound in the video. Skips TTS step.",
+    maxDuration: 15,
+    supportsImage: true,
+    supportsAudio: true,
+    supportsNativeAudio: true,
+    costPerSecond: 0.28,
+    buildPayload: (p) => {
+      const duration = Math.max(3, Math.min(15, p.duration || 5));
+      const payload: Record<string, unknown> = {
+        prompt: p.script,
+        start_image_url: p.photoUrl,
+        duration: String(duration),
+        aspect_ratio: "9:16",
+        generate_audio: true,
+      };
+      if (p.referenceImageUrls && p.referenceImageUrls.length > 0) {
+        payload.elements = [{ frontal_image_url: p.photoUrl, reference_image_urls: p.referenceImageUrls }];
+        if (!p.script.includes("@Element1")) payload.prompt = `@Element1 ${p.script}`;
+      }
+      return payload;
+    },
+  },
+
+  // ── Google Veo ────────────────────────────────────────────────
+
+  "veo_3": {
+    falId: "fal-ai/veo3",
+    name: "Google Veo 3",
+    description: "Google's latest — superior quality with native audio (voice + ambient). Top-tier realism.",
+    maxDuration: 8,
+    supportsImage: false,
+    supportsAudio: true,
+    supportsNativeAudio: true,
+    costPerSecond: 0.50,
+    buildPayload: (p) => ({
+      prompt: p.script,
+      ...(p.photoUrl ? { image_url: p.photoUrl } : {}),
+      aspect_ratio: "9:16",
+      generate_audio: true,
+    }),
+  },
+
+  "veo_3.1": {
+    falId: "fal-ai/veo3",
+    name: "Google Veo 3.1",
+    description: "Veo 3 without audio — cheaper, 1080p output",
+    maxDuration: 8,
+    supportsImage: false,
+    supportsAudio: false,
+    supportsNativeAudio: false,
+    costPerSecond: 0.20,
+    buildPayload: (p) => ({
+      prompt: p.script,
+      ...(p.photoUrl ? { image_url: p.photoUrl } : {}),
+      aspect_ratio: "9:16",
+      generate_audio: false,
+    }),
+  },
+
+  // ── ByteDance Seedance ────────────────────────────────────────
+
+  "seedance_2.0": {
+    falId: "fal-ai/seedance-2.0",
+    name: "Seedance 2.0 (ByteDance)",
+    description: "Cinematic output with native audio. Director-level camera control. Accepts text + image + audio inputs.",
+    maxDuration: 10,
+    supportsImage: true,
+    supportsAudio: true,
+    supportsNativeAudio: true,
+    costPerSecond: 0.30,
+    buildPayload: (p) => ({
+      prompt: p.script,
+      ...(p.photoUrl ? { image_url: p.photoUrl } : {}),
+      aspect_ratio: "9:16",
+      generate_audio: true,
+    }),
+  },
+
+  // ── MiniMax / Hailuo ──────────────────────────────────────────
 
   "minimax_video": {
     falId: "fal-ai/minimax/video-01/image-to-video",
@@ -165,6 +279,7 @@ const FAL_MODELS: Record<string, FalModelConfig> = {
     maxDuration: 6,
     supportsImage: true,
     supportsAudio: false,
+    supportsNativeAudio: false,
     buildPayload: (p) => ({
       prompt: p.script,
       image_url: p.photoUrl,
@@ -179,11 +294,14 @@ const FAL_MODELS: Record<string, FalModelConfig> = {
     maxDuration: 6,
     supportsImage: true,
     supportsAudio: false,
+    supportsNativeAudio: false,
     buildPayload: (p) => ({
       prompt: p.script,
       image_url: p.photoUrl,
     }),
   },
+
+  // ── Open Source ────────────────────────────────────────────────
 
   "wan_2.1": {
     falId: "fal-ai/wan/v2.1/image-to-video",
@@ -192,6 +310,7 @@ const FAL_MODELS: Record<string, FalModelConfig> = {
     maxDuration: 5,
     supportsImage: true,
     supportsAudio: false,
+    supportsNativeAudio: false,
     buildPayload: (p) => ({
       prompt: p.script,
       image_url: p.photoUrl,
@@ -201,6 +320,8 @@ const FAL_MODELS: Record<string, FalModelConfig> = {
     }),
   },
 
+  // ── LTX (Fast / Testing) ─────────────────────────────────────
+
   "ltx": {
     falId: "fal-ai/ltx-2.3/image-to-video",
     name: "LTX 2.3",
@@ -208,6 +329,7 @@ const FAL_MODELS: Record<string, FalModelConfig> = {
     maxDuration: 5,
     supportsImage: true,
     supportsAudio: false,
+    supportsNativeAudio: false,
     buildPayload: (p) => ({
       prompt: p.script,
       image_url: p.photoUrl,
@@ -221,35 +343,23 @@ const FAL_MODELS: Record<string, FalModelConfig> = {
     maxDuration: 5,
     supportsImage: true,
     supportsAudio: false,
+    supportsNativeAudio: false,
     buildPayload: (p) => ({
       prompt: p.script,
       image_url: p.photoUrl,
     }),
   },
 
-  // Legacy aliases — route to FAL equivalents
-  "seedance_2.0": {
-    falId: "fal-ai/kling-video/v2.6/pro/image-to-video",
-    name: "Seedance 2.0 → Kling 2.6 Pro",
-    description: "Routed to Kling 2.6 Pro via FAL",
-    maxDuration: 10,
-    supportsImage: true,
-    supportsAudio: false,
-    buildPayload: (p) => ({
-      prompt: p.script,
-      image_url: p.photoUrl,
-      duration: clampToKlingDuration(p.duration),
-      aspect_ratio: "9:16",
-    }),
-  },
+  // ── Legacy Aliases ────────────────────────────────────────────
 
   "sora_2": {
     falId: "fal-ai/minimax/video-01/image-to-video",
-    name: "Sora 2 → Minimax Video",
-    description: "Routed to Minimax Video via FAL",
+    name: "Sora 2 (legacy alias)",
+    description: "Routes to Minimax Video via FAL",
     maxDuration: 6,
     supportsImage: true,
     supportsAudio: false,
+    supportsNativeAudio: false,
     buildPayload: (p) => ({
       prompt: p.script,
       image_url: p.photoUrl,
@@ -625,16 +735,6 @@ function simulateGeneration(model: string): GenerateResult {
     thumbnailUrl: null as any,
     estimatedTime: 0,
   };
-}
-
-export function getAvailableModels(): { id: string; name: string; description: string; available: boolean }[] {
-  const hasFal = !!getFalKey();
-  return Object.entries(FAL_MODELS).map(([id, config]) => ({
-    id,
-    name: config.name,
-    description: config.description,
-    available: hasFal,
-  }));
 }
 
 export function getModelInfo(model: string) {

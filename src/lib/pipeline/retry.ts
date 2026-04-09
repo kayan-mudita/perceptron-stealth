@@ -43,12 +43,20 @@ export interface RetryResult<T> {
  * Model fallback chain for video generation.
  * If the primary model fails for a cut, try the next model in the chain.
  *
- * kling_2.6 -> minimax_hailuo -> wan_2.1
+ * kling_v3 -> kling_2.6 -> minimax_hailuo -> wan_2.1
+ * Audio-native chain: kling_v3_audio -> seedance_2.0 -> veo_3
  */
 export const MODEL_FALLBACK_CHAIN: string[] = [
+  "kling_v3",
   "kling_2.6",
   "minimax_hailuo",
   "wan_2.1",
+];
+
+export const AUDIO_NATIVE_FALLBACK_CHAIN: string[] = [
+  "kling_v3_audio",
+  "seedance_2.0",
+  "veo_3",
 ];
 
 /**
