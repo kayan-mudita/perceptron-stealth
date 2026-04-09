@@ -14,6 +14,8 @@ import {
   Image as ImageIcon,
 } from "lucide-react";
 import FadeIn from "@/components/motion/FadeIn";
+import GradientText from "@/components/marketing/GradientText";
+import GlowBlob from "@/components/marketing/GlowBlob";
 
 type DemoStage = "upload" | "processing" | "done";
 
@@ -82,16 +84,21 @@ export default function DemoClient() {
             href="/"
             className="text-p2 font-semibold tracking-tight text-white"
           >
-            Official <span className="text-blue-400">AI</span>
+            Official <span className="text-utility-300">AI</span>
           </Link>
         </div>
       </nav>
 
       <main className="pt-32 pb-24 px-6">
-        {/* Background glow */}
-        <div className="fixed top-20 left-1/2 -translate-x-1/2 w-[800px] h-[600px] pointer-events-none">
-          <div className="absolute top-0 left-1/4 w-[400px] h-[400px] bg-blue-500/[0.04] rounded-full blur-[120px]" />
-          <div className="absolute top-20 right-1/4 w-[300px] h-[300px] bg-violet-500/[0.04] rounded-full blur-[100px]" />
+        {/* Brand-tinted ambient backdrop */}
+        <div className="fixed inset-0 pointer-events-none overflow-hidden">
+          <GlowBlob color="utility" size="xl" position="top" intensity={0.06} />
+          <GlowBlob
+            color="special"
+            size="lg"
+            position="bottom"
+            intensity={0.05}
+          />
         </div>
 
         <div className="relative max-w-lg mx-auto">
@@ -102,11 +109,9 @@ export default function DemoClient() {
                 <h1 className="text-h2 sm:text-h0 font-bold tracking-[-0.03em] leading-[1.08] text-white mb-4">
                   See yourself
                   <br />
-                  <span className="bg-gradient-to-r from-blue-400 via-violet-400 to-blue-400 bg-clip-text text-transparent">
-                    in 30 seconds
-                  </span>
+                  <GradientText tone="brand">in 30 seconds</GradientText>
                 </h1>
-                <p className="text-p1 text-white/35 font-light">
+                <p className="text-p1 text-white/45 font-light">
                   Upload one photo. No signup required.
                 </p>
               </div>
@@ -115,7 +120,7 @@ export default function DemoClient() {
               <div
                 className={`relative rounded-2xl border-2 border-dashed transition-all duration-300 cursor-pointer ${
                   dragActive
-                    ? "border-blue-400/50 bg-blue-500/[0.05]"
+                    ? "border-utility-400/50 bg-utility-400/[0.06]"
                     : "border-white/[0.08] bg-white/[0.015] hover:border-white/[0.15] hover:bg-white/[0.025]"
                 }`}
                 onDragOver={(e) => {
@@ -139,7 +144,7 @@ export default function DemoClient() {
                 <div className="flex flex-col items-center justify-center py-20 px-8">
                   <div className="w-16 h-16 rounded-2xl bg-white/[0.04] border border-white/[0.06] flex items-center justify-center mb-6">
                     {dragActive ? (
-                      <Upload className="w-7 h-7 text-blue-400/70" />
+                      <Upload className="w-7 h-7 text-utility-300" />
                     ) : (
                       <ImageIcon className="w-7 h-7 text-white/30" />
                     )}
@@ -206,28 +211,28 @@ export default function DemoClient() {
                       key={i}
                       className={`flex items-center gap-4 p-4 rounded-xl border transition-all duration-500 ${
                         isActive
-                          ? "border-blue-500/20 bg-blue-500/[0.04]"
+                          ? "border-utility-400/30 bg-utility-400/[0.06]"
                           : isDone
-                          ? "border-white/[0.06] bg-white/[0.015]"
-                          : "border-white/[0.04] bg-transparent"
+                            ? "border-white/[0.06] bg-white/[0.015]"
+                            : "border-white/[0.04] bg-transparent"
                       }`}
                     >
                       <div
                         className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 transition-all duration-500 ${
                           isActive
-                            ? "bg-blue-500/15 border border-blue-500/25"
+                            ? "bg-utility-400/[0.12] border border-utility-400/30"
                             : isDone
-                            ? "bg-emerald-500/10 border border-emerald-500/20"
-                            : "bg-white/[0.03] border border-white/[0.06]"
+                              ? "bg-positive-500/10 border border-positive-500/25"
+                              : "bg-white/[0.03] border border-white/[0.06]"
                         }`}
                       >
                         {isDone ? (
-                          <Check className="w-3.5 h-3.5 text-emerald-400" />
+                          <Check className="w-3.5 h-3.5 text-positive-400" />
                         ) : (
                           <step.icon
                             className={`w-3.5 h-3.5 ${
                               isActive
-                                ? "text-blue-400 animate-pulse"
+                                ? "text-utility-300 animate-pulse"
                                 : "text-white/20"
                             }`}
                           />
@@ -236,18 +241,20 @@ export default function DemoClient() {
                       <span
                         className={`text-p2 font-medium transition-colors duration-500 ${
                           isActive
-                            ? "text-white/80"
+                            ? "text-white/85"
                             : isDone
-                            ? "text-white/40"
-                            : "text-white/20"
+                              ? "text-white/45"
+                              : "text-white/25"
                         }`}
                       >
                         {step.label}
                         {isActive && (
-                          <span className="text-blue-400/60 ml-1.5">...</span>
+                          <span className="text-utility-300/70 ml-1.5">
+                            ...
+                          </span>
                         )}
                         {isDone && (
-                          <span className="text-emerald-400/60 ml-1.5">
+                          <span className="text-positive-400/70 ml-1.5">
                             Done
                           </span>
                         )}
@@ -260,7 +267,7 @@ export default function DemoClient() {
               {/* Overall progress bar */}
               <div className="h-1 rounded-full bg-white/[0.04] overflow-hidden">
                 <div
-                  className="h-full rounded-full bg-gradient-to-r from-blue-400 to-violet-400 transition-all duration-1000 ease-out"
+                  className="h-full rounded-full bg-gradient-to-r from-utility-400 to-special-500 transition-all duration-1000 ease-out"
                   style={{
                     width: `${
                       ((currentStep + 1) / processingSteps.length) * 100
@@ -275,16 +282,17 @@ export default function DemoClient() {
           {stage === "done" && (
             <FadeIn duration={0.6}>
               <div className="text-center mb-8">
-                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 mb-6">
-                  <Check className="w-3 h-3 text-emerald-400" />
-                  <span className="text-p3 text-emerald-400/80 font-medium">
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-positive-500/10 border border-positive-500/25 mb-6">
+                  <Check className="w-3 h-3 text-positive-400" />
+                  <span className="text-p3 text-positive-300 font-medium">
                     Video ready
                   </span>
                 </div>
                 <h2 className="text-h2 font-bold tracking-tight text-white mb-2">
-                  Your video is ready
+                  Your video is{" "}
+                  <GradientText tone="brand">ready.</GradientText>
                 </h2>
-                <p className="text-p2 text-white/30">
+                <p className="text-p2 text-white/45">
                   Here is what AI created from your photo.
                 </p>
               </div>
@@ -294,7 +302,7 @@ export default function DemoClient() {
                 {/* 9:16 video frame */}
                 <div className="relative aspect-[9/16] rounded-2xl overflow-hidden border border-white/[0.08] bg-gradient-to-b from-white/[0.03] to-white/[0.01]">
                   {/* Simulated video content */}
-                  <div className="absolute inset-0 bg-gradient-to-b from-blue-900/20 via-[#0a0e17] to-violet-900/20" />
+                  <div className="absolute inset-0 bg-gradient-to-b from-utility-400/15 via-[#0a0e17] to-special-500/15" />
 
                   {/* Subtle grid overlay */}
                   <div
@@ -347,7 +355,7 @@ export default function DemoClient() {
                     setFileName("");
                     setCurrentStep(0);
                   }}
-                  className="text-p3 text-blue-400/70 hover:text-blue-400 transition-colors"
+                  className="text-p3 text-utility-300 hover:text-utility-200 transition-colors font-medium"
                 >
                   Try another photo &rarr;
                 </button>
