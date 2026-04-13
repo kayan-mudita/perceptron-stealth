@@ -38,14 +38,14 @@ export default function Breadcrumbs({ items }: BreadcrumbsProps) {
             return (
               <li key={index} className="flex items-center gap-1.5">
                 {index > 0 && (
-                  <ChevronRight className="w-3 h-3 text-white/20 flex-shrink-0" />
+                  <ChevronRight className="w-3 h-3 text-white/70 flex-shrink-0" />
                 )}
                 {isLast || !item.href ? (
-                  <span className="text-white/50">{item.label}</span>
+                  <span className="text-white/70">{item.label}</span>
                 ) : (
                   <Link
                     href={item.href}
-                    className="text-white/30 hover:text-white/50 transition-colors"
+                    className="text-white/60 hover:text-white/70 transition-colors"
                   >
                     {item.label}
                   </Link>

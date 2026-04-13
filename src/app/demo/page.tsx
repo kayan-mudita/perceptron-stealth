@@ -20,7 +20,7 @@ export default function DemoPage() {
     <>
       <section className="relative pt-28 pb-10 px-5 sm:px-8 max-w-4xl mx-auto">
         <div className="text-center">
-          <p className="text-p3 uppercase tracking-[0.22em] text-white/45 mb-4">
+          <p className="text-p3 uppercase tracking-[0.22em] text-white/70 mb-4">
             Interactive Demo
           </p>
           <h1 className="text-h1 sm:text-[52px] leading-[1.05] tracking-tight text-white font-semibold">
@@ -36,31 +36,31 @@ export default function DemoPage() {
 
         <div className="mt-14 grid gap-6 sm:grid-cols-3 text-left">
           <div className="rounded-2xl border border-white/[0.08] bg-white/[0.02] p-5">
-            <p className="text-p3 text-white/40">Step 01</p>
+            <p className="text-p3 text-white/70">Step 01</p>
             <h2 className="text-p1 text-white font-semibold mt-2">
               Upload three photos
             </h2>
-            <p className="text-p3 text-white/55 mt-2 leading-relaxed">
+            <p className="text-p3 text-white/70 mt-2 leading-relaxed">
               Front-facing, slight angle, profile. Phone photos are fine. The
               engine builds a consistent 360° likeness from these three frames.
             </p>
           </div>
           <div className="rounded-2xl border border-white/[0.08] bg-white/[0.02] p-5">
-            <p className="text-p3 text-white/40">Step 02</p>
+            <p className="text-p3 text-white/70">Step 02</p>
             <h2 className="text-p1 text-white font-semibold mt-2">
               Record a 30-second voice sample
             </h2>
-            <p className="text-p3 text-white/55 mt-2 leading-relaxed">
+            <p className="text-p3 text-white/70 mt-2 leading-relaxed">
               Read a short script on your phone. The voice model captures your
               tone, cadence, and emphasis — no studio mic required.
             </p>
           </div>
           <div className="rounded-2xl border border-white/[0.08] bg-white/[0.02] p-5">
-            <p className="text-p3 text-white/40">Step 03</p>
+            <p className="text-p3 text-white/70">Step 03</p>
             <h2 className="text-p1 text-white font-semibold mt-2">
               Watch it build your first video
             </h2>
-            <p className="text-p3 text-white/55 mt-2 leading-relaxed">
+            <p className="text-p3 text-white/70 mt-2 leading-relaxed">
               Hook, body, CTA — stitched from 3–8 separate AI-generated cuts,
               the same multi-cut method used on the real platform. Review every
               shot before approving.
@@ -72,7 +72,7 @@ export default function DemoPage() {
           <h2 className="text-h3 text-white font-semibold">
             What you&apos;ll see
           </h2>
-          <ul className="mt-4 space-y-2 text-p2 text-white/65 leading-relaxed">
+          <ul className="mt-4 space-y-2 text-p2 text-white/70 leading-relaxed">
             <li>
               <span className="text-white/90 font-medium">A real twin, not an avatar.</span>{" "}
               Detailed facial geometry, skin tone, expression, and gesture
@@ -94,7 +94,7 @@ export default function DemoPage() {
               download it if you want, and decide whether to continue.
             </li>
           </ul>
-          <p className="text-p3 text-white/40 mt-6">
+          <p className="text-p3 text-white/70 mt-6">
             Built for financial advisors, attorneys, doctors, realtors, and any
             solo professional whose brand lives on their face and voice. For
             regulated professions, every script is fully editable before

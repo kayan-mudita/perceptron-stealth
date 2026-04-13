@@ -132,7 +132,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           }}
         />
       </head>
-      <body className="min-h-screen bg-[#060911] text-white antialiased font-sans">
+      <body className="min-h-screen bg-[#0c0f11] text-white antialiased font-sans">
         {children}
         <CookieConsent />
       </body>

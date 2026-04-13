@@ -112,7 +112,7 @@ export default function IndustryPageTemplate({
           </>
         }
         belowActions={
-          <p className="text-p3 text-white/35">
+          <p className="text-p3 text-white/70">
             Try free for 7 days. Cancel anytime.
           </p>
         }
@@ -169,7 +169,7 @@ export default function IndustryPageTemplate({
                     </div>
                     <span
                       className={`relative text-p3 font-semibold ${
-                        isCurrent ? "text-white" : "text-white/65"
+                        isCurrent ? "text-white" : "text-white/70"
                       }`}
                     >
                       {other.shortLabel}
@@ -229,7 +229,7 @@ export default function IndustryPageTemplate({
                 <h3 className="text-p1 font-semibold text-white/90 mb-2">
                   {step.title}
                 </h3>
-                <p className="text-p2 text-white/45 leading-relaxed">
+                <p className="text-p2 text-white/70 leading-relaxed">
                   {step.text}
                 </p>
               </motion.div>
@@ -326,7 +326,7 @@ export default function IndustryPageTemplate({
                   <div className="text-p1 font-semibold text-white/90">
                     {industry.testimonial.name}
                   </div>
-                  <div className="text-p3 text-white/45">
+                  <div className="text-p3 text-white/70">
                     {industry.testimonial.title}
                   </div>
                 </div>
@@ -386,11 +386,11 @@ export default function IndustryPageTemplate({
                           <h3 className="text-p1 font-semibold text-white/90 mb-1">
                             {rel.shortLabel}
                           </h3>
-                          <p className="text-p2 text-white/45 leading-relaxed">
+                          <p className="text-p2 text-white/70 leading-relaxed">
                             {rel.subtitle}
                           </p>
                         </div>
-                        <ArrowRight className="flex-shrink-0 w-4 h-4 text-white/30 group-hover:text-white/70 group-hover:translate-x-0.5 transition-all mt-1" />
+                        <ArrowRight className="flex-shrink-0 w-4 h-4 text-white/70 group-hover:text-white/70 group-hover:translate-x-0.5 transition-all mt-1" />
                       </div>
                     </Link>
                   </motion.div>
@@ -411,16 +411,16 @@ export default function IndustryPageTemplate({
                   <ShieldCheck className="w-5 h-5 text-white/70" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="text-p3 uppercase tracking-[0.18em] text-white/40 font-medium mb-3">
+                  <p className="text-p3 uppercase tracking-[0.18em] text-white/70 font-medium mb-3">
                     {industry.compliance.eyebrow}
                   </p>
                   <h2 className="text-h3 font-semibold text-white leading-tight mb-4">
                     {industry.compliance.heading}
                   </h2>
-                  <p className="text-p2 text-white/65 leading-relaxed mb-5">
+                  <p className="text-p2 text-white/70 leading-relaxed mb-5">
                     {industry.compliance.body}
                   </p>
-                  <ul className="space-y-3 text-p2 text-white/55 leading-relaxed">
+                  <ul className="space-y-3 text-p2 text-white/70 leading-relaxed">
                     {industry.compliance.bullets.map((b, i) => (
                       <li key={i} className="flex gap-3">
                         <span aria-hidden className="mt-[9px] w-1 h-1 rounded-full bg-white/30 flex-shrink-0" />
@@ -460,7 +460,7 @@ export default function IndustryPageTemplate({
           </FadeIn>
 
           <FadeIn delay={0.1}>
-            <p className="text-p1 text-white/45 max-w-xl mx-auto mb-8">
+            <p className="text-p1 text-white/70 max-w-xl mx-auto mb-8">
               {industry.cta.description}
             </p>
           </FadeIn>
